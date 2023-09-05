@@ -244,7 +244,9 @@ IT WILL BE ADDED: describing results including estimated parameters.
 ```{r gene association os, message=FALSE, fig.width=7, fig.height=4}
 
 source("C:/PredictIO_CodeOcean_gene/PredictIO_package/getGeneAssociation.R")
+source("C:/PredictIO_CodeOcean_gene/PredictIO_package/getGeneSigAssociation.R")
 source("C:/PredictIO_CodeOcean_gene/PredictIO_package/getMetaAnalysis.R")
+source("C:/PredictIO_CodeOcean_gene/PredictIO_package/getGeneSigScore.R")
 
 genes <- c("CHRM5", "CHRM3", "FOXP3", "TRPV1", "CALCB", "TAC1", "SCN9A", "RAMP1",
            "CD3E", "CD3E", "CD4", "CD8a", "FOXP3", "GZMA", "PRF1", "BCL3", "CCL7",
@@ -393,37 +395,242 @@ getForestplotPerCancer(Coef = cox_os[cox_os$Gene == "CHRM5", "Coef"],
 
 RNA expression signatures including genes without any weight are computed using Gene Set Variation Analysis (GSVA) enrichment score using the \textit{GSVA} R package [REF]. RNA expression signatures containing genes associated with specific weights (+1 and -1 for up and down-regulated genes, respectively) are computed using the weighted mean expression approach. For RNA immunotherapy signatures with specific computational algorithms to get scores such as PredictIO, we can use their original publication to get the signature score. 
 
-For each dataset, RNA signatures are only computed if at least $80\%$ of their genes are present in the dataset. We also apply \textit{z}-score transformation to the genes of each RNA signature before the computation. The \textit{z}-score transformation is applied before GSVA or the weighted mean computation and after the computation of the specific immunotherapy.  signatures.
+For each dataset, RNA signatures are only computed if at least $80\%$ of their genes are present in the dataset. We also apply \textit{z}-score transformation to the genes of each RNA signature before the computation. The \textit{z}-score transformation is applied before GSVA or the weighted mean computation and after the computation of the specific immunotherapy signatures.
+
+- example for GSVA and summarize the results
+
+APM_Thompson is a RNA signature capturing the antigen processing and presentation machinery (APM) activity. This APM signature was a predictor of the response of PD-(L)1 blockade in Lung and Melanoma patients.
+
+```{r signature score computation GSVA, message=FALSE, warning = FALSE, fig.width=9, fig.height=5.5}
+
+i<- which(signature$Signature == "APM_Thompson")
+geneSigScore <- lapply(1:length(expr), function(k){
+      
+       geneSig <- getGeneSigGSVA(dat = expr[[k]], 
+                                  sig = qread(paste( "C:/PredictIO_CodeOcean_gene/PredictIO_package/data/signatures/qs/" , signature$Signature[i] , ".qs" , sep="" )),
+                                  signature_name = signature$Signature[i],
+                                  cutoff_n = 20,
+                                  cutoff_sig = 0.8, 
+                                  study = names(expr)[k])
+     
+      data.frame(study = names(expr)[k],
+                 signature_name = signature$Signature[i], 
+                 geneSig)
+    
+    })
+  
+geneSigScore <- do.call(rbind, geneSigScore)
+geneSigScore <- geneSigScore[!is.na(geneSigScore$geneSig), ]  
+rownames(geneSigScore) <- NULL 
+
+ggplot(geneSigScore, aes(x = study, y = geneSig)) + 
+  geom_boxplot(fill= "#d9d9d9", color = "#636363") +
+  xlab("") +
+  ylab("signature score (GSVA)") +
+  theme(axis.text.x=element_text(size=10,  face="bold", angle = 90),
+        axis.title=element_text(size=12,face="bold"),
+        axis.text.y=element_text(size=10, face = "bold"),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        plot.background = element_blank(), 
+        axis.line = element_line(colour = "black"),
+        legend.position="none",
+        legend.text = element_text(size = 6, face="bold"),
+        legend.title = element_blank()) 
+
+```
+
+- example for weighted mean and summarize the results
+
+IRG_Yang is a RNA signature capturing the expression level of several Immune Regulatory Genes (IRG). This IRG signature was a predictor of the response of CTLA-4 and PD-1 blockade in published cohorts.
+
+```{r signature score computation weighted mean, message=FALSE, warning = FALSE, fig.width=9, fig.height=5.5}
+
+i<- which(signature$Signature == "IRG_Yang")
+geneSigScore <- lapply(1:length(expr), function(k){
+
+       geneSig <- getGeneSigMean(dat = expr[[k]], 
+                                  sig = qread(paste( "C:/PredictIO_CodeOcean_gene/PredictIO_package/data/signatures/qs/" , signature$Signature[i] , ".qs" , sep="" )),
+                                  signature_name = signature$Signature[i],
+                                  cutoff_n = 20,
+                                  cutoff_sig = 0.8, 
+                                  study = names(expr)[k])
+  
+      data.frame(study = names(expr)[k],
+                 signature_name = signature$Signature[i], 
+                 geneSig)
+    
+    })
+  
+geneSigScore <- do.call(rbind, geneSigScore)
+geneSigScore <- geneSigScore[!is.na(geneSigScore$geneSig), ]  
+rownames(geneSigScore) <- NULL 
+
+ggplot(geneSigScore, aes(x = study, y = geneSig)) + 
+  geom_boxplot(fill= "#d9d9d9", color = "#636363") +
+  xlab("") +
+  ylab("signature score (Weighted Mean)") +
+  theme(axis.text.x=element_text(size=10,  face="bold", angle = 90),
+        axis.title=element_text(size=12,face="bold"),
+        axis.text.y=element_text(size=10, face = "bold"),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        plot.background = element_blank(), 
+        axis.line = element_line(colour = "black"),
+        legend.position="none",
+        legend.text = element_text(size = 6, face="bold"),
+        legend.title = element_blank()) 
 
 
-```{r signature score computation}
+```
 
+- example for specific method and summarize the results
+
+PredictIO is a RNA signature capturing the expression level of ----.
+ADD two colors for validation vs discovery cohorts ---> add in the table of immunotherapy Data
+
+```{r signature score computation specific, message=FALSE, warning = FALSE, fig.width=9, fig.height=5.5}
+
+i<- which(signature$Signature == "PredictIO")
+geneSigScore <- lapply(1:length(expr), function(k){
+      
+       geneSig <- getGeneSigPredictIO(dat = expr[[k]], 
+                                  sig = qread(paste( "C:/PredictIO_CodeOcean_gene/PredictIO_package/data/signatures/qs/" , signature$Signature[i] , ".qs" , sep="" )),
+                                  signature_name = signature$Signature[i],
+                                  cutoff_n = 20,
+                                  cutoff_sig = 0.8, 
+                                  study = names(expr)[k])
+  
+      data.frame(study = names(expr)[k],
+                 signature_name = signature$Signature[i], 
+                 geneSig)
+    
+    })
+  
+geneSigScore <- do.call(rbind, geneSigScore)
+geneSigScore <- geneSigScore[!is.na(geneSigScore$geneSig), ]  
+rownames(geneSigScore) <- NULL 
+
+ggplot(geneSigScore, aes(x = study, y = geneSig)) + 
+  geom_boxplot(fill= "#d9d9d9", color = "#636363") +
+  xlab("") +
+  ylab("signature score (Specific Algorithm)") +
+  theme(axis.text.x=element_text(size=10,  face="bold", angle = 90),
+        axis.title=element_text(size=12,face="bold"),
+        axis.text.y=element_text(size=10, face = "bold"),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        plot.background = element_blank(), 
+        axis.line = element_line(colour = "black"),
+        legend.position="none",
+        legend.text = element_text(size = 6, face="bold"),
+        legend.title = element_blank()) 
 
 ```
 
 ## Association of RNA Signatures with Immunotherapy Response
 
+APM_Thompson
+
+```{r signature score association with immunotherapy pfs, message=FALSE, warning = FALSE}
+
+i<- which(signature$Signature == "APM_Thompson")
+geneSig_pfs <- lapply(1:length(expr), function(k){
+      
+       geneSig <- getGeneSigGSVA(dat = expr[[k]], 
+                                 sig = qread(paste( "C:/PredictIO_CodeOcean_gene/PredictIO_package/data/signatures/qs/" , signature$Signature[i] , ".qs" , sep="" )),
+                                 signature_name = signature$Signature[i],
+                                 cutoff_n = 20,
+                                 cutoff_sig = 0.8, 
+                                 study = names(expr)[k])
+     
+    if(sum(!is.na(geneSig)) > 0){
+    
+    res <- getGeneSigAssociationSurvival(expr[[k]],
+                                     geneSig = geneSig,
+                                     time_censor = 24,
+                                     cutoff_n = 20,
+                                     study =  names(expr)[k],
+                                     survival_outcome = "PFS",
+                                     signature_name = signature$Signature[i])
+    
+   }else{
+    
+    res <- data.frame( Outcome = "PFS",
+                       Gene = geneSig, 
+                       Study = names(expr)[k],
+                       Coef = NA,
+                       SE = NA,
+                       N = NA,
+                       Pval = NA,
+                       Seq = NA) 
+    
+    
+  }
+  
+  rownames(res) <- NULL
+  res
+  
+})
+  
+geneSig_pfs <- do.call(rbind, geneSig_pfs)
+geneSig_pfs <- geneSig_pfs[!is.na(geneSig_pfs$Coef), ]
+geneSig_pfs
+
+```
+
 ### Aggregating Associations through Meta-Analysis
+
+```{r signature score meta-analysis pan, message=FALSE, warning = FALSE, fig.width=8, fig.height=5}
+
+
+res <- getMeta(Coef = geneSig_pfs$Coef, 
+                SE = geneSig_pfs$SE, 
+                Study  = geneSig_pfs$Study, 
+                Pval = geneSig_pfs$Pval, 
+                N = geneSig_pfs$N, 
+                gene = unique(geneSig_pfs$Gene), 
+                cancer_dat = FALSE)
+
+
+getForestplotPanCancer(Coef = geneSig_pfs$Coef, 
+                         SE = geneSig_pfs$SE, 
+                         Study  = geneSig_pfs$Study, 
+                         Pval = geneSig_pfs$Pval, 
+                         N = geneSig_pfs$N, 
+                         gene = unique(geneSig_pfs$Gene), 
+                         cancer_dat = FALSE, 
+                         xlab = "logHR estimate", 
+                         label = "logHR")
+
+
+```
+
+
+
+```{r signature score meta-analysis per cancer, message=FALSE, warning = FALSE, fig.width=8, fig.height=9}
+
+getForestplotPerCancer(Coef = geneSig_pfs$Coef, 
+                         SE = geneSig_pfs$SE, 
+                         Study  = geneSig_pfs$Study, 
+                         Pval = geneSig_pfs$Pval, 
+                         N = geneSig_pfs$N, 
+                         gene = unique(geneSig_pfs$Gene), 
+                         cancer_dat = TRUE, 
+                         xlab = "logHR estimate", 
+                         label = "logHR")
+
+
+```
 
 ## Comparisons
 
-```{r CalculateMolecularSubtypes}
+```{r immunotherapy signatures comparison}
 # Load the requisite data
-#data(scmod2.robust)
-#data(pam50.robust)
 
-
-
-  # Perform subtyping using PAM50
-  # Matrix should have samples as ROWS, genes as COLUMNS
-  # rownames(dannot)<-dannot$probe<-dannot$EntrezGene.ID
-
-  # OLDER FUNCTION CALL
-  # PAM50Preds<-intrinsic.cluster.predict(sbt.model=pam50,data=ddata,
-  #                                         annot=dannot,do.mapping=TRUE,
-  #                                         verbose=TRUE)
-
-  # NEWER FUNCTION CALL BASED ON MOST RECENT VERSION
  
 
 ```
