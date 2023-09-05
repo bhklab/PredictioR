@@ -49,7 +49,7 @@ getGeneSigGSVA <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, study
     
     cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= cutoff_n ] )
     
-    message(paste(study))
+    #message(paste(study))
     
     data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
     remove <- rem(data)
@@ -60,7 +60,7 @@ getGeneSigGSVA <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, study
     
     if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene , ] ) ) / length( sig$gene ) > cutoff_sig & ncol(data) > cutoff_n ){
       
-      print( paste( signature_name , "|" , "GSVA" , sep=" " ) )
+      #print( paste( signature_name , "|" , "GSVA" , sep=" " ) )
       
       geneSig <- NULL
       geneSig <- as.numeric(gsva( getScale( x=data ) , list(sig$gene) , verbose=FALSE ) )
@@ -95,7 +95,7 @@ getGeneSigMean <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, study
     
     cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= cutoff_n ] )
     
-    message(paste(study))
+    #message(paste(study))
     
     data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
     remove <- rem(data)
@@ -106,7 +106,7 @@ getGeneSigMean <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, study
     
     if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene , ] ) ) / length( sig$gene ) > cutoff_sig & ncol(data) > cutoff_n ){
       
-      print( paste( signature_name , "|" , "Weighted Mean" , sep=" " ) )
+      #print( paste( signature_name , "|" , "Weighted Mean" , sep=" " ) )
       
       gene <- intersect( rownames(data) , sig$gene) 
       s <- sig[ sig$gene %in% gene, ]
@@ -151,7 +151,7 @@ getGeneSigPredictIO <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, 
     
     cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= cutoff_n ] )
     
-    message(paste(study))
+    #message(paste(study))
     
     data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
     remove <- rem(data)
@@ -163,7 +163,7 @@ getGeneSigPredictIO <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, 
     geneSig <- NULL
     if( ncol(data)){
       
-      print( paste( signature_name , "|" , "Specific" , sep=" " ) )
+      #print( paste( signature_name , "|" , "Specific" , sep=" " ) )
       
       sensitive <- sig[ sig$coef == "sensitive" , ]$gene
       resistance <- sig[ sig$coef == "resistance", ]$gene
@@ -221,7 +221,7 @@ getGeneSigCOX_IS <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, stu
     
     cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= cutoff_n ] )
     
-    message(paste(study))
+    #message(paste(study))
     
     data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
     remove <- rem(data)
@@ -232,7 +232,7 @@ getGeneSigCOX_IS <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, stu
     
     if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene , ] ) ) / length( sig$gene ) > cutoff_sig & ncol(data) > cutoff_n ){
       
-      print( paste( signature_name , "|" , "Specific" , sep=" " ) )
+      #print( paste( signature_name , "|" , "Specific" , sep=" " ) )
       
       geneSig <- NULL
       pos <- apply( data[ rownames(data) %in% sig[ sig$coef %in% 1 , ]$gene , ] , 2 , function(x){ ( sum( x ) /  length( x ) ) } )
@@ -268,7 +268,7 @@ getGeneSigCOX_IS <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, stu
 ## Get signature score: IPS
 #####################################################################
 ## calculate Immunophenoscore
-ipsmap<- function (x) {
+ipsmap <- function (x) {
   if (x<=0) {
     ips<-0
   } else {
@@ -281,7 +281,7 @@ ipsmap<- function (x) {
   return(ips)
 }
 
-getIPS = function( expr, sig ){
+getIPS <- function( expr, sig ){
   
   expr <- as.data.frame(expr)
   sample_names <- names(expr)
@@ -346,7 +346,7 @@ getGeneSigIPS <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, study)
     
     cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= cutoff_n ] )
     
-    message(paste(study))
+    #message(paste(study))
     
     data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
     remove <- rem(data)
@@ -359,7 +359,7 @@ getGeneSigIPS <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, study)
     geneSig = NULL
     if( ncol(data) & nrow(data) > 10000 ){ # Question: no need to consider the 80% of genes in data? 
         
-        print( paste( signature_name , "|" , "Specific" , sep=" " ) )
+        #print( paste( signature_name , "|" , "Specific" , sep=" " ) )
       
         geneSig <- as.numeric( scale( get_IPS( expr = data , sig = sig) ) )
         names( geneSig ) <- colnames(data)
@@ -402,7 +402,7 @@ getGeneSigIPRES <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, stud
       
     cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= cutoff_n ] )
     
-    message(paste(study))
+    #message(paste(study))
     
     data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
     remove <- rem(data)
@@ -411,7 +411,7 @@ getGeneSigIPRES <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, stud
       data <- data[-remove,]
     }
       
-      print( paste( signature_name , "|" , "Specific" , sep=" " ) )
+      #print( paste( signature_name , "|" , "Specific" , sep=" " ) )
       
      
       scale_data <- getScale( x=data )
