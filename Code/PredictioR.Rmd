@@ -84,40 +84,40 @@ dir <- file.path(app_dir, list.files(app_dir))
 
 ```
 
-|Dataset      |Patients [\#]  |Cancer type   |RECIST criteria |Clinical endpoints |Molecular data |PMID  |      
-|-------------|---------------|--------------|--------------|----------|----------|------|
-| Braun       | 181           | Kidney       | Available    | PFS/OS   |RNA/DNA   | [32472114](https://pubmed.ncbi.nlm.nih.gov/32472114/)|
-| Gide        | 41            | Melanoma     | Available    | PFS/OS   |RNA       | [30753825](https://pubmed.ncbi.nlm.nih.gov/30753825/)| 
-| Hugo        | 27            | Melanoma     | Available    | OS       |RNA       | [26997480](https://pubmed.ncbi.nlm.nih.gov/26997480/)| 
-| Hwang       | 21            | Lung         | Available    | PFS/OS   |RNA       | [31959763](https://pubmed.ncbi.nlm.nih.gov/31959763/)| 
-| Jerby_Arnon | 112           | Melanoma     | Available    | PFS      |RNA       | [30388455](https://pubmed.ncbi.nlm.nih.gov/30388455/)| 
-| Jung        | 27            | Lung         | Available    | PFS      |RNA/DNA   | [31537801](https://pubmed.ncbi.nlm.nih.gov/31537801/)| 
-| Kim         | 45            | Gastric      | Available    | None     |RNA       | [30013197](https://pubmed.ncbi.nlm.nih.gov/30013197/)| 
-| Limagne1    | 70            | Lung         | Available    | PFS      |RNA       | [35051357](https://pubmed.ncbi.nlm.nih.gov/35051357/)| 
-| Limagne2    | 26            | Lung         | Available    | PFS      |RNA       | [35051357](https://pubmed.ncbi.nlm.nih.gov/35051357/)| 
-| Liu         | 121           | Melanoma     | Available    | PFS/OS   |RNA/DNA   | [31792460](https://pubmed.ncbi.nlm.nih.gov/31792460/)| 
-| Miao1       | 33            | Kidney       | Available    | PFS/OS   |RNA/DNA   | [29301960](https://pubmed.ncbi.nlm.nih.gov/29301960/)|
-| Nathanson   | 24            | Melanoma     | Available    | OS       |RNA/DNA   | [27956380](https://pubmed.ncbi.nlm.nih.gov/27956380/)|
-| Padron      | 45            | Pancreas     | Available    | PFS/OS   |RNA       | [35662283](https://pubmed.ncbi.nlm.nih.gov/35662283/)|
-| Puch        | 55            | Melanoma     | Available    | None     |RNA       | [32472114](https://pubmed.ncbi.nlm.nih.gov/32472114/)|
-| Riaz        | 46            | Melanoma     | Available    | OS       |RNA/DNA   | [29033130](https://pubmed.ncbi.nlm.nih.gov/29033130/)|
-| Roh         | 16            | Melanoma     | Available    | OS       |RNA/DNA   | [28251903](https://pubmed.ncbi.nlm.nih.gov/28251903/)|
-| Shiuan      | 15            | Kidney       | Available    | None     |RNA       | [33806963](https://pubmed.ncbi.nlm.nih.gov/33806963/)|
-| Snyder      | 25            | Ureteral     | Available    | PFS/OS   |RNA       | [28552987](https://pubmed.ncbi.nlm.nih.gov/28552987/)|
-| Van_Allen   | 42            | Melanoma     | Available    | PFS/OS   |RNA/DNA   | [26359337](https://pubmed.ncbi.nlm.nih.gov/26359337/)|
-| VanDenEnde  | 35            | Esophageal   | Available    | None     |RNA       | [33504550](https://pubmed.ncbi.nlm.nih.gov/33504550/)|
-| Mariathasan | 195           | Bladder      | Available    | OS       |RNA/DNA   | [29443960](https://pubmed.ncbi.nlm.nih.gov/31792460/)| 
-|             | 67            | Kidney       |                                                      | 
-|             | 5             | Liver        |                                                      | 
-|             | 10            | Lung         |                                                      | 
-|             | 26            | Lymph_node   |                                                      | 
-|             | 19            | Unknown      |                                                      | 
-|             | 26            | Ureteral     |                                                      |
-| Total       | 1355          | Pan-cancer   | [GitHub](https://github.com/bhklab/ClinSets.git)     |
+|Dataset      |Discovery / Validation |Patients [\#]  |Cancer type   |RECIST criteria |Clinical endpoints |Molecular data |PMID  |      
+|-------------|-------------|---------------|--------------|--------------|----------|----------|------|
+| Braun       | Discovery  | 181           | Kidney       | Available    | PFS/OS   |RNA/DNA   | [32472114](https://pubmed.ncbi.nlm.nih.gov/32472114/)|
+| Gide        | Validation | 41            | Melanoma     | Available    | PFS/OS   |RNA       | [30753825](https://pubmed.ncbi.nlm.nih.gov/30753825/)| 
+| Hugo        | Discovery  | 27            | Melanoma     | Available    | OS       |RNA       | [26997480](https://pubmed.ncbi.nlm.nih.gov/26997480/)| 
+| Hwang       | Discovery  | 21            | Lung         | Available    | PFS/OS   |RNA       | [31959763](https://pubmed.ncbi.nlm.nih.gov/31959763/)| 
+| Jerby_Arnon | Discovery  | 112           | Melanoma     | Available    | PFS      |RNA       | [30388455](https://pubmed.ncbi.nlm.nih.gov/30388455/)| 
+| Jung        | Discovery  | 27            | Lung         | Available    | PFS      |RNA/DNA   | [31537801](https://pubmed.ncbi.nlm.nih.gov/31537801/)| 
+| Kim         | Validation | 45            | Gastric      | Available    | None     |RNA       | [30013197](https://pubmed.ncbi.nlm.nih.gov/30013197/)| 
+| Limagne1    | Discovery  | 70            | Lung         | Available    | PFS      |RNA       | [35051357](https://pubmed.ncbi.nlm.nih.gov/35051357/)| 
+| Limagne2    | Discovery  | 26            | Lung         | Available    | PFS      |RNA       | [35051357](https://pubmed.ncbi.nlm.nih.gov/35051357/)| 
+| Liu         | Discovery  | 121           | Melanoma     | Available    | PFS/OS   |RNA/DNA   | [31792460](https://pubmed.ncbi.nlm.nih.gov/31792460/)| 
+| Miao1       | Discovery  | 33            | Kidney       | Available    | PFS/OS   |RNA/DNA   | [29301960](https://pubmed.ncbi.nlm.nih.gov/29301960/)|
+| Nathanson   | Discovery  | 24            | Melanoma     | Available    | OS       |RNA/DNA   | [27956380](https://pubmed.ncbi.nlm.nih.gov/27956380/)|
+| Padron      | Validation | 45            | Pancreas     | Available    | PFS/OS   |RNA       | [35662283](https://pubmed.ncbi.nlm.nih.gov/35662283/)|
+| Puch        | Validation | 55            | Melanoma     | Available    | None     |RNA       | [32472114](https://pubmed.ncbi.nlm.nih.gov/32472114/)|
+| Riaz        | Discovery  | 46            | Melanoma     | Available    | OS       |RNA/DNA   | [29033130](https://pubmed.ncbi.nlm.nih.gov/29033130/)|
+| Roh         | Discovery  | 16            | Melanoma     | Available    | OS       |RNA/DNA   | [28251903](https://pubmed.ncbi.nlm.nih.gov/28251903/)|
+| Shiuan      | Validation | 15            | Kidney       | Available    | None     |RNA       | [33806963](https://pubmed.ncbi.nlm.nih.gov/33806963/)|
+| Snyder      | Discovery  | 25            | Ureteral     | Available    | PFS/OS   |RNA       | [28552987](https://pubmed.ncbi.nlm.nih.gov/28552987/)|
+| Van_Allen   | Discovery  | 42            | Melanoma     | Available    | PFS/OS   |RNA/DNA   | [26359337](https://pubmed.ncbi.nlm.nih.gov/26359337/)|
+| VanDenEnde  | Validation | 35            | Esophageal   | Available    | None     |RNA       | [33504550](https://pubmed.ncbi.nlm.nih.gov/33504550/)|
+| Mariathasan | Discovery  | 195           | Bladder      | Available    | OS       |RNA/DNA   | [29443960](https://pubmed.ncbi.nlm.nih.gov/31792460/)| 
+|             | Discovery  | 67            | Kidney       |                                                      | 
+|             | NA         | 5             | Liver        |                                                      | 
+|             | NA         | 10            | Lung         |                                                      | 
+|             | Discovery  | 26            | Lymph_node   |                                                      | 
+|             | NA         | 19            | Unknown      |                                                      | 
+|             | Discovery  | 26            | Ureteral     |                                                      |
+| Total       |            | 1355          | Pan-cancer   | [GitHub](https://github.com/bhklab/ClinSets.git)     |
 
 : (\#tab:table1) Detailed overview for the immunotherapy datasets.
 
-Table \@ref(tab:table1) shows an overview of the immunotherapy datasets and the total patients (n=1355). The immunotherapy dataset is stored in a SummarizedExperiment object. For RNA profiles, we utilize log2-transformed TPM (Transcripts Per Million) data from protein-coding genes. For each dataset, genes with zero expression value in at least 50\% of the samples were filtered out.
+Table \@ref(tab:table1) shows an overview of the immunotherapy datasets and the total patients (n=1355)[CHECK]. The immunotherapy dataset is stored in a SummarizedExperiment object. For RNA profiles, we utilize log2-transformed TPM (Transcripts Per Million) data from protein-coding genes. For each dataset, genes with zero expression value in at least 50\% of the samples were filtered out.
 
 As an example, the Braun immunotherapy dataset with PMID [32472114](https://pubmed.ncbi.nlm.nih.gov/32472114/) includes RNA-seq expression, clinicopathological characteristics, and gene meta data. 181 patients have both clinical data and RNA-seq expression data. In addition, the Braun dataset has 18,808 protein-coding genes. 
 
@@ -241,7 +241,7 @@ where
 IT WILL BE ADDED: describing results including estimated parameters. 
 
 
-```{r gene association os, message=FALSE, fig.width=7, fig.height=4}
+```{r gene association os, message=FALSE, fig.width=8, fig.height=4}
 
 source("C:/PredictIO_CodeOcean_gene/PredictIO_package/getGeneAssociation.R")
 source("C:/PredictIO_CodeOcean_gene/PredictIO_package/getGeneSigAssociation.R")
@@ -264,6 +264,10 @@ names(expr) <- study_icb
 ## remove studies with less than 20 patients (need to fix code for this scenario)
 study_icb <- study_icb[- which(study_icb %in% c("Shiuan__Kidney", "Roh__Melanoma", 
                           "Mariathasan__Unknown", "Mariathasan__Lung", "Mariathasan__Liver"))]
+group <- c("Discovery", "Validation", "Discovery", "Discovery", "Discovery", "Discovery",
+           "Validation", "Discovery", "Discovery", "Discovery", "Discovery", "Discovery",
+           "Discovery", "Discovery", "Discovery", "Discovery", "Validation", "Validation", 
+           "Discovery", "Discovery", "Discovery", "Validation")
 expr <- expr[study_icb]
 
 ## identify the genes' association with OS
@@ -424,7 +428,7 @@ geneSigScore <- geneSigScore[!is.na(geneSigScore$geneSig), ]
 rownames(geneSigScore) <- NULL 
 
 ggplot(geneSigScore, aes(x = study, y = geneSig)) + 
-  geom_boxplot(fill= "#d9d9d9", color = "#636363") +
+  geom_boxplot(fill= "#fdb863", color = "#878787") +
   xlab("") +
   ylab("signature score (GSVA)") +
   theme(axis.text.x=element_text(size=10,  face="bold", angle = 90),
@@ -468,7 +472,7 @@ geneSigScore <- geneSigScore[!is.na(geneSigScore$geneSig), ]
 rownames(geneSigScore) <- NULL 
 
 ggplot(geneSigScore, aes(x = study, y = geneSig)) + 
-  geom_boxplot(fill= "#d9d9d9", color = "#636363") +
+  geom_boxplot(fill= "#a6dba0", color = "#878787") +
   xlab("") +
   ylab("signature score (Weighted Mean)") +
   theme(axis.text.x=element_text(size=10,  face="bold", angle = 90),
@@ -504,6 +508,7 @@ geneSigScore <- lapply(1:length(expr), function(k){
                                   study = names(expr)[k])
   
       data.frame(study = names(expr)[k],
+                 status = group[k],
                  signature_name = signature$Signature[i], 
                  geneSig)
     
@@ -513,8 +518,9 @@ geneSigScore <- do.call(rbind, geneSigScore)
 geneSigScore <- geneSigScore[!is.na(geneSigScore$geneSig), ]  
 rownames(geneSigScore) <- NULL 
 
-ggplot(geneSigScore, aes(x = study, y = geneSig)) + 
-  geom_boxplot(fill= "#d9d9d9", color = "#636363") +
+ggplot(geneSigScore, aes(x = study, y = geneSig, fill = status)) + 
+  geom_boxplot(color = "#878787") + 
+  scale_fill_manual(values = c("#fee08b", "#abd9e9")) +
   xlab("") +
   ylab("signature score (Specific Algorithm)") +
   theme(axis.text.x=element_text(size=10,  face="bold", angle = 90),
@@ -525,7 +531,7 @@ ggplot(geneSigScore, aes(x = study, y = geneSig)) +
         panel.background = element_blank(),
         plot.background = element_blank(), 
         axis.line = element_line(colour = "black"),
-        legend.position="none",
+        legend.position="right",
         legend.text = element_text(size = 6, face="bold"),
         legend.title = element_blank()) 
 
@@ -628,10 +634,152 @@ getForestplotPerCancer(Coef = geneSig_pfs$Coef,
 
 ## Comparisons
 
-```{r immunotherapy signatures comparison}
-# Load the requisite data
+Compare the performance of signature scores to predict immunotherapy response (R vs NR)
+- Do the signature score across all signatures
+- Do the association of signature score and response
+- Integrate results across datasets 
+- Add volcano plot
 
+```{r immunotherapy signatures comparison, message=FALSE, warning = FALSE}
+
+AllGeneSig_os <- lapply(1:nrow(signature[-which(signature$Signature == "PredictIO"), ]), function(i){
+  
+  geneSig_os <- lapply(1:length(expr), function(k){
  
+  if(signature$method[i] == "GSVA"){
+    
+    geneSig <- getGeneSigGSVA(dat = expr[[k]], 
+                                 sig = qread(paste( "C:/PredictIO_CodeOcean_gene/PredictIO_package/data/signatures/qs/" , signature$Signature[i] , ".qs" , sep="" )),
+                                 signature_name = signature$Signature[i],
+                                 cutoff_n = 20,
+                                 cutoff_sig = 0.8, 
+                                 study = names(expr)[k]) 
+    
+      }     
+  
+   if(signature$method[i] == "weighted_mean"){
+    
+    geneSig <- getGeneSigMean(dat = expr[[k]], 
+                                 sig = qread(paste( "C:/PredictIO_CodeOcean_gene/PredictIO_package/data/signatures/qs/" , signature$Signature[i] , ".qs" , sep="" )),
+                                 signature_name = signature$Signature[i],
+                                 cutoff_n = 20,
+                                 cutoff_sig = 0.8, 
+                                 study = names(expr)[k]) 
+    
+   }     
+  
+  if(signature$method[i] == "specific" & signature$Signature[i] == "COX_IS"){
+    
+    geneSig <- getGeneSigCOX_IS(dat = expr[[k]], 
+                                 sig = qread(paste( "C:/PredictIO_CodeOcean_gene/PredictIO_package/data/signatures/qs/" , signature$Signature[i] , ".qs" , sep="" )),
+                                 signature_name = signature$Signature[i],
+                                 cutoff_n = 20,
+                                 cutoff_sig = 0.8, 
+                                 study = names(expr)[k]) 
+    
+  } 
+  
+  if(signature$method[i] == "specific" & signature$Signature[i] == "IPS"){
+    
+    geneSig <- getGeneSigIPS(dat = expr[[k]], 
+                                 sig = qread(paste( "C:/PredictIO_CodeOcean_gene/PredictIO_package/data/signatures/qs/" , signature$Signature[i] , ".qs" , sep="" )),
+                                 signature_name = signature$Signature[i],
+                                 cutoff_n = 20,
+                                 cutoff_sig = 0.8, 
+                                 study = names(expr)[k]) 
+    
+  } 
+  
+  if(signature$method[i] == "specific" & signature$Signature[i] == "IPRES"){
+    
+    geneSig <- getGeneSigIPRES(dat = expr[[k]], 
+                                 sig = qread(paste( "C:/PredictIO_CodeOcean_gene/PredictIO_package/data/signatures/qs/" , signature$Signature[i] , ".qs" , sep="" )),
+                                 signature_name = signature$Signature[i],
+                                 cutoff_n = 20,
+                                 cutoff_sig = 0.8, 
+                                 study = names(expr)[k]) 
+    
+  } 
+  
+  
+    if(sum(!is.na(geneSig)) > 0){
+    
+    res <- getGeneSigAssociationSurvival(expr[[k]],
+                                     geneSig = geneSig,
+                                     time_censor = 36,
+                                     cutoff_n = 20,
+                                     study =  names(expr)[k],
+                                     survival_outcome = "OS",
+                                     signature_name = signature$Signature[i])
+    
+   }else{
+    
+    res <- data.frame( Outcome = "OS",
+                       Gene = geneSig, 
+                       Study = names(expr)[k],
+                       Coef = NA,
+                       SE = NA,
+                       N = NA,
+                       Pval = NA,
+                       Seq = NA) 
+    
+    
+  }
+  
+  rownames(res) <- NULL
+  res
+  
+})
+ 
+geneSig_os <- do.call(rbind, geneSig_os)
+geneSig_os <- geneSig_os[!is.na(geneSig_os$Coef), ]
+rownames(geneSig_os) <- NULL
+geneSig_os  
+  
+})
+
+AllGeneSig_meta <- lapply(1:length(AllGeneSig_os), function(j){
+  
+  res <- getMeta(Coef = AllGeneSig_os[[j]]$Coef, 
+                SE = AllGeneSig_os[[j]]$SE, 
+                Study  = AllGeneSig_os[[j]]$Study, 
+                Pval = AllGeneSig_os[[j]]$Pval, 
+                N = AllGeneSig_os[[j]]$N, 
+                gene = unique(AllGeneSig_os[[j]]$Gene), 
+                cancer_dat = FALSE)
+  
+  res$meta_summery 
+})
+
+AllGeneSig_meta <- do.call(rbind, AllGeneSig_meta)
+AllGeneSig_meta$FDR <- p.adjust(AllGeneSig_meta$Pval, method = "BH")
+AllGeneSig_meta
+
+```
+
+
+```{r immunotherapy signatures comparison visualization, message=FALSE, warning = FALSE, fig.width=8, fig.height=4}
+
+p1 <- getVolcanoPlot(feature = AllGeneSig_meta$Gene, 
+                  coef = AllGeneSig_meta$Coef, 
+                  pval = AllGeneSig_meta$Pval, 
+                  padj = AllGeneSig_meta$FDR, 
+            cutoff_neg = 19, 
+            cutoff_pos = 1, 
+                 x_lab = "logHR estimate",
+            padj_label = FALSE)
+
+
+p2 <- getVolcanoPlot(feature = AllGeneSig_meta$Gene, 
+                  coef = AllGeneSig_meta$Coef, 
+                  pval = AllGeneSig_meta$Pval, 
+                  padj = AllGeneSig_meta$FDR, 
+            cutoff_neg = 16, 
+            cutoff_pos = 1, 
+                 x_lab = "logHR estimate",
+            padj_label = TRUE)
+
+grid.arrange(p1, p2, ncol = 2)
 
 ```
 
