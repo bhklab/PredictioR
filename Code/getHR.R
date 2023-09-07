@@ -206,9 +206,9 @@ getVolcanoPlot <- function(feature, coef, pval, padj, cutoff_pos, cutoff_neg, x_
     xlab(x_lab) +
     scale_colour_manual(values = mycolors) +
     theme(
-      axis.text.x=element_text(size=10,  face="bold"),
-      axis.title=element_text(size=10,face="bold"),
-      axis.text.y=element_text(size=10, face = "bold"),
+      axis.text.x=element_text(size=12,  face="bold"),
+      axis.title=element_text(size=12,face="bold"),
+      axis.text.y=element_text(size=12, face = "bold"),
       panel.grid.major = element_blank(), 
       panel.grid.minor = element_blank(),
       panel.background = element_blank(),
