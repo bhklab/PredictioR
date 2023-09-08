@@ -8,9 +8,12 @@ author:
   affiliation:
   - &pm Faculty of Pharmacy, Université de Montréal, Montreal, Canada
   - &mbp Centre de Recherche du Centre Hospitalier de l’Université de Montréal, Institut du Cancer de Montréal, Montreal, Canada
-- name: ....
+- name: Minoru Nakano
   affiliation:
-    - ...
+    - &pm Bioinformatics and Computational Genomics Laboratory, Princess Margaret Cancer Center,University Health Network, Toronto, Ontario, Canada
+- name: ...
+  affiliation:
+    - ...    
 - name: John Stagg
   affiliation:
   - &pm Faculty of Pharmacy, Université de Montréal, Montreal, Canada
@@ -37,7 +40,6 @@ The PredictioR package provides relevant functions for biomarker discovery in im
 
 Please refer to the manuscript URL (https://pubmed.ncbi.nlm.nih.gov/36055464/).
 
-
 # Loading Functions
 
 First we load the functions into the workspace.
@@ -50,11 +52,9 @@ First we load the functions into the workspace.
 
 To compute gene associations with immunotherapy response, calculate signature scores, assess signature associations with immunotherapy response, integrate the estimates, and compare them, we need to load all the necessary packages
 
-
 ```{r load, eval=TRUE, results='hide', message=FALSE}
 
 library(survcomp)
-library(genefu)
 library(GSVA)
 library(qs)
 library(dplyr)
@@ -73,14 +73,13 @@ library(MultiAssayExperiment)
 
 # Load Immunotherapy Datasets 
 
-The following clinical multimodal immunotherapy datasets are publicly available on [GitHub](https://github.com/bhklab/ClinSets.git) data repository and a cloud-based [ORCESTRA](https://www.orcestra.ca/clinical_icb) platform to ensure that the curation and processing of the clinical genomic data are fully transparent and reproducible. The following datasets are used in the biomarker discovery for immunotherapy response via pan-cancer and cancer-specific analyses. 
+The following clinical multimodal immunotherapy datasets are publicly available on [GitHub](https://github.com/bhklab/ClinSets.git) data repository. Datasets are also obtained from the a cloud-based [ORCESTRA](https://www.orcestra.ca/clinical_icb) platform to ensure that the curation and processing of the clinical genomic data are fully transparent and reproducible. The following datasets are used in the biomarker discovery for immunotherapy response via pan-cancer and cancer-specific analyses. 
 
 ```{r load_data, eval=TRUE, results='hide', message=FALSE}
 
 ## the GitHub link with be used: it will be updated
 app_dir <- "C:/PredictIO_CodeOcean_gene/PredictIO_package/results/datasets/rda"
 dir <- file.path(app_dir, list.files(app_dir))
-
 
 ```
 
@@ -117,27 +116,27 @@ dir <- file.path(app_dir, list.files(app_dir))
 
 : (\#tab:table1) Detailed overview for the immunotherapy datasets.
 
-Table \@ref(tab:table1) shows an overview of the immunotherapy datasets and the total patients (n=1355)[CHECK]. The immunotherapy dataset is stored in a SummarizedExperiment object. For RNA profiles, we utilize log2-transformed TPM (Transcripts Per Million) data from protein-coding genes. For each dataset, genes with zero expression value in at least 50\% of the samples are filtered out.
+Table \@ref(tab:table1) shows an overview of the immunotherapy datasets and the total patients (n=1355)[CHECK]. The immunotherapy dataset is stored in a SummarizedExperiment object. For RNA profiles, we utilize log2-transformed TPM (Transcripts Per Million) data from protein-coding genes. For each dataset, genes with zero expression value in at least 50\% of the samples are filtered out. Note that only studies with at least 20 patients are included in the following analyses.
 
 As an example, the Braun immunotherapy dataset with PMID [32472114](https://pubmed.ncbi.nlm.nih.gov/32472114/) includes RNA expression, clinical characteristics, and gene meta data. 181 patients have both clinical data and RNA expression data. In addition, the Braun dataset has 18,808 protein-coding genes. 
 
 ```{r load braun data}
 
-# gene expression, clinicopathological characteristics, and gene meta data 
+# gene expression, clinical characteristics, and gene meta data 
 
 load(file.path(dir[1])) 
 expr <- assay(dat_icb)
 clin <- colData(dat_icb) %>% as.data.frame()
 annot <- rowData(dat_icb) %>% as.data.frame()
 
-# number of genes and patients
+# number of protein-coding genes and patients
 dim(expr)
 
 ```
 
-The detailed clinical characteristics of the Braun dataset including cancer type, age, sex, response, overall survival (OS), and progression-free survival (PFS). The summary table represents that in the Braun study about 22\% of the response data is missing, while no missing for survival variables. Additionally, more than 80\% of patients are female. Note that "R" and "NR" represent responder and non-responder, respectively.  
+The detailed clinical characteristics of the Braun dataset including cancer type, age, sex, response (R vs. NR), overall survival (OS), and progression-free survival (PFS). The summary table represents that in the Braun dataset about 22\% of the response data is missing, while no missing for survival variables. Additionally, more than 80\% of patients are female. Note that "R" and "NR" represent responder and non-responder, respectively.  
 
-```{r }
+```{r Braun clinical data summary}
 
 # summary table of selected clinical variable 
 sub_clin <- clin[, c("age","sex", "response","survival_time_os", "survival_time_pfs")]
@@ -152,7 +151,7 @@ print(dfSummary(sub_clin,
 
 # Load Immunotherapy RNA Signatures 
 
-We evaluate the reproducibility of a compendium of about 40 RNA signatures described as immunotherapy biomarkers. The following published immunotherapy RNA signatures are available on [GitHub](https://github.com/bhklab/SignatureSets) data repository and a web application [predictio.ca](https://predictio.ca/) to allow the community to easily mine our large compendium of published signatures.
+We evaluate the reproducibility of a compendium of about 40 RNA signatures described as immunotherapy biomarkers. The following published immunotherapy RNA signatures are available on [GitHub](https://github.com/bhklab/SignatureSets) data repository. The signatures are also obtained from a web application [predictio.ca](https://predictio.ca/) to allow the community to easily mine our large compendium of published signatures.
 
 ```{r signature data}
 ## it will be updated
@@ -163,57 +162,57 @@ signature$method <- as.character( signature$method )
 ```
 
 |Signature  name|Method |PMID |      
-|-----------------|---------------|------|
-| ADO             | GSVA          | [31953314](https://pubmed.ncbi.nlm.nih.gov/31953314/) |
-| APM_Thompson    | GSVA          | [33028693](https://pubmed.ncbi.nlm.nih.gov/33028693/) |
-| APM_Wang        | GSVA          | [31767055](https://pubmed.ncbi.nlm.nih.gov/31767055/) |
-| B_cell_Budczies | GSVA          | [33520406](https://pubmed.ncbi.nlm.nih.gov/33520406/) |
-| B_cell_Helmink  | GSVA          | [31942075](https://pubmed.ncbi.nlm.nih.gov/31942075/) |
-| Blood_Response  | GSVA          | [28807052](https://pubmed.ncbi.nlm.nih.gov/28807052/) |
-| CD8_Jiang       | GSVA          | [30127393](https://pubmed.ncbi.nlm.nih.gov/30127393/) |
-| COX_IS          | specific      | [33220234](https://pubmed.ncbi.nlm.nih.gov/33220234/) |
-| IPRES           | specific      | [31683225](https://pubmed.ncbi.nlm.nih.gov/31683225/) |
-| C_ECM           | weighted mean | [30410077](https://pubmed.ncbi.nlm.nih.gov/30410077/) |
-| EMT_Thompson    | weighted mean | [31683225](https://pubmed.ncbi.nlm.nih.gov/31683225/) |
-| PTEN_MITF       | weighted mean | [32245160](https://pubmed.ncbi.nlm.nih.gov/32245160/) |
-| T_cell_exclusion| weighted mean | [30388455](https://pubmed.ncbi.nlm.nih.gov/30388455/) |
-| CD8_SF          | GSVA          | [30388456](https://pubmed.ncbi.nlm.nih.gov/30388456/) |
-| CRMA            | GSVA          | [29656892](https://pubmed.ncbi.nlm.nih.gov/29656892/) |
-| CYT             | GSVA          | [25594174](https://pubmed.ncbi.nlm.nih.gov/25594174/) |
-| IFNG            | GSVA          | [28650338](https://pubmed.ncbi.nlm.nih.gov/28650338/) |
-| ImmuneCells     | GSVA          | [33033253](https://pubmed.ncbi.nlm.nih.gov/33033253/) |
-| Inflammatory    | GSVA          | [31683225](https://pubmed.ncbi.nlm.nih.gov/31683225/) |
-| IRG_Ayers       | GSVA          | [28650338](https://pubmed.ncbi.nlm.nih.gov/28650338/) |
-| KDM5A           | GSVA          | [32908002](https://pubmed.ncbi.nlm.nih.gov/32908002/) |
-| LRRC15_CAF      | GSVA          | [31699795](https://pubmed.ncbi.nlm.nih.gov/31699795/) |
-| M1              | GSVA          | [31959763](https://pubmed.ncbi.nlm.nih.gov/31959763/) |
-| Macrophage      | GSVA          | [33520406](https://pubmed.ncbi.nlm.nih.gov/33520406/) |
-| Myeloid_DC      | GSVA          | [31942075](https://pubmed.ncbi.nlm.nih.gov/31942075/) |
-| NonResponse_Ivy | GSVA          | [32907939](https://pubmed.ncbi.nlm.nih.gov/32907939/) |
-| PDL1            | GSVA          | [30127393](https://pubmed.ncbi.nlm.nih.gov/30127393/) |
-| peri_Tcell      | GSVA          | [31959763](https://pubmed.ncbi.nlm.nih.gov/31959763/) |
-| Response_Ivy    | GSVA          | [32907939](https://pubmed.ncbi.nlm.nih.gov/32907939/) |
-| STAT1           | GSVA          | [31316010](https://pubmed.ncbi.nlm.nih.gov/31316010/) |
-| T_cell_inflamed | GSVA          | [30804515](https://pubmed.ncbi.nlm.nih.gov/30804515/) |
-| TGFB_Mariathasan| GSVA          | [29443960](https://pubmed.ncbi.nlm.nih.gov/29443960/) |
-| TIS             | GSVA          | [31684954](https://pubmed.ncbi.nlm.nih.gov/31684954/) |
-| TLS             | GSVA          | [31942071](https://pubmed.ncbi.nlm.nih.gov/31942071/) |
-| IPS             | specific      | [28052254](https://pubmed.ncbi.nlm.nih.gov/28052254/) |
-| IMPRES          | weighted mean | [30127394](https://pubmed.ncbi.nlm.nih.gov/30127394/) |
-| IRG_Yang        | weighted mean | [31741756](https://pubmed.ncbi.nlm.nih.gov/31741756/) |
-| MPS             | weighted mean | [32284588](https://pubmed.ncbi.nlm.nih.gov/32284588/) |
-| PredictIO       | specific      | [36055464](https://pubmed.ncbi.nlm.nih.gov/36055464/)|
+|-----------------|------------------------|------|
+| ADO             | GSVA                   | [31953314](https://pubmed.ncbi.nlm.nih.gov/31953314/) |
+| APM_Thompson    | GSVA                   | [33028693](https://pubmed.ncbi.nlm.nih.gov/33028693/) |
+| APM_Wang        | GSVA                   | [31767055](https://pubmed.ncbi.nlm.nih.gov/31767055/) |
+| B_cell_Budczies | GSVA                   | [33520406](https://pubmed.ncbi.nlm.nih.gov/33520406/) |
+| B_cell_Helmink  | GSVA                   | [31942075](https://pubmed.ncbi.nlm.nih.gov/31942075/) |
+| Blood_Response  | GSVA                   | [28807052](https://pubmed.ncbi.nlm.nih.gov/28807052/) |
+| CD8_Jiang       | GSVA                   | [30127393](https://pubmed.ncbi.nlm.nih.gov/30127393/) |
+| COX_IS          | specific algorithm     | [33220234](https://pubmed.ncbi.nlm.nih.gov/33220234/) |
+| IPRES           | specific algorithm     | [31683225](https://pubmed.ncbi.nlm.nih.gov/31683225/) |
+| C_ECM           | weighted mean          | [30410077](https://pubmed.ncbi.nlm.nih.gov/30410077/) |
+| EMT_Thompson    | weighted mean          | [31683225](https://pubmed.ncbi.nlm.nih.gov/31683225/) |
+| PTEN_MITF       | weighted mean          | [32245160](https://pubmed.ncbi.nlm.nih.gov/32245160/) |
+| T_cell_exclusion| weighted mean          | [30388455](https://pubmed.ncbi.nlm.nih.gov/30388455/) |
+| CD8_SF          | GSVA                   | [30388456](https://pubmed.ncbi.nlm.nih.gov/30388456/) |
+| CRMA            | GSVA                   | [29656892](https://pubmed.ncbi.nlm.nih.gov/29656892/) |
+| CYT             | GSVA                   | [25594174](https://pubmed.ncbi.nlm.nih.gov/25594174/) |
+| IFNG            | GSVA                   | [28650338](https://pubmed.ncbi.nlm.nih.gov/28650338/) |
+| ImmuneCells     | GSVA                   | [33033253](https://pubmed.ncbi.nlm.nih.gov/33033253/) |
+| Inflammatory    | GSVA                   | [31683225](https://pubmed.ncbi.nlm.nih.gov/31683225/) |
+| IRG_Ayers       | GSVA                   | [28650338](https://pubmed.ncbi.nlm.nih.gov/28650338/) |
+| KDM5A           | GSVA                   | [32908002](https://pubmed.ncbi.nlm.nih.gov/32908002/) |
+| LRRC15_CAF      | GSVA                   | [31699795](https://pubmed.ncbi.nlm.nih.gov/31699795/) |
+| M1              | GSVA                   | [31959763](https://pubmed.ncbi.nlm.nih.gov/31959763/) |
+| Macrophage      | GSVA                   | [33520406](https://pubmed.ncbi.nlm.nih.gov/33520406/) |
+| Myeloid_DC      | GSVA                   | [31942075](https://pubmed.ncbi.nlm.nih.gov/31942075/) |
+| NonResponse_Ivy | GSVA                   | [32907939](https://pubmed.ncbi.nlm.nih.gov/32907939/) |
+| PDL1            | GSVA                   | [30127393](https://pubmed.ncbi.nlm.nih.gov/30127393/) |
+| peri_Tcell      | GSVA                   | [31959763](https://pubmed.ncbi.nlm.nih.gov/31959763/) |
+| Response_Ivy    | GSVA                   | [32907939](https://pubmed.ncbi.nlm.nih.gov/32907939/) |
+| STAT1           | GSVA                   | [31316010](https://pubmed.ncbi.nlm.nih.gov/31316010/) |
+| T_cell_inflamed | GSVA                   | [30804515](https://pubmed.ncbi.nlm.nih.gov/30804515/) |
+| TGFB_Mariathasan| GSVA                   | [29443960](https://pubmed.ncbi.nlm.nih.gov/29443960/) |
+| TIS             | GSVA                   | [31684954](https://pubmed.ncbi.nlm.nih.gov/31684954/) |
+| TLS             | GSVA                   | [31942071](https://pubmed.ncbi.nlm.nih.gov/31942071/) |
+| IPS             | specific algorithm     | [28052254](https://pubmed.ncbi.nlm.nih.gov/28052254/) |
+| IMPRES          | weighted mean          | [30127394](https://pubmed.ncbi.nlm.nih.gov/30127394/) |
+| IRG_Yang        | weighted mean          | [31741756](https://pubmed.ncbi.nlm.nih.gov/31741756/) |
+| MPS             | weighted mean          | [32284588](https://pubmed.ncbi.nlm.nih.gov/32284588/) |
+| PredictIO       | specific algorithm     | [36055464](https://pubmed.ncbi.nlm.nih.gov/36055464/)|
 
 : (\#tab:table2) Detailed overview for the RNA immunotherapy signatures.
 
-Table \@ref(tab:table2) shows an overview of signatures data and  methods to compute the signatures scores including weighted mean, Gene Set Variation Analysis (GSVA) [REF], and specific computational
+Table \@ref(tab:table2) shows an overview of signatures data and methods to compute the signatures' scores including weighted mean, Gene Set Variation Analysis (GSVA) [PMID 23323831](https://pubmed.ncbi.nlm.nih.gov/23323831/), and specific computational
 algorithms.   
 
 # Biomarkers and Immunotherapy Response Association
 
 Association of specific biomarkers with immunotherapy response (R vs NR) is assessed using a logistic regression model. Association of specific biomarkers with immunotherapy survival (either PFS or OS) is assessed using Cox proportional hazards model to assess the discrimination or separation of a survival model. 
 
-To assess the association between a biomarker and immunotherapy response (responder vs non-responder), the logistic regression model is given as
+To assess the association between a biomarker and immunotherapy response (R vs NR), the logistic regression model is given as
 
 $$\textit{logit}(E(Y|X)) = \textit{logit}(p) = \textit{ln} (\frac{p}{1-p}) = \beta_0 + \beta_1 X + \epsilon$$
 where
@@ -240,10 +239,9 @@ When needed p-values are corrected for multiple testing using the Benjamini-Hoch
 
 ## Association of Genes with Immunotherapy Response 
 
-To gain more insight into the mechanism of response and resistance to immunotherapy response, we assess the association of 100 genes in PredictIO signature with immunotherapy survival (OS). Note that only studies with at least 20 patients are included in the following analyses.
+We assess the association of 100 genes in PredictIO signature with immunotherapy survival (OS), to gain more insight into the mechanism of response and resistance to immunotherapy response. Note that Coef represents the log hazard ratio (logHR) or log odds ratio (logOR) depending on the analysis. 
 
-
-```{r gene association os, message=FALSE, fig.width=8, fig.height=4, fig.cap = "IO genes association", fig.align="center"}
+```{r gene association os, message=FALSE}
 
 source("C:/PredictIO_CodeOcean_gene/PredictIO_package/getGeneAssociation.R")
 source("C:/PredictIO_CodeOcean_gene/PredictIO_package/getGeneSigAssociation.R")
@@ -251,7 +249,7 @@ source("C:/PredictIO_CodeOcean_gene/PredictIO_package/getMetaAnalysis.R")
 source("C:/PredictIO_CodeOcean_gene/PredictIO_package/getGeneSigScore.R")
 
 sig <- qread(paste( "C:/PredictIO_CodeOcean_gene/PredictIO_package/data/signatures/qs/" , "PredictIO" , ".qs" , sep="" ))
-genes <- sig$gene
+genes <- sig$gene_name
 
 expr <- lapply(1:length(list.files(app_dir)), function(k){
   load(file.path(dir[k])) 
@@ -261,7 +259,7 @@ expr <- lapply(1:length(list.files(app_dir)), function(k){
 study_icb <- substr(list.files(app_dir), 5, nchar(list.files(app_dir)) - 4)
 names(expr) <- study_icb
 
-## remove studies with less than 20 patients (need to fix code for this scenario)
+## remove studies with less than 20 patients 
 study_icb <- study_icb[- which(study_icb %in% c("Shiuan__Kidney", "Roh__Melanoma", 
                           "Mariathasan__Unknown", "Mariathasan__Lung", "Mariathasan__Liver"))]
 
@@ -292,7 +290,7 @@ knitr::kable(head(cox_os[order(cox_os$FDR, decreasing = FALSE), ]), format="html
 
 ```
 
-The association results for Melanoma Van Allen show that 36\% of genes are associated with immunotherapy survival with $FDR < 0.05$, where about 92\% of them are associated with worse survival.     
+The association results for a selected Melanoma (Van Allen, [PMID 26359337](https://pubmed.ncbi.nlm.nih.gov/26359337/)) dataset show that 36\% of genes are associated with immunotherapy survival with $FDR < 0.05$, where about 92\% of them are associated with worse survival.     
 
 ```{r Fig1, message=FALSE, fig.width=5, fig.height=4, fig.cap = "gene association with immunotherapy overall survival", fig.align="center"}
 
@@ -310,7 +308,7 @@ p1
 
 ```
 
-Additionally, the association of genes in PredictIO signature with immunotherapy response (R vs NR) are assessed.
+Additionally, we assess the association of genes in PredictIO signature with immunotherapy response (R vs NR).
 
 ```{r gene association response, message=FALSE}
 
@@ -332,19 +330,19 @@ knitr::kable(head(logreg[order(logreg$FDR, decreasing = FALSE), ]), format="html
 
 ```
 
-The association results for Melanoma Van Allen show that 44\% of genes are negatively associated with immunotherapy response with FDR$<0.05$.    
+The association results for a selected Bladder (Mariathasan,[PMID 29443960](https://pubmed.ncbi.nlm.nih.gov/31792460/)) show that 35\% of genes are associated with immunotherapy response with $p <0.05$, while 26\% of them are associated with better respond.    
 
 ```{r Fig2, message=FALSE, fig.width=5, fig.height=4, fig.cap = "gene association with immunotherapy response (responder vs non-responder)", fig.align="center"}
 
-df <- logreg[logreg$Study == "Gide__Melanoma", ]
+df <- logreg[logreg$Study == "Mariathasan__Bladder", ]
 p2 <- getVolcanoPlot(feature = df$Gene, 
                       coef = df$Coef, 
                       pval = df$Pval, 
                       padj = df$FDR, 
-                      cutoff_neg = 44, 
-                      cutoff_pos = 1, 
+                      cutoff_neg = 26, 
+                      cutoff_pos = 9, 
                       x_lab = "logOR estimate",
-                      padj_label = TRUE)
+                      padj_label = FALSE)
 
 p2
 
@@ -354,7 +352,7 @@ p2
 
 To improve reproducibility, the results of individual independent datasets are pooled using random-effects meta-analysis with inverse variance weighting in \textit{DerSimonian and Laird} random-effects models. Heterogeneity across studies is evaluated by using the $Q$ statistic along with $I^2$ index, which describes the total variation across studies attributable to heterogeneity rather than sampling error. Note that $I^2$ value of $>50\%$ along with Cochran’s $Q$ statistic $p < 0.05$ represents moderate-to-high heterogeneity. 
 
-As an example, the meta-analysis approach is applied for CXCL9 to generalize the association with immunotherapy survival. The result shows that the gene is associated with worse survival ($\text{logHR} = -0.2, p = 0.001$), where the significant heterogenity $I^2 = 0.44$ with $Q\,\,p = 0.04$ across datasets.  
+As an example, for a gene CXCL9, to generalize the association with immunotherapy survival, we apply a meta-analysis approach to integrate findings across datasets for pan-cancer analysis. The result shows that the gene is considerably associated with worse survival ($\text{logHR} = -0.2, p = 0.001$), where the significant heterogenity across datasets ($I^2 = 0.44$, $Q$ $p = 0.04$).  
 
 
 ```{r meta-analysis pan-cancer}
@@ -377,9 +375,9 @@ knitr::kable(res_meta$meta_summery, format="html",
 
 ```
 
-The following forest plot displays the aggregated results across datasets as pan-cancer analyses. For each dataset, the log hazard ratio (logHR), 95\% confidence intervals (CIs), and p-values are computed. The blue diamond represents the aggregated results. Horizontal bars represent the 95\% CIs of logHR. 
+The following forest plot displays the aggregated results across datasets for pan-cancer analysis. For each dataset, the logHR, 95\% confidence intervals (CIs), and p-values are computed.  Horizontal bars represent the 95\% CIs of logHR. The blue diamond represents the aggregated results.
 
-```{r meta-analysis pan-cancer forestplot, fig.width=8, fig.height=5, fig.cap ="sss", fig.align= 'center'}
+```{r meta-analysis pan-cancer forestplot, fig.width=8, fig.height=5, fig.cap ="Forest plot (CXCL9): Pan-cancer analysis", fig.align= 'center'}
 
 getForestplotPanCancer(Coef = cox_os[cox_os$Gene == "CXCL9", "Coef"], 
                          SE = cox_os[cox_os$Gene == "CXCL9", "SE"], 
@@ -394,13 +392,10 @@ getForestplotPanCancer(Coef = cox_os[cox_os$Gene == "CXCL9", "Coef"],
 
 ```
 
-Subgroup meta-analysis analysis is considered to assess the impact of tumor type on the source of moderate-to-high heterogeneity. 
+Subgroup meta-analysis analysis is considered to assess the impact of cancer type on the source of moderate-to-high heterogeneity. For cancer-specific analysis, consider subgroup meta-analysis when there are at least 3 datasets. The following forest plot displays the aggregated results across datasets as cancer-specific analysis. 
 
 
-The following forest plot displays the aggregated results across datasets as cancer-specific analysis. 
-
-
-```{r meta-analysis per-cancer, fig.width=8, fig.height=9, fig.cap ="ccc", fig.align= 'center'}
+```{r meta-analysis per-cancer, fig.width=8, fig.height=9, fig.cap ="Forest plot (CXCL9): cancer-specific analysis", fig.align= 'center'}
 
 getForestplotPerCancer(Coef = cox_os[cox_os$Gene == "CXCL9", "Coef"], 
                          SE = cox_os[cox_os$Gene == "CXCL9", "SE"], 
@@ -422,7 +417,7 @@ For each dataset, RNA signatures are only computed if at least $80\%$ of their g
 
 ### GSVA signature score computation
 
-APM_Thompson is a RNA signature capturing the antigen processing and presentation machinery (APM) activity. This APM signature was a predictor of the response of PD-(L)1 blockade in Lung and Melanoma patients.
+\textit{APM_Thompson} ([PMID 33028693](https://pubmed.ncbi.nlm.nih.gov/33028693/)) is a RNA signature capturing the antigen processing and presentation machinery (APM) activity. This APM signature was a predictor of the response of PD-(L)1 blockade in Lung and Melanoma patients. To get the signature score, the GSVA approach is applied. 
 
 ```{r signature score computation GSVA, message=FALSE, warning = FALSE, fig.width=9, fig.height=5.5}
 
@@ -447,6 +442,7 @@ geneSigScore <- geneSigScore[!is.na(geneSigScore$geneSig), ]
 
 ```
 
+The box plots denote the distribution of computed signature score across immunotherapy datasets. 
 
 ```{r Fig3, message=FALSE, warning = FALSE, fig.width=10, fig.height=6, fig.cap= "Distribution of APM_Thompson signature score across datasets using GSVA approach.", fig.align= "center"}
 
@@ -473,11 +469,11 @@ ggplot(geneSigScore, aes(x = study, y = geneSig)) +
 
 ### Weighted mean signature score computation
 
-IRG_Yang is a RNA signature capturing the expression level of several Immune Regulatory Genes (IRG). This IRG signature was a predictor of the response of CTLA-4 and PD-1 blockade in published cohorts.
+\textit{T_cell_exclusion} ([PMID 30388455](https://pubmed.ncbi.nlm.nih.gov/30388455/)) is a RNA signature capturing the mechanism of T-cell exclusion. This T_cell_exclusion signature was a predictor of the failure of PD-1 blockade in Melanoma patients. To get the signature score, the weighted mean approach is applied. 
 
 ```{r signature score computation weighted mean, message=FALSE, warning = FALSE}
 
-i<- which(signature$Signature == "IRG_Yang")
+i<- which(signature$Signature == "T_cell_exclusion")
 geneSigScore <- lapply(1:length(expr), function(k){
 
        geneSig <- getGeneSigMean(dat = expr[[k]], 
@@ -498,12 +494,14 @@ geneSigScore <- geneSigScore[!is.na(geneSigScore$geneSig), ]
 
 ```
 
+The box plots denote the distribution of computed signature score across immunotherapy datasets. 
+
 ```{r Fig4, message=FALSE, warning = FALSE, fig.width=10, fig.height=6, fig.cap ="Distribution of IRG_Yang signature score across datasets using weighted mean approach", fig.align= 'center'}
 
 ggplot(geneSigScore, aes(x = study, y = geneSig)) + 
   geom_boxplot(fill= "#a6dba0", color = "#878787") +
   xlab("") +
-  ylab("signature score (Weighted Mean)") +
+  ylab("signature score (weighted mean)") +
   theme(axis.text.x=element_text(size=10,  face="bold", angle = 90),
         axis.title=element_text(size=12,face="bold"),
         axis.text.y=element_text(size=10, face = "bold"),
@@ -519,10 +517,10 @@ ggplot(geneSigScore, aes(x = study, y = geneSig)) +
 
 ```
 
-- example for specific method and summarize the results
+### Specific algorithm (PredictIO) signature score computation
 
-PredictIO is a RNA signature capturing the expression level of ----.
-ADD two colors for validation vs discovery cohorts ---> add in the table of immunotherapy Data
+\textit{PredictIO} ([PMID 36055464](https://pubmed.ncbi.nlm.nih.gov/36055464/)) is a RNA signature that demonstrated better and more consistent ability to predict immunotherapy response as compared to other signatures. The specific algorithm is applied to computed the signature score. The PredictIO signature was identified by integrating gene expression data from a large pan-cancer discovery immunotherapy datasets. The validation immunotherapy datasets were used to assess the performance of the PredictIO compared with other published RNA immunotherapy signatures.
+
 
 ```{r signature score computation specific, message=FALSE, warning = FALSE}
 
@@ -549,14 +547,15 @@ geneSigScore <- geneSigScore[!is.na(geneSigScore$geneSig), ]
 
 ```
 
+The box plots denote the distribution of computed signature score across immunotherapy datasets. 
 
-```{r Fig5, message=FALSE, warning = FALSE, fig.width=10, fig.height=6, fig.cap ="Distribution of PrdictIO signature score across datasets using specific algorithm", fig.align= 'center'}
+```{r Fig5, message=FALSE, warning = FALSE, fig.width=10, fig.height=6, fig.cap ="Distribution of PrdictIO signature score across datasets (discovery and validation) using specific algorithm", fig.align= 'center'}
 
 ggplot(geneSigScore, aes(x = study, y = geneSig, fill = status)) + 
   geom_boxplot(color = "#878787") + 
   scale_fill_manual(values = c("#fee08b", "#abd9e9")) +
   xlab("") +
-  ylab("signature score (Specific Algorithm)") +
+  ylab("signature score (specific algorithm)") +
   theme(axis.text.x=element_text(size=10,  face="bold", angle = 90),
         axis.title=element_text(size=12,face="bold"),
         axis.text.y=element_text(size=10, face = "bold"),
@@ -573,7 +572,7 @@ ggplot(geneSigScore, aes(x = study, y = geneSig, fill = status)) +
 
 ## Association of RNA Signatures with Immunotherapy Response
 
-APM_Thompson
+For \textit{APM_Thompson} signature, we assess the association of signature with immunotherapy response (PFS). 
 
 ```{r signature score association with immunotherapy pfs, message=FALSE, warning = FALSE}
 
@@ -616,11 +615,15 @@ geneSig_pfs <- lapply(1:length(expr), function(k){
   
 geneSig_pfs <- do.call(rbind, geneSig_pfs)
 geneSig_pfs <- geneSig_pfs[!is.na(geneSig_pfs$Coef), ]
-geneSig_pfs
+
+# top association results
+knitr::kable(geneSig_pfs[order(geneSig_pfs$Pval, decreasing = FALSE), ], format="html", 
+             table.attr = "style='width:30%;'", row.names = FALSE) %>% kableExtra::kable_styling()
+
 
 ```
 
-### Aggregating Associations through Meta-Analysis
+The associations across datasets are aggregated using the meta-analysis approach. The signature is negatively associated with PFS ($logHR = -0.60, p = 0.001$). 
 
 ```{r signature score meta-analysis pan, message=FALSE, warning = FALSE }
 
@@ -633,11 +636,15 @@ res <- getMeta(Coef = geneSig_pfs$Coef,
                 cancer_dat = FALSE)
 
 
+# summary of meta-analysis
+knitr::kable(res$meta_summery, format="html", 
+             table.attr = "style='width:30%;'", row.names = FALSE) %>% kableExtra::kable_styling()
 
 ```
 
+The forest plot shows the pan-cancer analysis. 
 
-```{r Fig6, message=FALSE, warning = FALSE, fig.width=8, fig.height=5, fig.cap ="aaaa", fig.align= 'center'}
+```{r Fig6, message=FALSE, warning = FALSE, fig.width=8, fig.height=5, fig.cap ="Forest plot (APM_Thompson signature): cancer-specific analysis", fig.align= 'center'}
 
 getForestplotPanCancer(Coef = geneSig_pfs$Coef, 
                          SE = geneSig_pfs$SE, 
@@ -652,9 +659,10 @@ getForestplotPanCancer(Coef = geneSig_pfs$Coef,
 
 ```
 
+The subgroup meta-analysis is also considered to assess the impact of cancer type on the source of moderate-to-high heterogeneity ($I^2=0.45$, $Q$ $p=0.06$). 
 
 
-```{r Fig7, message=FALSE, warning = FALSE, fig.width=8, fig.height=9, fig.cap ="bbb", fig.align= 'center'}
+```{r Fig7, message=FALSE, warning = FALSE, fig.width=8, fig.height=9, fig.cap ="Forest plot (APM_Thompson signature): cancer-specific analysis", fig.align= 'center'}
 
 getForestplotPerCancer(Coef = geneSig_pfs$Coef, 
                          SE = geneSig_pfs$SE, 
@@ -671,12 +679,7 @@ getForestplotPerCancer(Coef = geneSig_pfs$Coef,
 
 ## Comparisons
 
-Compare the performance of signature scores to predict immunotherapy response (R vs NR)
-- Do the signature score across all signatures
-- Do the association of signature score and response
-- Integrate results across datasets 
-- Add volcano plot
-
+Assess the association of RNA signatures with immunotherapy response (OS). Per signatures, we integrate the results across datasets to generalize the findings and improve the power of analyses. 
 
 ```{r immunotherapy signatures comparison, message=FALSE, warning = FALSE}
 
@@ -791,12 +794,17 @@ AllGeneSig_meta <- lapply(1:length(AllGeneSig_os), function(j){
 
 AllGeneSig_meta <- do.call(rbind, AllGeneSig_meta)
 AllGeneSig_meta$FDR <- p.adjust(AllGeneSig_meta$Pval, method = "BH")
-AllGeneSig_meta
+
+# top signatures association results
+knitr::kable(head(AllGeneSig_meta[order(AllGeneSig_meta$FDR, decreasing = FALSE), ]), format="html", 
+             table.attr = "style='width:30%;'", row.names = FALSE) %>% kableExtra::kable_styling()
 
 ```
 
+The volcano plot denotes the majority of signatures are associated with worse survival with FDR$< 0.05$.  
 
-```{r immunotherapy signatures comparison visualization, message=FALSE, warning = FALSE, fig.width=8, fig.height=4}
+
+```{r Fig8, message=FALSE, warning = FALSE, fig.width=9, fig.height=5}
 
 p1 <- getVolcanoPlot(feature = AllGeneSig_meta$Gene, 
                      coef = AllGeneSig_meta$Coef, 
@@ -820,6 +828,7 @@ p2 <- getVolcanoPlot(feature = AllGeneSig_meta$Gene,
 grid.arrange(p1, p2, ncol = 2)
 
 ```
+
 
 # References
 
