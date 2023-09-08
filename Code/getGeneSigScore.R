@@ -1,7 +1,6 @@
 ## packages
 
 library(GSVA)
-library(genefu)
 
 ########################################################
 ## create NULL function
@@ -58,12 +57,12 @@ getGeneSigGSVA <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, study
       data <- data[-remove,]
     }
     
-    if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene , ] ) ) / length( sig$gene ) > cutoff_sig & ncol(data) > cutoff_n ){
+    if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > cutoff_sig & ncol(data) > cutoff_n ){
       
       #print( paste( signature_name , "|" , "GSVA" , sep=" " ) )
       
       geneSig <- NULL
-      geneSig <- as.numeric(gsva( getScale( x=data ) , list(sig$gene) , verbose=FALSE ) )
+      geneSig <- as.numeric(gsva( getScale( x=data ) , list(sig$gene_name) , verbose=FALSE ) )
       names( geneSig ) <- colnames(data)
 
     }else{
@@ -104,12 +103,12 @@ getGeneSigMean <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, study
       data <- data[-remove,]
     }
     
-    if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene , ] ) ) / length( sig$gene ) > cutoff_sig & ncol(data) > cutoff_n ){
+    if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > cutoff_sig & ncol(data) > cutoff_n ){
       
       #print( paste( signature_name , "|" , "Weighted Mean" , sep=" " ) )
       
-      gene <- intersect( rownames(data) , sig$gene) 
-      s <- sig[ sig$gene %in% gene, ]
+      gene <- intersect( rownames(data) , sig$gene_name) 
+      s <- sig[ sig$gene_name %in% gene, ]
       
       scaled_dat <- getScale( x= data[ gene , ] )
       
@@ -119,7 +118,7 @@ getGeneSigMean <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, study
       }else{ scaled_dat }
       
       geneSig <- NULL
-      geneSig <- apply( scaled_dat , 2 , function(x) ( sum( ( x * s$coef ) ) /  nrow( s ) ) )
+      geneSig <- apply( scaled_dat , 2 , function(x) ( sum( ( x * s$weight ) ) /  nrow( s ) ) )
       names( geneSig ) = colnames(data)
       
     }else{
@@ -165,8 +164,8 @@ getGeneSigPredictIO <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, 
       
       #print( paste( signature_name , "|" , "Specific" , sep=" " ) )
       
-      sensitive <- sig[ sig$coef == "sensitive" , ]$gene
-      resistance <- sig[ sig$coef == "resistance", ]$gene
+      sensitive <- sig[ sig$weight == "sensitive" , ]$gene_name
+      resistance <- sig[ sig$weight == "resistance", ]$gene_name
       
       IO_resistance <- NULL
       if( ifelse( is.null( nrow( data[ rownames(data) %in% resistance , ]) ) , 1 , nrow( data[ rownames(data) %in% resistance , ] ) ) / length( resistance ) > cutoff_sig ){
@@ -230,13 +229,13 @@ getGeneSigCOX_IS <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, stu
       data <- data[-remove,]
     }
     
-    if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene , ] ) ) / length( sig$gene ) > cutoff_sig & ncol(data) > cutoff_n ){
+    if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > cutoff_sig & ncol(data) > cutoff_n ){
       
       #print( paste( signature_name , "|" , "Specific" , sep=" " ) )
       
       geneSig <- NULL
-      pos <- apply( data[ rownames(data) %in% sig[ sig$coef %in% 1 , ]$gene , ] , 2 , function(x){ ( sum( x ) /  length( x ) ) } )
-      neg <- apply( data[ rownames(data) %in% sig[ sig$coef %in% -1 , ]$gene , ] , 2 , function(x){ ( sum( x ) /  length( x ) ) } )
+      pos <- apply( data[ rownames(data) %in% sig[ sig$weight %in% 1 , ]$gene_name , ] , 2 , function(x){ ( sum( x ) /  length( x ) ) } )
+      neg <- apply( data[ rownames(data) %in% sig[ sig$weight %in% -1 , ]$gene_name , ] , 2 , function(x){ ( sum( x ) /  length( x ) ) } )
       
       geneSig <- as.numeric( scale( pos / neg ) )
       names(geneSig) <- colnames(data)
@@ -298,7 +297,7 @@ getIPS <- function( expr, sig ){
   # Gene names in expression file
   GVEC <- row.names( expr )
   # Genes names in IPS genes file
-  VEC <- as.vector( sig$gene )
+  VEC <- as.vector( sig$gene_name )
   # Match IPS genes with genes in expression file
   ind <- which( is.na( match( VEC , GVEC ) ) )
   
@@ -310,8 +309,8 @@ getIPS <- function( expr, sig ){
     GE <- expr[[i]]
     mGE <- mean(GE, na.rm=T)
     sGE <- sd(GE, na.rm=T)
-    Z1 <- (expr[as.vector(sig$gene),i] - mGE)/sGE
-    W1 <- sig$coef
+    Z1 <- (expr[as.vector(sig$gene_name),i] - mGE)/sGE
+    W1 <- sig$weight
     coef <- NULL
     MIG <- NULL
     k <- 1
@@ -361,7 +360,7 @@ getGeneSigIPS <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, study)
         
         #print( paste( signature_name , "|" , "Specific" , sep=" " ) )
       
-        geneSig <- as.numeric( scale( get_IPS( expr = data , sig = sig) ) )
+        geneSig <- as.numeric( scale( getIPS( expr = data , sig = sig) ) )
         names( geneSig ) <- colnames(data)
         
       }else{
@@ -396,7 +395,7 @@ getGeneSigIPRES <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, stud
     
     sig <- list()
     for( j in 1:length(IPRES)){
-      sig[[j]] <-  IPRES[[j]]$gene
+      sig[[j]] <-  IPRES[[j]]$gene_name
     }
     names(sig) <- names(IPRES)
       
@@ -431,7 +430,7 @@ getGeneSigIPRES <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, stud
         
     }
    
-    if(sum(is.na(geneSig)) > 0 & sum(is.na(geneSig)) != length(geneSig)){ geneSig <- geneSig[!is.na(geneSig)]   }else{
+    if( sum(is.na(geneSig)) > 0 & sum(is.na(geneSig)) != length(geneSig) ){ geneSig <- geneSig[!is.na(geneSig)]   }else{
         
         if(sum(is.na(geneSig)) > 0 & sum(is.na(geneSig)) == length(geneSig)){ geneSig <- NA }else{
           
@@ -449,7 +448,7 @@ getGeneSigIPRES <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, stud
         
       }else{
         
-        geneSig <- NULL
+        geneSig <- NA
         message("not enough samples and/or genes in a data")        
       }
       

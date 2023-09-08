@@ -1,7 +1,6 @@
 ## load libraries
 
 library(survcomp)
-library(genefu)
 library(GSVA)
 library(MultiAssayExperiment)
 library(qs)

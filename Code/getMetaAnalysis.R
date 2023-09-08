@@ -3,7 +3,6 @@
 library(qs)
 library(meta)
 library(metafor)
-library(genefu)
 library(forestplot)
 library(ggplot2)
 library(ggrepel)
