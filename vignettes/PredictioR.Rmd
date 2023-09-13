@@ -46,7 +46,11 @@ First we load the functions into the workspace.
 
 ```{r install, eval=FALSE, results='hide', message=FALSE}
 
-# load functions (through GitHub links ---> will be updated)
+source(here::here('R', 'getHR.R'))
+source(here::here('R', 'getGeneAssociation.R'))
+source(here::here('R', 'getGeneSigAssociation.R'))
+source(here::here('R', 'getMetaAnalysis.R'))
+source(here::here('R', 'getGeneSigScore.R'))
 
 ```
 
@@ -244,13 +248,6 @@ When needed p-values are corrected for multiple testing using the Benjamini-Hoch
 We assess the association of 100 genes in PredictIO signature with immunotherapy survival (OS), to gain more insight into the mechanism of response and resistance to immunotherapy response. Note that Coef represents the log hazard ratio (logHR) or log odds ratio (logOR) depending on the analysis. 
 
 ```{r gene association os, message=FALSE}
-
-source(here::here('R', 'getHR.R'))
-source(here::here('R', 'getGeneAssociation.R'))
-source(here::here('R', 'getGeneSigAssociation.R'))
-source(here::here('R', 'getMetaAnalysis.R'))
-source(here::here('R', 'getGeneSigScore.R'))
-
 
 load(file.path(dir_GeneSig, "PredictIO.rda"))
 genes <- sig$gene_name
