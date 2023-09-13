@@ -1,6 +1,6 @@
 ## load functions and libraries
 
-source(here::here('R', 'getHR.R'))
+source(file.path(app_dir, 'PredictioR', "R/getHR.R"))
 
 ############################################################
 ############################################################
