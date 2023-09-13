@@ -46,11 +46,13 @@ First we load the functions into the workspace.
 
 ```{r install, eval=FALSE, results='hide', message=FALSE}
 
-source(here::here('R', 'getHR.R'))
-source(here::here('R', 'getGeneAssociation.R'))
-source(here::here('R', 'getGeneSigAssociation.R'))
-source(here::here('R', 'getMetaAnalysis.R'))
-source(here::here('R', 'getGeneSigScore.R'))
+app_dir <- str_split(rstudioapi::getActiveDocumentContext()$path,'PredictioR')[[1]][1]
+                     
+source(file.path(app_dir, 'PredictioR', "R/getHR.R"))
+source(file.path(app_dir, 'PredictioR', "R/getGeneAssociation.R"))
+source(file.path(app_dir, 'PredictioR', "R/getGeneSigAssociation.R"))
+source(file.path(app_dir, 'PredictioR', "R/getMetaAnalysis.R"))
+source(file.path(app_dir, 'PredictioR', "R/getGeneSigScore.R"))
 
 ```
 
@@ -60,7 +62,7 @@ To compute gene associations with immunotherapy response, calculate signature sc
 
 library(survcomp)
 library(GSVA)
-library(qs)
+library(stringr)
 library(dplyr)
 library(here)
 library(meta)
@@ -82,8 +84,8 @@ The following clinical multimodal immunotherapy datasets are publicly available 
 
 ```{r load_data, eval=TRUE, results='hide', message=FALSE}
 
-app_dir <- str_split(rstudioapi::getActiveDocumentContext()$path, 'PredictioR')[[1]][1]
-dir <- file.path(app_dir, 'PredictioR', 'data/ICB') ## be updated by data folder
+app_dir <- str_split(rstudioapi::getActiveDocumentContext()$path,'PredictioR')[[1]][1]
+dir <- file.path(app_dir, 'PredictioR', "data/ICB") 
 
 ```
 
@@ -153,12 +155,14 @@ print(dfSummary(sub_clin,
 
 ```
 
+
 # Load Immunotherapy RNA Signatures 
 
 We evaluate the reproducibility of a compendium of about 40 RNA signatures described as immunotherapy biomarkers. The following published immunotherapy RNA signatures are available on [GitHub](https://github.com/bhklab/SignatureSets) data repository. The signatures are also obtained from a web application [predictio.ca](https://predictio.ca/) to allow the community to easily mine our large compendium of published signatures.
 
 ```{r signature data}
 
+app_dir <- str_split(rstudioapi::getActiveDocumentContext()$path,'PredictioR')[[1]][1]
 dir_GeneSig <- file.path(app_dir, 'PredictioR', 'data/signature')
 
 signature <- read.csv( file.path(dir_GeneSig, "signature_INFO.csv")) 
@@ -168,49 +172,49 @@ signature$method <- as.character( signature$method )
 ```
 
 |Signature  name|Method |PMID |      
-|-----------------|------------------------|------|
-| ADO             | GSVA                   | [31953314](https://pubmed.ncbi.nlm.nih.gov/31953314/) |
-| APM_Thompson    | GSVA                   | [33028693](https://pubmed.ncbi.nlm.nih.gov/33028693/) |
-| APM_Wang        | GSVA                   | [31767055](https://pubmed.ncbi.nlm.nih.gov/31767055/) |
-| B_cell_Budczies | GSVA                   | [33520406](https://pubmed.ncbi.nlm.nih.gov/33520406/) |
-| B_cell_Helmink  | GSVA                   | [31942075](https://pubmed.ncbi.nlm.nih.gov/31942075/) |
-| Blood_Response  | GSVA                   | [28807052](https://pubmed.ncbi.nlm.nih.gov/28807052/) |
-| CD8_Jiang       | GSVA                   | [30127393](https://pubmed.ncbi.nlm.nih.gov/30127393/) |
-| COX_IS          | specific algorithm     | [33220234](https://pubmed.ncbi.nlm.nih.gov/33220234/) |
-| IPRES           | specific algorithm     | [31683225](https://pubmed.ncbi.nlm.nih.gov/31683225/) |
-| C_ECM           | weighted mean          | [30410077](https://pubmed.ncbi.nlm.nih.gov/30410077/) |
-| EMT_Thompson    | weighted mean          | [31683225](https://pubmed.ncbi.nlm.nih.gov/31683225/) |
-| PTEN_MITF       | weighted mean          | [32245160](https://pubmed.ncbi.nlm.nih.gov/32245160/) |
-| T_cell_exclusion| weighted mean          | [30388455](https://pubmed.ncbi.nlm.nih.gov/30388455/) |
-| CD8_SF          | GSVA                   | [30388456](https://pubmed.ncbi.nlm.nih.gov/30388456/) |
-| CRMA            | GSVA                   | [29656892](https://pubmed.ncbi.nlm.nih.gov/29656892/) |
-| CYT             | GSVA                   | [25594174](https://pubmed.ncbi.nlm.nih.gov/25594174/) |
-| IFNG            | GSVA                   | [28650338](https://pubmed.ncbi.nlm.nih.gov/28650338/) |
-| ImmuneCells     | GSVA                   | [33033253](https://pubmed.ncbi.nlm.nih.gov/33033253/) |
-| Inflammatory    | GSVA                   | [31683225](https://pubmed.ncbi.nlm.nih.gov/31683225/) |
-| IRG_Ayers       | GSVA                   | [28650338](https://pubmed.ncbi.nlm.nih.gov/28650338/) |
-| KDM5A           | GSVA                   | [32908002](https://pubmed.ncbi.nlm.nih.gov/32908002/) |
-| LRRC15_CAF      | GSVA                   | [31699795](https://pubmed.ncbi.nlm.nih.gov/31699795/) |
-| M1              | GSVA                   | [31959763](https://pubmed.ncbi.nlm.nih.gov/31959763/) |
-| Macrophage      | GSVA                   | [33520406](https://pubmed.ncbi.nlm.nih.gov/33520406/) |
-| Myeloid_DC      | GSVA                   | [31942075](https://pubmed.ncbi.nlm.nih.gov/31942075/) |
-| NonResponse_Ivy | GSVA                   | [32907939](https://pubmed.ncbi.nlm.nih.gov/32907939/) |
-| PDL1            | GSVA                   | [30127393](https://pubmed.ncbi.nlm.nih.gov/30127393/) |
-| peri_Tcell      | GSVA                   | [31959763](https://pubmed.ncbi.nlm.nih.gov/31959763/) |
-| Response_Ivy    | GSVA                   | [32907939](https://pubmed.ncbi.nlm.nih.gov/32907939/) |
-| STAT1           | GSVA                   | [31316010](https://pubmed.ncbi.nlm.nih.gov/31316010/) |
-| T_cell_inflamed | GSVA                   | [30804515](https://pubmed.ncbi.nlm.nih.gov/30804515/) |
-| TGFB_Mariathasan| GSVA                   | [29443960](https://pubmed.ncbi.nlm.nih.gov/29443960/) |
-| TIS             | GSVA                   | [31684954](https://pubmed.ncbi.nlm.nih.gov/31684954/) |
-| TLS             | GSVA                   | [31942071](https://pubmed.ncbi.nlm.nih.gov/31942071/) |
-| IPS             | specific algorithm     | [28052254](https://pubmed.ncbi.nlm.nih.gov/28052254/) |
-| IMPRES          | weighted mean          | [30127394](https://pubmed.ncbi.nlm.nih.gov/30127394/) |
-| IRG_Yang        | weighted mean          | [31741756](https://pubmed.ncbi.nlm.nih.gov/31741756/) |
-| MPS             | weighted mean          | [32284588](https://pubmed.ncbi.nlm.nih.gov/32284588/) |
-| PredictIO       | specific algorithm     | [36055464](https://pubmed.ncbi.nlm.nih.gov/36055464/)|
-
-: (\#tab:table2) Detailed overview for the RNA immunotherapy signatures.
-
+  |-----------------|------------------------|------|
+  | ADO             | GSVA                   | [31953314](https://pubmed.ncbi.nlm.nih.gov/31953314/) |
+  | APM_Thompson    | GSVA                   | [33028693](https://pubmed.ncbi.nlm.nih.gov/33028693/) |
+  | APM_Wang        | GSVA                   | [31767055](https://pubmed.ncbi.nlm.nih.gov/31767055/) |
+  | B_cell_Budczies | GSVA                   | [33520406](https://pubmed.ncbi.nlm.nih.gov/33520406/) |
+  | B_cell_Helmink  | GSVA                   | [31942075](https://pubmed.ncbi.nlm.nih.gov/31942075/) |
+  | Blood_Response  | GSVA                   | [28807052](https://pubmed.ncbi.nlm.nih.gov/28807052/) |
+  | CD8_Jiang       | GSVA                   | [30127393](https://pubmed.ncbi.nlm.nih.gov/30127393/) |
+  | COX_IS          | specific algorithm     | [33220234](https://pubmed.ncbi.nlm.nih.gov/33220234/) |
+  | IPRES           | specific algorithm     | [31683225](https://pubmed.ncbi.nlm.nih.gov/31683225/) |
+  | C_ECM           | weighted mean          | [30410077](https://pubmed.ncbi.nlm.nih.gov/30410077/) |
+  | EMT_Thompson    | weighted mean          | [31683225](https://pubmed.ncbi.nlm.nih.gov/31683225/) |
+  | PTEN_MITF       | weighted mean          | [32245160](https://pubmed.ncbi.nlm.nih.gov/32245160/) |
+  | T_cell_exclusion| weighted mean          | [30388455](https://pubmed.ncbi.nlm.nih.gov/30388455/) |
+  | CD8_SF          | GSVA                   | [30388456](https://pubmed.ncbi.nlm.nih.gov/30388456/) |
+  | CRMA            | GSVA                   | [29656892](https://pubmed.ncbi.nlm.nih.gov/29656892/) |
+  | CYT             | GSVA                   | [25594174](https://pubmed.ncbi.nlm.nih.gov/25594174/) |
+  | IFNG            | GSVA                   | [28650338](https://pubmed.ncbi.nlm.nih.gov/28650338/) |
+  | ImmuneCells     | GSVA                   | [33033253](https://pubmed.ncbi.nlm.nih.gov/33033253/) |
+  | Inflammatory    | GSVA                   | [31683225](https://pubmed.ncbi.nlm.nih.gov/31683225/) |
+  | IRG_Ayers       | GSVA                   | [28650338](https://pubmed.ncbi.nlm.nih.gov/28650338/) |
+  | KDM5A           | GSVA                   | [32908002](https://pubmed.ncbi.nlm.nih.gov/32908002/) |
+  | LRRC15_CAF      | GSVA                   | [31699795](https://pubmed.ncbi.nlm.nih.gov/31699795/) |
+  | M1              | GSVA                   | [31959763](https://pubmed.ncbi.nlm.nih.gov/31959763/) |
+  | Macrophage      | GSVA                   | [33520406](https://pubmed.ncbi.nlm.nih.gov/33520406/) |
+  | Myeloid_DC      | GSVA                   | [31942075](https://pubmed.ncbi.nlm.nih.gov/31942075/) |
+  | NonResponse_Ivy | GSVA                   | [32907939](https://pubmed.ncbi.nlm.nih.gov/32907939/) |
+  | PDL1            | GSVA                   | [30127393](https://pubmed.ncbi.nlm.nih.gov/30127393/) |
+  | peri_Tcell      | GSVA                   | [31959763](https://pubmed.ncbi.nlm.nih.gov/31959763/) |
+  | Response_Ivy    | GSVA                   | [32907939](https://pubmed.ncbi.nlm.nih.gov/32907939/) |
+  | STAT1           | GSVA                   | [31316010](https://pubmed.ncbi.nlm.nih.gov/31316010/) |
+  | T_cell_inflamed | GSVA                   | [30804515](https://pubmed.ncbi.nlm.nih.gov/30804515/) |
+  | TGFB_Mariathasan| GSVA                   | [29443960](https://pubmed.ncbi.nlm.nih.gov/29443960/) |
+  | TIS             | GSVA                   | [31684954](https://pubmed.ncbi.nlm.nih.gov/31684954/) |
+  | TLS             | GSVA                   | [31942071](https://pubmed.ncbi.nlm.nih.gov/31942071/) |
+  | IPS             | specific algorithm     | [28052254](https://pubmed.ncbi.nlm.nih.gov/28052254/) |
+  | IMPRES          | weighted mean          | [30127394](https://pubmed.ncbi.nlm.nih.gov/30127394/) |
+  | IRG_Yang        | weighted mean          | [31741756](https://pubmed.ncbi.nlm.nih.gov/31741756/) |
+  | MPS             | weighted mean          | [32284588](https://pubmed.ncbi.nlm.nih.gov/32284588/) |
+  | PredictIO       | specific algorithm     | [36055464](https://pubmed.ncbi.nlm.nih.gov/36055464/)|
+  
+  : (\#tab:table2) Detailed overview for the RNA immunotherapy signatures.
+     
 Table \@ref(tab:table2) shows an overview of signatures data and methods to compute the signatures' scores including weighted mean, Gene Set Variation Analysis (GSVA) [PMID 23323831](https://pubmed.ncbi.nlm.nih.gov/23323831/), and specific computational
 algorithms.   
 
@@ -249,6 +253,14 @@ We assess the association of 100 genes in PredictIO signature with immunotherapy
 
 ```{r gene association os, message=FALSE}
 
+app_dir <- str_split(rstudioapi::getActiveDocumentContext()$path,'PredictioR')[[1]][1]
+                     
+source(file.path(app_dir, 'PredictioR', "R/getHR.R"))
+source(file.path(app_dir, 'PredictioR', "R/getGeneAssociation.R"))
+source(file.path(app_dir, 'PredictioR', "R/getGeneSigAssociation.R"))
+source(file.path(app_dir, 'PredictioR', "R/getMetaAnalysis.R"))
+source(file.path(app_dir, 'PredictioR', "R/getGeneSigScore.R"))
+
 load(file.path(dir_GeneSig, "PredictIO.rda"))
 genes <- sig$gene_name
 
@@ -274,421 +286,421 @@ expr <- expr[study_icb]
 
 ## identify the genes' association with OS
 cox_os <- lapply(1:length(study_icb), function(i){
-  
-  getGeneAssociationSurvival(expr[[i]],
-                                time_censor = 36,
-                                cutoff_n = 20,
-                                genes = genes,
-                                study =  names(expr)[i],
-                                survival_outcome = "OS")
-  
-})
-
+       
+       getGeneAssociationSurvival(expr[[i]],
+                                  time_censor = 36,
+                                  cutoff_n = 20,
+                                  genes = genes,
+                                  study =  names(expr)[i],
+                                  survival_outcome = "OS")
+       
+     })
+     
 cox_os <- do.call(rbind, cox_os)
 cox_os <- cox_os[!is.na(cox_os$Gene), ]
-
+     
 knitr::kable(head(cox_os[order(cox_os$FDR, decreasing = FALSE), ]), format="html", 
-             table.attr = "style='width:30%;'", row.names = FALSE) %>% kableExtra::kable_styling()
-
+                  table.attr = "style='width:30%;'", row.names = FALSE) %>% kableExtra::kable_styling()
+     
 ```
-
+     
 The association results for a selected Melanoma (Van Allen, [PMID 26359337](https://pubmed.ncbi.nlm.nih.gov/26359337/)) dataset show that 36\% of genes are associated with immunotherapy survival with $FDR < 0.05$, where about 92\% of them are associated with worse survival.     
-
+     
 ```{r Fig1, message=FALSE, fig.width=5, fig.height=4, fig.cap = "gene association with immunotherapy overall survival", fig.align="center"}
-
+     
 df <- cox_os[cox_os$Study == "Van_Allen__Melanoma", ]
 p1 <- getVolcanoPlot(feature = df$Gene, 
-                      coef = df$Coef, 
-                      pval = df$Pval, 
-                      padj = df$FDR, 
-                      cutoff_neg = 33, 
-                      cutoff_pos = 3, 
-                      x_lab = "logHR estimate",
-                      padj_label = TRUE)
-
+                          coef = df$Coef, 
+                          pval = df$Pval, 
+                          padj = df$FDR, 
+                          cutoff_neg = 33, 
+                          cutoff_pos = 3, 
+                          x_lab = "logHR estimate",
+                          padj_label = TRUE)
+     
 p1
-
+     
 ```
-
+     
 Additionally, we assess the association of genes in PredictIO signature with immunotherapy response (R vs NR).
-
+     
 ```{r gene association response, message=FALSE}
-
+     
 ## identify genes' association with binary response (R vs NR)
 logreg <- lapply(1:length(study_icb), function(i){
-  
-  getGeneAssociationLogReg(expr[[i]],
+       
+       getGeneAssociationLogReg(expr[[i]],
                                 cutoff_n = 20,
                                 genes = genes,
                                 study =  names(expr)[i])
-  
-})
-
+       
+     })
+     
 logreg <- do.call(rbind, logreg)
 logreg <- logreg[!is.na(logreg$Gene), ]
-
+     
 knitr::kable(head(logreg[order(logreg$FDR, decreasing = FALSE), ]), format="html", 
-             table.attr = "style='width:30%;'", row.names = FALSE) %>% kableExtra::kable_styling()
-
+                  table.attr = "style='width:30%;'", row.names = FALSE) %>% kableExtra::kable_styling()
+     
 ```
-
+     
 The association results for a selected Bladder (Mariathasan,[PMID 29443960](https://pubmed.ncbi.nlm.nih.gov/31792460/)) show that 35\% of genes are associated with immunotherapy response with $p <0.05$, while 26\% of them are associated with better respond.    
-
+     
 ```{r Fig2, message=FALSE, fig.width=5, fig.height=4, fig.cap = "gene association with immunotherapy response (responder vs non-responder)", fig.align="center"}
-
+     
 df <- logreg[logreg$Study == "Mariathasan__Bladder", ]
 p2 <- getVolcanoPlot(feature = df$Gene, 
-                      coef = df$Coef, 
-                      pval = df$Pval, 
-                      padj = df$FDR, 
-                      cutoff_neg = 26, 
-                      cutoff_pos = 9, 
-                      x_lab = "logOR estimate",
-                      padj_label = FALSE)
-
+                          coef = df$Coef, 
+                          pval = df$Pval, 
+                          padj = df$FDR, 
+                          cutoff_neg = 26, 
+                          cutoff_pos = 9, 
+                          x_lab = "logOR estimate",
+                          padj_label = FALSE)
+     
 p2
-
+     
 ```
-
+     
 ### Aggregating Associations through Meta-Analysis
-
+     
 To improve reproducibility, the results of individual independent datasets are pooled using random-effects meta-analysis with inverse variance weighting in \textit{DerSimonian and Laird} random-effects models. Heterogeneity across studies is evaluated by using the $Q$ statistic along with $I^2$ index, which describes the total variation across studies attributable to heterogeneity rather than sampling error. Note that $I^2$ value of $>50\%$ along with Cochran’s $Q$ statistic $p < 0.05$ represents moderate-to-high heterogeneity. 
 
 As an example, for a gene CXCL9, to generalize the association with immunotherapy survival, we apply a meta-analysis approach to integrate findings across datasets for pan-cancer analysis. The result shows that the gene is considerably associated with worse survival ($\text{logHR} = -0.2, p = 0.001$), where the significant heterogenity across datasets ($I^2 = 0.44$, $Q$ $p = 0.04$).  
-
-
+     
+     
 ```{r meta-analysis pan-cancer}
-
+     
 # meta-analysis for all genes across datasets
 res_meta <- getMeta(Coef = cox_os[cox_os$Gene == "CXCL9", "Coef"], 
-                SE = cox_os[cox_os$Gene == "CXCL9", "SE"],
-                Study  = cox_os[cox_os$Gene == "CXCL9", "Study"], 
-                Pval = cox_os[cox_os$Gene == "CXCL9", "Pval"], 
-                N = cox_os[cox_os$Gene == "CXCL9", "N"],
-                gene = "CXCL9", 
-                cancer_dat = FALSE)
-
+                         SE = cox_os[cox_os$Gene == "CXCL9", "SE"],
+                         Study  = cox_os[cox_os$Gene == "CXCL9", "Study"], 
+                         Pval = cox_os[cox_os$Gene == "CXCL9", "Pval"], 
+                         N = cox_os[cox_os$Gene == "CXCL9", "N"],
+                         gene = "CXCL9", 
+                         cancer_dat = FALSE)
+     
 # meta-analysis results
 res_meta$meta_output
-
+     
 # summary of meta-analysis results
 knitr::kable(res_meta$meta_summery, format="html", 
-             table.attr = "style='width:30%;'", row.names = FALSE) %>% kableExtra::kable_styling()
-
+                  table.attr = "style='width:30%;'", row.names = FALSE) %>% kableExtra::kable_styling()
+    
 ```
-
-The following forest plot displays the aggregated results across datasets for pan-cancer analysis. For each dataset, the logHR, 95\% confidence intervals (CIs), and p-values are computed.  Horizontal bars represent the 95\% CIs of logHR. The blue diamond represents the aggregated results.
-
-```{r meta-analysis pan-cancer forestplot, fig.width=8, fig.height=5, fig.cap ="Forest plot (CXCL9): Pan-cancer analysis", fig.align= 'center'}
-
-getForestplotPanCancer(Coef = cox_os[cox_os$Gene == "CXCL9", "Coef"], 
-                         SE = cox_os[cox_os$Gene == "CXCL9", "SE"], 
-                         Study  = cox_os[cox_os$Gene == "CXCL9", "Study"], 
-                         Pval = cox_os[cox_os$Gene == "CXCL9", "Pval"], 
-                         N = cox_os[cox_os$Gene == "CXCL9", "N"], 
-                         gene = "CXCL9", 
-                         cancer_dat = FALSE, 
-                         xlab = "logHR estimate", 
-                         label = "logHR")
-
-
-```
-
-Subgroup meta-analysis analysis is considered to assess the impact of cancer type on the source of moderate-to-high heterogeneity. For cancer-specific analysis, consider subgroup meta-analysis when there are at least 3 datasets. The following forest plot displays the aggregated results across datasets as cancer-specific analysis. 
-
-
-```{r meta-analysis per-cancer, fig.width=8, fig.height=9, fig.cap ="Forest plot (CXCL9): cancer-specific analysis", fig.align= 'center'}
-
-getForestplotPerCancer(Coef = cox_os[cox_os$Gene == "CXCL9", "Coef"], 
-                         SE = cox_os[cox_os$Gene == "CXCL9", "SE"], 
-                         Study  = cox_os[cox_os$Gene == "CXCL9", "Study"], 
-                         Pval = cox_os[cox_os$Gene == "CXCL9", "Pval"], 
-                         N = cox_os[cox_os$Gene == "CXCL9", "N"], 
-                         gene = "CXCL9", 
-                         cancer_dat = FALSE, 
-                         xlab = "logHR estimate", 
-                         label = "logHR")
-
-```
-
-## Signature Score Computation
-
-RNA expression signatures including genes without any weight are computed using Gene Set Variation Analysis (GSVA) enrichment score using the \textit{GSVA} R package [REF]. RNA expression signatures containing genes associated with specific weights (+1 and -1 for up and down-regulated genes, respectively) are computed using the weighted mean expression approach. For RNA immunotherapy signatures with specific computational algorithms to get scores such as PredictIO, we can use their original publication to get the signature score. 
-
-For each dataset, RNA signatures are only computed if at least $80\%$ of their genes are present in the dataset. We also apply \textit{z}-score transformation to the genes of each RNA signature before the computation. The \textit{z}-score transformation is applied before GSVA or the weighted mean computation and after the computation of the specific immunotherapy signatures.
-
-### GSVA signature score computation
-
-\textit{APM_Thompson} ([PMID 33028693](https://pubmed.ncbi.nlm.nih.gov/33028693/)) is a RNA signature capturing the antigen processing and presentation machinery (APM) activity. This APM signature was a predictor of the response of PD-(L)1 blockade in Lung and Melanoma patients. To get the signature score, the GSVA approach is applied. 
-
-```{r signature score computation GSVA, message=FALSE, warning = FALSE, fig.width=9, fig.height=5.5}
-
-i<- which(signature$Signature == "APM_Thompson")
-load(file.path(dir_GeneSig, "APM_Thompson.rda"))
-
-geneSigScore <- lapply(1:length(expr), function(k){
-      
-       geneSig <- getGeneSigGSVA(dat = expr[[k]], 
-                                  sig = sig,
-                                  signature_name = signature$Signature[i],
-                                  cutoff_n = 20,
-                                  cutoff_sig = 0.8, 
-                                  study = names(expr)[k])
      
-      data.frame(study = names(expr)[k],
-                 signature_name = signature$Signature[i], 
-                 geneSig)
-    
-    })
-  
-geneSigScore <- do.call(rbind, geneSigScore)
-geneSigScore <- geneSigScore[!is.na(geneSigScore$geneSig), ]  
-
+The following forest plot displays the aggregated results across datasets for pan-cancer analysis. For each dataset, the logHR, 95\% confidence intervals (CIs), and p-values are computed.  Horizontal bars represent the 95\% CIs of logHR. The blue diamond represents the aggregated results.
+     
+```{r meta-analysis pan-cancer forestplot, fig.width=8, fig.height=5, fig.cap ="Forest plot (CXCL9): Pan-cancer analysis", fig.align= 'center'}
+     
+getForestplotPanCancer(Coef = cox_os[cox_os$Gene == "CXCL9", "Coef"], 
+                            SE = cox_os[cox_os$Gene == "CXCL9", "SE"], 
+                            Study  = cox_os[cox_os$Gene == "CXCL9", "Study"], 
+                            Pval = cox_os[cox_os$Gene == "CXCL9", "Pval"], 
+                            N = cox_os[cox_os$Gene == "CXCL9", "N"], 
+                            gene = "CXCL9", 
+                            cancer_dat = FALSE, 
+                            xlab = "logHR estimate", 
+                            label = "logHR")
+     
+     
 ```
-
-The box plots denote the distribution of computed signature score across immunotherapy datasets. 
-
-```{r Fig3, message=FALSE, warning = FALSE, fig.width=10, fig.height=6, fig.cap= "Distribution of APM_Thompson signature score across datasets using GSVA approach.", fig.align= "center"}
-
-ggplot(geneSigScore, aes(x = study, y = geneSig)) + 
-  geom_boxplot(fill= "#fdb863", color = "#878787") +
-  xlab("") +
-  ylab("signature score (GSVA)") +
-  theme(axis.text.x=element_text(size=10,  face="bold", angle = 90),
-        axis.title=element_text(size=12,face="bold"),
-        axis.text.y=element_text(size=10, face = "bold"),
-        panel.grid.major = element_blank(), 
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        plot.background = element_blank(), 
-        axis.line = element_line(colour = "black"),
-        legend.position="none",
-        legend.text = element_text(size = 6, face="bold"),
-        legend.title = element_blank()) 
-
-
-
+     
+Subgroup meta-analysis analysis is considered to assess the impact of cancer type on the source of moderate-to-high heterogeneity. For cancer-specific analysis, consider subgroup meta-analysis when there are at least 3 datasets. The following forest plot displays the aggregated results across datasets as cancer-specific analysis. 
+     
+     
+```{r meta-analysis per-cancer, fig.width=8, fig.height=9, fig.cap ="Forest plot (CXCL9): cancer-specific analysis", fig.align= 'center'}
+     
+getForestplotPerCancer(Coef = cox_os[cox_os$Gene == "CXCL9", "Coef"], 
+                            SE = cox_os[cox_os$Gene == "CXCL9", "SE"], 
+                            Study  = cox_os[cox_os$Gene == "CXCL9", "Study"], 
+                            Pval = cox_os[cox_os$Gene == "CXCL9", "Pval"], 
+                            N = cox_os[cox_os$Gene == "CXCL9", "N"], 
+                            gene = "CXCL9", 
+                            cancer_dat = FALSE, 
+                            xlab = "logHR estimate", 
+                            label = "logHR")
+     
 ```
-
-
-### Weighted mean signature score computation
-
-\textit{T_cell_exclusion} ([PMID 30388455](https://pubmed.ncbi.nlm.nih.gov/30388455/)) is a RNA signature capturing the mechanism of T-cell exclusion. This T_cell_exclusion signature was a predictor of the failure of PD-1 blockade in Melanoma patients. To get the signature score, the weighted mean approach is applied. 
-
-```{r signature score computation weighted mean, message=FALSE, warning = FALSE}
-
-i<- which(signature$Signature == "T_cell_exclusion")
-load(file.path(dir_GeneSig, "T_cell_exclusion.rda"))
-
-geneSigScore <- lapply(1:length(expr), function(k){
-
-       geneSig <- getGeneSigMean(dat = expr[[k]], 
-                                  sig = sig,
-                                  signature_name = signature$Signature[i],
-                                  cutoff_n = 20,
-                                  cutoff_sig = 0.8, 
-                                  study = names(expr)[k])
-  
-      data.frame(study = names(expr)[k],
-                 signature_name = signature$Signature[i], 
-                 geneSig)
-    
-    })
-  
-geneSigScore <- do.call(rbind, geneSigScore)
-geneSigScore <- geneSigScore[!is.na(geneSigScore$geneSig), ]  
-
-```
-
-The box plots denote the distribution of computed signature score across immunotherapy datasets. 
-
-```{r Fig4, message=FALSE, warning = FALSE, fig.width=10, fig.height=6, fig.cap ="Distribution of IRG_Yang signature score across datasets using weighted mean approach", fig.align= 'center'}
-
-ggplot(geneSigScore, aes(x = study, y = geneSig)) + 
-  geom_boxplot(fill= "#a6dba0", color = "#878787") +
-  xlab("") +
-  ylab("signature score (weighted mean)") +
-  theme(axis.text.x=element_text(size=10,  face="bold", angle = 90),
-        axis.title=element_text(size=12,face="bold"),
-        axis.text.y=element_text(size=10, face = "bold"),
-        panel.grid.major = element_blank(), 
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        plot.background = element_blank(), 
-        axis.line = element_line(colour = "black"),
-        legend.position="none",
-        legend.text = element_text(size = 6, face="bold"),
-        legend.title = element_blank()) 
-
-
-```
-
-### Specific algorithm (PredictIO) signature score computation
-
-\textit{PredictIO} ([PMID 36055464](https://pubmed.ncbi.nlm.nih.gov/36055464/)) is a RNA signature that demonstrated better and more consistent ability to predict immunotherapy response as compared to other signatures. The specific algorithm is applied to computed the signature score. The PredictIO signature was identified by integrating gene expression data from a large pan-cancer discovery immunotherapy datasets. The validation immunotherapy datasets were used to assess the performance of the PredictIO compared with other published RNA immunotherapy signatures.
-
-
-```{r signature score computation specific, message=FALSE, warning = FALSE}
-
-i<- which(signature$Signature == "PredictIO")
-load(file.path(dir_GeneSig, "PredictIO.rda"))
-
-geneSigScore <- lapply(1:length(expr), function(k){
-      
-       geneSig <- getGeneSigPredictIO(dat = expr[[k]], 
-                                  sig = sig,
-                                  signature_name = signature$Signature[i],
-                                  cutoff_n = 20,
-                                  cutoff_sig = 0.8, 
-                                  study = names(expr)[k])
-  
-      data.frame(study = names(expr)[k],
-                 status = group[k],
-                 signature_name = signature$Signature[i], 
-                 geneSig)
-    
-    })
-  
-geneSigScore <- do.call(rbind, geneSigScore)
-geneSigScore <- geneSigScore[!is.na(geneSigScore$geneSig), ]  
-
-
-```
-
-The box plots denote the distribution of computed signature score across immunotherapy datasets. 
-
-```{r Fig5, message=FALSE, warning = FALSE, fig.width=10, fig.height=6, fig.cap ="Distribution of PrdictIO signature score across datasets (discovery and validation) using specific algorithm", fig.align= 'center'}
-
-ggplot(geneSigScore, aes(x = study, y = geneSig, fill = status)) + 
-  geom_boxplot(color = "#878787") + 
-  scale_fill_manual(values = c("#fee08b", "#abd9e9")) +
-  xlab("") +
-  ylab("signature score (specific algorithm)") +
-  theme(axis.text.x=element_text(size=10,  face="bold", angle = 90),
-        axis.title=element_text(size=12,face="bold"),
-        axis.text.y=element_text(size=10, face = "bold"),
-        panel.grid.major = element_blank(), 
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        plot.background = element_blank(), 
-        axis.line = element_line(colour = "black"),
-        legend.position="right",
-        legend.text = element_text(size = 6, face="bold"),
-        legend.title = element_blank()) 
-
-```
-
-## Association of RNA Signatures with Immunotherapy Response
-
-For \textit{APM_Thompson} signature, we assess the association of signature with immunotherapy response (PFS). 
-
-```{r signature score association with immunotherapy pfs, message=FALSE, warning = FALSE}
-
+     
+## Signature Score Computation
+     
+RNA expression signatures including genes without any weight are computed using Gene Set Variation Analysis (GSVA) enrichment score using the \textit{GSVA} R package [REF]. RNA expression signatures containing genes associated with specific weights (+1 and -1 for up and down-regulated genes, respectively) are computed using the weighted mean expression approach. For RNA immunotherapy signatures with specific computational algorithms to get scores such as PredictIO, we can use their original publication to get the signature score. 
+     
+For each dataset, RNA signatures are only computed if at least $80\%$ of their genes are present in the dataset. We also apply \textit{z}-score transformation to the genes of each RNA signature before the computation. The \textit{z}-score transformation is applied before GSVA or the weighted mean computation and after the computation of the specific immunotherapy signatures.
+     
+### GSVA signature score computation
+     
+\textit{APM_Thompson} ([PMID 33028693](https://pubmed.ncbi.nlm.nih.gov/33028693/)) is a RNA signature capturing the antigen processing and presentation machinery (APM) activity. This APM signature was a predictor of the response of PD-(L)1 blockade in Lung and Melanoma patients. To get the signature score, the GSVA approach is applied. 
+     
+```{r signature score computation GSVA, message=FALSE, warning = FALSE, fig.width=9, fig.height=5.5}
+     
 i<- which(signature$Signature == "APM_Thompson")
 load(file.path(dir_GeneSig, "APM_Thompson.rda"))
-
-geneSig_pfs <- lapply(1:length(expr), function(k){
-      
+     
+geneSigScore <- lapply(1:length(expr), function(k){
+       
        geneSig <- getGeneSigGSVA(dat = expr[[k]], 
                                  sig = sig,
                                  signature_name = signature$Signature[i],
                                  cutoff_n = 20,
                                  cutoff_sig = 0.8, 
                                  study = names(expr)[k])
+       
+       data.frame(study = names(expr)[k],
+                  signature_name = signature$Signature[i], 
+                  geneSig)
+       
+     })
      
-    if(sum(!is.na(geneSig)) > 0){
-    
-    res <- getGeneSigAssociationSurvival(expr[[k]],
-                                     geneSig = geneSig,
-                                     time_censor = 24,
-                                     cutoff_n = 20,
-                                     study =  names(expr)[k],
-                                     survival_outcome = "PFS",
-                                     signature_name = signature$Signature[i])
-    
-   }else{
-    
-    res <- data.frame( Outcome = "PFS",
-                       Gene = geneSig, 
-                       Study = names(expr)[k],
-                       Coef = NA,
-                       SE = NA,
-                       N = NA,
-                       Pval = NA,
-                       Seq = NA) 
-  }
+geneSigScore <- do.call(rbind, geneSigScore)
+geneSigScore <- geneSigScore[!is.na(geneSigScore$geneSig), ]  
+     
+```
+     
+The box plots denote the distribution of computed signature score across immunotherapy datasets. 
+     
+```{r Fig3, message=FALSE, warning = FALSE, fig.width=10, fig.height=6, fig.cap= "Distribution of APM_Thompson signature score across datasets using GSVA approach.", fig.align= "center"}
+     
+ggplot(geneSigScore, aes(x = study, y = geneSig)) + 
+       geom_boxplot(fill= "#fdb863", color = "#878787") +
+       xlab("") +
+       ylab("signature score (GSVA)") +
+       theme(axis.text.x=element_text(size=10,  face="bold", angle = 90),
+             axis.title=element_text(size=12,face="bold"),
+             axis.text.y=element_text(size=10, face = "bold"),
+             panel.grid.major = element_blank(), 
+             panel.grid.minor = element_blank(),
+             panel.background = element_blank(),
+             plot.background = element_blank(), 
+             axis.line = element_line(colour = "black"),
+             legend.position="none",
+             legend.text = element_text(size = 6, face="bold"),
+             legend.title = element_blank()) 
+     
+     
   
-  rownames(res) <- NULL
-  res
-  
-})
-  
+```
+     
+     
+### Weighted mean signature score computation
+     
+\textit{T_cell_exclusion} ([PMID 30388455](https://pubmed.ncbi.nlm.nih.gov/30388455/)) is a RNA signature capturing the mechanism of T-cell exclusion. This T_cell_exclusion signature was a predictor of the failure of PD-1 blockade in Melanoma patients. To get the signature score, the weighted mean approach is applied. 
+     
+```{r signature score computation weighted mean, message=FALSE, warning = FALSE}
+     
+i<- which(signature$Signature == "T_cell_exclusion")
+load(file.path(dir_GeneSig, "T_cell_exclusion.rda"))
+     
+geneSigScore <- lapply(1:length(expr), function(k){
+       
+       geneSig <- getGeneSigMean(dat = expr[[k]], 
+                                 sig = sig,
+                                 signature_name = signature$Signature[i],
+                                 cutoff_n = 20,
+                                 cutoff_sig = 0.8, 
+                                 study = names(expr)[k])
+       
+       data.frame(study = names(expr)[k],
+                  signature_name = signature$Signature[i], 
+                  geneSig)
+       
+     })
+     
+geneSigScore <- do.call(rbind, geneSigScore)
+geneSigScore <- geneSigScore[!is.na(geneSigScore$geneSig), ]  
+    
+```
+     
+The box plots denote the distribution of computed signature score across immunotherapy datasets. 
+    
+```{r Fig4, message=FALSE, warning = FALSE, fig.width=10, fig.height=6, fig.cap ="Distribution of IRG_Yang signature score across datasets using weighted mean approach", fig.align= 'center'}
+     
+ggplot(geneSigScore, aes(x = study, y = geneSig)) + 
+       geom_boxplot(fill= "#a6dba0", color = "#878787") +
+       xlab("") +
+       ylab("signature score (weighted mean)") +
+       theme(axis.text.x=element_text(size=10,  face="bold", angle = 90),
+             axis.title=element_text(size=12,face="bold"),
+             axis.text.y=element_text(size=10, face = "bold"),
+             panel.grid.major = element_blank(), 
+             panel.grid.minor = element_blank(),
+             panel.background = element_blank(),
+             plot.background = element_blank(), 
+             axis.line = element_line(colour = "black"),
+             legend.position="none",
+             legend.text = element_text(size = 6, face="bold"),
+             legend.title = element_blank()) 
+     
+     
+```
+     
+### Specific algorithm (PredictIO) signature score computation
+     
+\textit{PredictIO} ([PMID 36055464](https://pubmed.ncbi.nlm.nih.gov/36055464/)) is a RNA signature that demonstrated better and more consistent ability to predict immunotherapy response as compared to other signatures. The specific algorithm is applied to computed the signature score. The PredictIO signature was identified by integrating gene expression data from a large pan-cancer discovery immunotherapy datasets. The validation immunotherapy datasets were used to assess the performance of the PredictIO compared with other published RNA immunotherapy signatures.
+     
+     
+```{r signature score computation specific, message=FALSE, warning = FALSE}
+     
+i<- which(signature$Signature == "PredictIO")
+load(file.path(dir_GeneSig, "PredictIO.rda"))
+     
+geneSigScore <- lapply(1:length(expr), function(k){
+       
+       geneSig <- getGeneSigPredictIO(dat = expr[[k]], 
+                                      sig = sig,
+                                      signature_name = signature$Signature[i],
+                                      cutoff_n = 20,
+                                      cutoff_sig = 0.8, 
+                                      study = names(expr)[k])
+       
+       data.frame(study = names(expr)[k],
+                  status = group[k],
+                  signature_name = signature$Signature[i], 
+                  geneSig)
+       
+     })
+     
+geneSigScore <- do.call(rbind, geneSigScore)
+geneSigScore <- geneSigScore[!is.na(geneSigScore$geneSig), ]  
+     
+     
+```
+     
+The box plots denote the distribution of computed signature score across immunotherapy datasets. 
+     
+```{r Fig5, message=FALSE, warning = FALSE, fig.width=10, fig.height=6, fig.cap ="Distribution of PrdictIO signature score across datasets (discovery and validation) using specific algorithm", fig.align= 'center'}
+     
+ggplot(geneSigScore, aes(x = study, y = geneSig, fill = status)) + 
+       geom_boxplot(color = "#878787") + 
+       scale_fill_manual(values = c("#fee08b", "#abd9e9")) +
+       xlab("") +
+       ylab("signature score (specific algorithm)") +
+       theme(axis.text.x=element_text(size=10,  face="bold", angle = 90),
+             axis.title=element_text(size=12,face="bold"),
+             axis.text.y=element_text(size=10, face = "bold"),
+             panel.grid.major = element_blank(), 
+             panel.grid.minor = element_blank(),
+             panel.background = element_blank(),
+             plot.background = element_blank(), 
+             axis.line = element_line(colour = "black"),
+             legend.position="right",
+             legend.text = element_text(size = 6, face="bold"),
+             legend.title = element_blank()) 
+     
+```
+     
+## Association of RNA Signatures with Immunotherapy Response
+     
+For \textit{APM_Thompson} signature, we assess the association of signature with immunotherapy response (PFS). 
+    
+```{r signature score association with immunotherapy pfs, message=FALSE, warning = FALSE}
+     
+i<- which(signature$Signature == "APM_Thompson")
+load(file.path(dir_GeneSig, "APM_Thompson.rda"))
+     
+geneSig_pfs <- lapply(1:length(expr), function(k){
+       
+       geneSig <- getGeneSigGSVA(dat = expr[[k]], 
+                                 sig = sig,
+                                 signature_name = signature$Signature[i],
+                                 cutoff_n = 20,
+                                 cutoff_sig = 0.8, 
+                                 study = names(expr)[k])
+       
+       if(sum(!is.na(geneSig)) > 0){
+         
+         res <- getGeneSigAssociationSurvival(expr[[k]],
+                                              geneSig = geneSig,
+                                              time_censor = 24,
+                                              cutoff_n = 20,
+                                              study =  names(expr)[k],
+                                              survival_outcome = "PFS",
+                                              signature_name = signature$Signature[i])
+         
+       }else{
+         
+         res <- data.frame( Outcome = "PFS",
+                            Gene = geneSig, 
+                            Study = names(expr)[k],
+                            Coef = NA,
+                            SE = NA,
+                            N = NA,
+                            Pval = NA,
+                            Seq = NA) 
+       }
+       
+       rownames(res) <- NULL
+       res
+       
+     })
+     
 geneSig_pfs <- do.call(rbind, geneSig_pfs)
 geneSig_pfs <- geneSig_pfs[!is.na(geneSig_pfs$Coef), ]
-
-# top association results
+     
+     # top association results
 knitr::kable(geneSig_pfs[order(geneSig_pfs$Pval, decreasing = FALSE), ], format="html", 
-             table.attr = "style='width:30%;'", row.names = FALSE) %>% kableExtra::kable_styling()
-
-
+                  table.attr = "style='width:30%;'", row.names = FALSE) %>% kableExtra::kable_styling()
+     
+     
 ```
-
+     
 The associations across datasets are aggregated using the meta-analysis approach. The signature is negatively associated with PFS ($logHR = -0.60, p = 0.001$). 
-
+    
 ```{r signature score meta-analysis pan, message=FALSE, warning = FALSE }
-
+     
 res <- getMeta(Coef = geneSig_pfs$Coef, 
-                SE = geneSig_pfs$SE, 
-                Study  = geneSig_pfs$Study, 
-                Pval = geneSig_pfs$Pval, 
-                N = geneSig_pfs$N, 
-                gene = unique(geneSig_pfs$Gene), 
-                cancer_dat = FALSE)
-
-
-# summary of meta-analysis
+                    SE = geneSig_pfs$SE, 
+                    Study  = geneSig_pfs$Study, 
+                    Pval = geneSig_pfs$Pval, 
+                    N = geneSig_pfs$N, 
+                    gene = unique(geneSig_pfs$Gene), 
+                    cancer_dat = FALSE)
+     
+     
+     # summary of meta-analysis
 knitr::kable(res$meta_summery, format="html", 
-             table.attr = "style='width:30%;'", row.names = FALSE) %>% kableExtra::kable_styling()
-
+                  table.attr = "style='width:30%;'", row.names = FALSE) %>% kableExtra::kable_styling()
+     
 ```
-
+     
 The forest plot shows the pan-cancer analysis. 
-
+     
 ```{r Fig6, message=FALSE, warning = FALSE, fig.width=8, fig.height=5, fig.cap ="Forest plot (APM_Thompson signature): cancer-specific analysis", fig.align= 'center'}
-
+     
 getForestplotPanCancer(Coef = geneSig_pfs$Coef, 
-                         SE = geneSig_pfs$SE, 
-                         Study  = geneSig_pfs$Study, 
-                         Pval = geneSig_pfs$Pval, 
-                         N = geneSig_pfs$N, 
-                         gene = unique(geneSig_pfs$Gene), 
-                         cancer_dat = FALSE, 
-                         xlab = "logHR estimate", 
-                         label = "logHR")
-
-
+                            SE = geneSig_pfs$SE, 
+                            Study  = geneSig_pfs$Study, 
+                            Pval = geneSig_pfs$Pval, 
+                            N = geneSig_pfs$N, 
+                            gene = unique(geneSig_pfs$Gene), 
+                            cancer_dat = FALSE, 
+                            xlab = "logHR estimate", 
+                            label = "logHR")
+     
+     
 ```
-
+     
 The subgroup meta-analysis is also considered to assess the impact of cancer type on the source of moderate-to-high heterogeneity ($I^2=0.45$, $Q$ $p=0.06$). 
-
-
+     
+     
 ```{r Fig7, message=FALSE, warning = FALSE, fig.width=8, fig.height=9, fig.cap ="Forest plot (APM_Thompson signature): cancer-specific analysis", fig.align= 'center'}
-
+     
 getForestplotPerCancer(Coef = geneSig_pfs$Coef, 
-                         SE = geneSig_pfs$SE, 
-                         Study  = geneSig_pfs$Study, 
-                         Pval = geneSig_pfs$Pval, 
-                         N = geneSig_pfs$N, 
-                         gene = unique(geneSig_pfs$Gene), 
-                         cancer_dat = TRUE, 
-                         xlab = "logHR estimate", 
-                         label = "logHR")
-
-
+                            SE = geneSig_pfs$SE, 
+                            Study  = geneSig_pfs$Study, 
+                            Pval = geneSig_pfs$Pval, 
+                            N = geneSig_pfs$N, 
+                            gene = unique(geneSig_pfs$Gene), 
+                            cancer_dat = TRUE, 
+                            xlab = "logHR estimate", 
+                            label = "logHR")
+     
+     
 ```
-
+     
 ## Comparisons
-
+     
 Assess the association of RNA signatures with immunotherapy response (OS). Per signatures, we integrate the results across datasets to generalize the findings and improve the power of analyses. 
 
 ```{r immunotherapy signatures comparison, message=FALSE, warning = FALSE}
@@ -854,3 +866,4 @@ grid.arrange(p1, p2, ncol = 2)
 ```{r sessionInfo, echo=FALSE}
 #sessionInfo()
 ```
+
