@@ -11,9 +11,6 @@ author:
 - name: Minoru Nakano
   affiliation:
     - &pm Bioinformatics and Computational Genomics Laboratory, Princess Margaret Cancer Center,University Health Network, Toronto, Ontario, Canada
-- name: ...
-  affiliation:
-    - ...    
 - name: John Stagg
   affiliation:
   - &pm Faculty of Pharmacy, Université de Montréal, Montreal, Canada
@@ -64,7 +61,6 @@ library(survcomp)
 library(GSVA)
 library(stringr)
 library(dplyr)
-library(here)
 library(meta)
 library(metafor)
 library(forestplot)
@@ -164,8 +160,9 @@ We evaluate the reproducibility of a compendium of about 40 RNA signatures descr
 
 app_dir <- str_split(rstudioapi::getActiveDocumentContext()$path,'PredictioR')[[1]][1]
 dir_GeneSig <- file.path(app_dir, 'PredictioR', 'data/signature')
+dir_GeneSig_info <- file.path(app_dir, 'PredictioR', 'data-raw')
 
-signature <- read.csv( file.path(dir_GeneSig, "signature_INFO.csv")) 
+signature <- read.csv( file.path(dir_GeneSig_info, "signature_INFO.csv")) 
 signature$Signature <- as.character( signature$Signature )
 signature$method <- as.character( signature$method )
 
@@ -707,9 +704,13 @@ Assess the association of RNA signatures with immunotherapy response (OS). Per s
 
 # remove PredictIO signatures from this analyses due to the nature of creating this signature using discovery datasets
 
-GeneSig_list <- list.files(dir_GeneSig)[list.files(dir_GeneSig) != "PredictIO.rda"]
+GeneSig_list <- list.files(dir_GeneSig)[!(list.files(dir_GeneSig) %in% c("PredictIO.rda"))]
+GeneSig_list <- GeneSig_list[order(GeneSig_list)]
 
-AllGeneSig_os <- lapply(1:5, function(i){ # length(GeneSig_list)
+signature <- signature[signature$Signature != "PredictIO", ]
+signature <- signature[order(signature$Signature), ]
+
+AllGeneSig_os <- lapply(1:length(GeneSig_list), function(i){  
   
   load(file.path(dir_GeneSig, GeneSig_list[i]))
   
