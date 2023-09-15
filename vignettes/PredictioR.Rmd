@@ -1,5 +1,5 @@
 ---
-title: "PredictioR: A Package For Meta-Analysis of Immunotherapy Clinical Trials in Cancer"
+title: "PredictioR: A Package for Biomarker Discovery in Immunotherapy Response"
 author:
 - name: Farnoosh Abbas-Aghababazadeh
   affiliation:
@@ -26,8 +26,7 @@ output:
 abstract: |
   Description of your vignette
 vignette: |
-  %\VignetteIndexEntry{PredictioR: A Package For Meta-Analysis of Immunotherapy Clinical Trials in Cancer}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{PredictioR: A Package for Biomarker Discovery in Immunotherapy Response}
   %\VignetteEncoding{UTF-8}
 ---
 
