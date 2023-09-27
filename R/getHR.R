@@ -3,7 +3,6 @@ library(here)
 library(survcomp)
 library(GSVA)
 library(MultiAssayExperiment)
-library(qs)
 library(data.table)
 
 ############################################################

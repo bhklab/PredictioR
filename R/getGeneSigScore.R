@@ -38,17 +38,25 @@ getScale <- function( x ){
 ## Get signature score: GSVA
 #####################################################################
 
-getGeneSigGSVA <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, study){
+getGeneSigGSVA <- function(dat_icb, sig, signature_name, cutoff_n, cutoff_sig, study){
 
 
-  if( class(dat)[1] == "SummarizedExperiment"){
+     if( !class(dat_icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+         stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+       }
 
-    dat_expr <- assay(dat)
-    dat_clin <- colData(dat)
+    if( class(dat_icb) == "MultiAssayExperiment"){
+        dat <- getSummarizedExperiment(dat_icb)
+        dat_expr <- assay(dat)
+        dat_clin <- colData(dat)
+      }
+
+    if( class(dat_icb) == "SummarizedExperiment"){
+       dat_expr <- assay(dat_icb)
+       dat_clin <- colData(dat_icb)
+      }
 
     cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= cutoff_n ] )
-
-    #message(paste(study))
 
     data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
     remove <- rem(data)
@@ -72,12 +80,6 @@ getGeneSigGSVA <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, study
 
     }
 
-    }else{
-
-      stop(message("function requires SummarizedExperiment class of data"))
-
-  }
-
   return(geneSig)
 }
 
@@ -85,12 +87,22 @@ getGeneSigGSVA <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, study
 ## Get signature score: weighted mean
 #####################################################################
 
-getGeneSigMean <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, study){
+getGeneSigMean <- function(dat_icb, sig, signature_name, cutoff_n, cutoff_sig, study){
 
-  if( class(dat)[1] == "SummarizedExperiment"){
+  if( !class(dat_icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+    stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+  }
 
+  if( class(dat_icb) == "MultiAssayExperiment"){
+    dat <- getSummarizedExperiment(dat_icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
+  }
+
+  if( class(dat_icb) == "SummarizedExperiment"){
+    dat_expr <- assay(dat_icb)
+    dat_clin <- colData(dat_icb)
+  }
 
     cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= cutoff_n ] )
 
@@ -128,12 +140,6 @@ getGeneSigMean <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, study
 
     }
 
-  }else{
-
-    stop(message("function requires SummarizedExperiment class of data"))
-
-  }
-
   return(geneSig)
 }
 
@@ -141,12 +147,22 @@ getGeneSigMean <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, study
 ## Get signature score: PredictIO
 #####################################################################
 
-getGeneSigPredictIO <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, study){
+getGeneSigPredictIO <- function(dat_icb, sig, signature_name, cutoff_n, cutoff_sig, study){
 
-  if( class(dat)[1] == "SummarizedExperiment"){
+  if( !class(dat_icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+    stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+  }
 
+  if( class(dat_icb) == "MultiAssayExperiment"){
+    dat <- getSummarizedExperiment(dat_icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
+  }
+
+  if( class(dat_icb) == "SummarizedExperiment"){
+    dat_expr <- assay(dat_icb)
+    dat_clin <- colData(dat_icb)
+  }
 
     cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= cutoff_n ] )
 
@@ -196,12 +212,6 @@ getGeneSigPredictIO <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, 
 
     }
 
-  }else{
-
-    stop(message("function requires SummarizedExperiment class of aata"))
-
-  }
-
   return(geneSig)
 }
 
@@ -210,13 +220,23 @@ getGeneSigPredictIO <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, 
 ## Get signature score: COX_IS
 #####################################################################
 
-getGeneSigCOX_IS <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, study){
+getGeneSigCOX_IS <- function(dat_icb, sig, signature_name, cutoff_n, cutoff_sig, study){
 
 
-  if( class(dat)[1] == "SummarizedExperiment"){
+  if( !class(dat_icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+    stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+  }
 
+  if( class(dat_icb) == "MultiAssayExperiment"){
+    dat <- getSummarizedExperiment(dat_icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
+  }
+
+  if( class(dat_icb) == "SummarizedExperiment"){
+    dat_expr <- assay(dat_icb)
+    dat_clin <- colData(dat_icb)
+  }
 
     cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= cutoff_n ] )
 
@@ -253,12 +273,6 @@ getGeneSigCOX_IS <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, stu
       message("not enough samples and/or genes in a data")
 
     }
-
-  }else{
-
-    stop(message("function requires SummarizedExperiment class of data"))
-
-  }
 
   return(geneSig)
 }
@@ -335,13 +349,23 @@ getIPS <- function( expr, sig ){
   AZ
 }
 
-getGeneSigIPS <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, study){
+getGeneSigIPS <- function(dat_icb, sig, signature_name, cutoff_n, cutoff_sig, study){
 
 
-  if( class(dat)[1] == "SummarizedExperiment"){
+  if( !class(dat_icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+    stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+  }
 
+  if( class(dat_icb) == "MultiAssayExperiment"){
+    dat <- getSummarizedExperiment(dat_icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
+  }
+
+  if( class(dat_icb) == "SummarizedExperiment"){
+    dat_expr <- assay(dat_icb)
+    dat_clin <- colData(dat_icb)
+  }
 
     cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= cutoff_n ] )
 
@@ -368,13 +392,7 @@ getGeneSigIPS <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, study)
       geneSig <- NA
       message("not enough samples and/or genes in a data")
 
-    }
-
-  }else{
-
-    stop(message("function requires SummarizedExperiment class of data"))
-
-  }
+      }
 
   return(geneSig)
 }
@@ -383,13 +401,23 @@ getGeneSigIPS <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, study)
 ## Get signature score: IPRES
 #####################################################################
 
-getGeneSigIPRES <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, study){
+getGeneSigIPRES <- function(dat_icb, sig, signature_name, cutoff_n, cutoff_sig, study){
 
+  if( !class(dat_icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+    stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+  }
 
-  if( class(dat)[1] == "SummarizedExperiment"){
-
+  if( class(dat_icb) == "MultiAssayExperiment"){
+    dat <- getSummarizedExperiment(dat_icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
+  }
+
+  if( class(dat_icb) == "SummarizedExperiment"){
+    dat_expr <- assay(dat_icb)
+    dat_clin <- colData(dat_icb)
+  }
+
 
     IPRES <- sig
 
@@ -451,14 +479,6 @@ getGeneSigIPRES <- function(dat, sig, signature_name, cutoff_n, cutoff_sig, stud
         geneSig <- NA
         message("not enough samples and/or genes in a data")
       }
-
-
-
-  }else{
-
-    stop(message("function requires SummarizedExperiment class of data"))
-
- }
 
   return(geneSig)
 }
