@@ -38,27 +38,15 @@ Please refer to the manuscript URL (https://pubmed.ncbi.nlm.nih.gov/36055464/).
 
 # Loading Functions
 
-First we load the functions into the workspace.
+First we load the functions into the workspace. To compute gene associations with immunotherapy response, calculate signature scores, assess signature associations with immunotherapy response, integrate the estimates, and compare them, we need to load all the necessary packages
 
-```{r install, eval=FALSE, results='hide', message=FALSE}
+```{r load, echo=TRUE, message=FALSE}
 
+library(stringr)
 app_dir <- str_split(rstudioapi::getActiveDocumentContext()$path,'PredictioR')[[1]][1]
-                     
-source(file.path(app_dir, 'PredictioR', "R/getHR.R"))
-source(file.path(app_dir, 'PredictioR', "R/getGeneAssociation.R"))
-source(file.path(app_dir, 'PredictioR', "R/getGeneSigAssociation.R"))
-source(file.path(app_dir, 'PredictioR', "R/getMetaAnalysis.R"))
-source(file.path(app_dir, 'PredictioR', "R/getGeneSigScore.R"))
-
-```
-
-To compute gene associations with immunotherapy response, calculate signature scores, assess signature associations with immunotherapy response, integrate the estimates, and compare them, we need to load all the necessary packages
-
-```{r load, eval=TRUE, results='hide', message=FALSE}
 
 library(survcomp)
 library(GSVA)
-library(stringr)
 library(dplyr)
 library(meta)
 library(metafor)
@@ -70,8 +58,8 @@ library(data.table)
 library(kableExtra)
 library(summarytools)
 library(MultiAssayExperiment)
-
 ```
+
 
 # Load Immunotherapy Datasets 
 
@@ -252,6 +240,7 @@ We assess the association of 100 genes in PredictIO signature with immunotherapy
 app_dir <- str_split(rstudioapi::getActiveDocumentContext()$path,'PredictioR')[[1]][1]
                      
 source(file.path(app_dir, 'PredictioR', "R/getHR.R"))
+source(file.path(app_dir, 'PredictioR', "R/getSummarizedExperiment.R"))
 source(file.path(app_dir, 'PredictioR', "R/getGeneAssociation.R"))
 source(file.path(app_dir, 'PredictioR', "R/getGeneSigAssociation.R"))
 source(file.path(app_dir, 'PredictioR', "R/getMetaAnalysis.R"))
@@ -283,10 +272,10 @@ expr <- expr[study_icb]
 ## identify the genes' association with OS
 cox_os <- lapply(1:length(study_icb), function(i){
        
-       getGeneAssociationSurvival(expr[[i]],
+       getGeneAssociationSurvival(dat_icb = expr[[i]],
                                   time_censor = 36,
                                   cutoff_n = 20,
-                                  genes = genes,
+                                  feature = genes,
                                   study =  names(expr)[i],
                                   survival_outcome = "OS")
        
@@ -306,13 +295,13 @@ The association results for a selected Melanoma (Van Allen, [PMID 26359337](http
      
 df <- cox_os[cox_os$Study == "Van_Allen__Melanoma", ]
 p1 <- getVolcanoPlot(feature = df$Gene, 
-                          coef = df$Coef, 
-                          pval = df$Pval, 
-                          padj = df$FDR, 
-                          cutoff_neg = 33, 
-                          cutoff_pos = 3, 
-                          x_lab = "logHR estimate",
-                          padj_label = TRUE)
+                     coef = df$Coef, 
+                     pval = df$Pval, 
+                     padj = df$FDR, 
+                     cutoff_neg = 33, 
+                     cutoff_pos = 3, 
+                     x_lab = "logHR estimate",
+                     padj_label = TRUE)
      
 p1
      
@@ -325,9 +314,9 @@ Additionally, we assess the association of genes in PredictIO signature with imm
 ## identify genes' association with binary response (R vs NR)
 logreg <- lapply(1:length(study_icb), function(i){
        
-       getGeneAssociationLogReg(expr[[i]],
+       getGeneAssociationLogReg(dat_icb = expr[[i]],
                                 cutoff_n = 20,
-                                genes = genes,
+                                feature = genes,
                                 study =  names(expr)[i])
        
      })
@@ -346,13 +335,13 @@ The association results for a selected Bladder (Mariathasan,[PMID 29443960](http
      
 df <- logreg[logreg$Study == "Mariathasan__Bladder", ]
 p2 <- getVolcanoPlot(feature = df$Gene, 
-                          coef = df$Coef, 
-                          pval = df$Pval, 
-                          padj = df$FDR, 
-                          cutoff_neg = 26, 
-                          cutoff_pos = 9, 
-                          x_lab = "logOR estimate",
-                          padj_label = FALSE)
+                     coef = df$Coef, 
+                     pval = df$Pval, 
+                     padj = df$FDR, 
+                     cutoff_neg = 26, 
+                     cutoff_pos = 9, 
+                     x_lab = "logOR estimate",
+                     padj_label = FALSE)
      
 p2
      
@@ -369,12 +358,12 @@ As an example, for a gene CXCL9, to generalize the association with immunotherap
      
 # meta-analysis for all genes across datasets
 res_meta <- getMeta(Coef = cox_os[cox_os$Gene == "CXCL9", "Coef"], 
-                         SE = cox_os[cox_os$Gene == "CXCL9", "SE"],
-                         Study  = cox_os[cox_os$Gene == "CXCL9", "Study"], 
-                         Pval = cox_os[cox_os$Gene == "CXCL9", "Pval"], 
-                         N = cox_os[cox_os$Gene == "CXCL9", "N"],
-                         gene = "CXCL9", 
-                         cancer_dat = FALSE)
+                    SE = cox_os[cox_os$Gene == "CXCL9", "SE"],
+                    Study  = cox_os[cox_os$Gene == "CXCL9", "Study"], 
+                    Pval = cox_os[cox_os$Gene == "CXCL9", "Pval"], 
+                    N = cox_os[cox_os$Gene == "CXCL9", "N"],
+                    feature = "CXCL9", 
+                    cancer_dat = FALSE)
      
 # meta-analysis results
 res_meta$meta_output
@@ -390,14 +379,14 @@ The following forest plot displays the aggregated results across datasets for pa
 ```{r meta-analysis pan-cancer forestplot, fig.width=8, fig.height=5, fig.cap ="Forest plot (CXCL9): Pan-cancer analysis", fig.align= 'center'}
      
 getForestplotPanCancer(Coef = cox_os[cox_os$Gene == "CXCL9", "Coef"], 
-                            SE = cox_os[cox_os$Gene == "CXCL9", "SE"], 
-                            Study  = cox_os[cox_os$Gene == "CXCL9", "Study"], 
-                            Pval = cox_os[cox_os$Gene == "CXCL9", "Pval"], 
-                            N = cox_os[cox_os$Gene == "CXCL9", "N"], 
-                            gene = "CXCL9", 
-                            cancer_dat = FALSE, 
-                            xlab = "logHR estimate", 
-                            label = "logHR")
+                       SE = cox_os[cox_os$Gene == "CXCL9", "SE"], 
+                       Study  = cox_os[cox_os$Gene == "CXCL9", "Study"], 
+                       Pval = cox_os[cox_os$Gene == "CXCL9", "Pval"], 
+                       N = cox_os[cox_os$Gene == "CXCL9", "N"], 
+                       feature = "CXCL9", 
+                       cancer_dat = FALSE, 
+                       xlab = "logHR estimate", 
+                       label = "logHR")
      
      
 ```
@@ -408,14 +397,14 @@ Subgroup meta-analysis analysis is considered to assess the impact of cancer typ
 ```{r meta-analysis per-cancer, fig.width=8, fig.height=9, fig.cap ="Forest plot (CXCL9): cancer-specific analysis", fig.align= 'center'}
      
 getForestplotPerCancer(Coef = cox_os[cox_os$Gene == "CXCL9", "Coef"], 
-                            SE = cox_os[cox_os$Gene == "CXCL9", "SE"], 
-                            Study  = cox_os[cox_os$Gene == "CXCL9", "Study"], 
-                            Pval = cox_os[cox_os$Gene == "CXCL9", "Pval"], 
-                            N = cox_os[cox_os$Gene == "CXCL9", "N"], 
-                            gene = "CXCL9", 
-                            cancer_dat = FALSE, 
-                            xlab = "logHR estimate", 
-                            label = "logHR")
+                       SE = cox_os[cox_os$Gene == "CXCL9", "SE"], 
+                       Study  = cox_os[cox_os$Gene == "CXCL9", "Study"], 
+                       Pval = cox_os[cox_os$Gene == "CXCL9", "Pval"], 
+                       N = cox_os[cox_os$Gene == "CXCL9", "N"], 
+                       feature = "CXCL9", 
+                       cancer_dat = FALSE, 
+                       xlab = "logHR estimate", 
+                       label = "logHR")
      
 ```
      
@@ -436,7 +425,7 @@ load(file.path(dir_GeneSig, "APM_Thompson.rda"))
      
 geneSigScore <- lapply(1:length(expr), function(k){
        
-       geneSig <- getGeneSigGSVA(dat = expr[[k]], 
+       geneSig <- getGeneSigGSVA(dat_icb = expr[[k]], 
                                  sig = sig,
                                  signature_name = signature$Signature[i],
                                  cutoff_n = 20,
@@ -490,7 +479,7 @@ load(file.path(dir_GeneSig, "T_cell_exclusion.rda"))
      
 geneSigScore <- lapply(1:length(expr), function(k){
        
-       geneSig <- getGeneSigMean(dat = expr[[k]], 
+       geneSig <- getGeneSigMean(dat_icb = expr[[k]], 
                                  sig = sig,
                                  signature_name = signature$Signature[i],
                                  cutoff_n = 20,
@@ -543,7 +532,7 @@ load(file.path(dir_GeneSig, "PredictIO.rda"))
      
 geneSigScore <- lapply(1:length(expr), function(k){
        
-       geneSig <- getGeneSigPredictIO(dat = expr[[k]], 
+       geneSig <- getGeneSigPredictIO(dat_icb = expr[[k]], 
                                       sig = sig,
                                       signature_name = signature$Signature[i],
                                       cutoff_n = 20,
@@ -597,7 +586,7 @@ load(file.path(dir_GeneSig, "APM_Thompson.rda"))
      
 geneSig_pfs <- lapply(1:length(expr), function(k){
        
-       geneSig <- getGeneSigGSVA(dat = expr[[k]], 
+       geneSig <- getGeneSigGSVA(dat_icb = expr[[k]], 
                                  sig = sig,
                                  signature_name = signature$Signature[i],
                                  cutoff_n = 20,
@@ -606,7 +595,7 @@ geneSig_pfs <- lapply(1:length(expr), function(k){
        
        if(sum(!is.na(geneSig)) > 0){
          
-         res <- getGeneSigAssociationSurvival(expr[[k]],
+         res <- getGeneSigAssociationSurvival(dat_icb = expr[[k]],
                                               geneSig = geneSig,
                                               time_censor = 24,
                                               cutoff_n = 20,
@@ -646,12 +635,12 @@ The associations across datasets are aggregated using the meta-analysis approach
 ```{r signature score meta-analysis pan, message=FALSE, warning = FALSE }
      
 res <- getMeta(Coef = geneSig_pfs$Coef, 
-                    SE = geneSig_pfs$SE, 
-                    Study  = geneSig_pfs$Study, 
-                    Pval = geneSig_pfs$Pval, 
-                    N = geneSig_pfs$N, 
-                    gene = unique(geneSig_pfs$Gene), 
-                    cancer_dat = FALSE)
+               SE = geneSig_pfs$SE, 
+               Study  = geneSig_pfs$Study, 
+               Pval = geneSig_pfs$Pval, 
+               N = geneSig_pfs$N, 
+               feature = unique(geneSig_pfs$Gene), 
+               cancer_dat = FALSE)
      
      
      # summary of meta-analysis
@@ -665,14 +654,14 @@ The forest plot shows the pan-cancer analysis.
 ```{r Fig6, message=FALSE, warning = FALSE, fig.width=8, fig.height=5, fig.cap ="Forest plot (APM_Thompson signature): cancer-specific analysis", fig.align= 'center'}
      
 getForestplotPanCancer(Coef = geneSig_pfs$Coef, 
-                            SE = geneSig_pfs$SE, 
-                            Study  = geneSig_pfs$Study, 
-                            Pval = geneSig_pfs$Pval, 
-                            N = geneSig_pfs$N, 
-                            gene = unique(geneSig_pfs$Gene), 
-                            cancer_dat = FALSE, 
-                            xlab = "logHR estimate", 
-                            label = "logHR")
+                       SE = geneSig_pfs$SE, 
+                       Study  = geneSig_pfs$Study, 
+                       Pval = geneSig_pfs$Pval, 
+                       N = geneSig_pfs$N, 
+                       feature = unique(geneSig_pfs$Gene), 
+                       cancer_dat = FALSE, 
+                       xlab = "logHR estimate", 
+                       label = "logHR")
      
      
 ```
@@ -683,14 +672,14 @@ The subgroup meta-analysis is also considered to assess the impact of cancer typ
 ```{r Fig7, message=FALSE, warning = FALSE, fig.width=8, fig.height=9, fig.cap ="Forest plot (APM_Thompson signature): cancer-specific analysis", fig.align= 'center'}
      
 getForestplotPerCancer(Coef = geneSig_pfs$Coef, 
-                            SE = geneSig_pfs$SE, 
-                            Study  = geneSig_pfs$Study, 
-                            Pval = geneSig_pfs$Pval, 
-                            N = geneSig_pfs$N, 
-                            gene = unique(geneSig_pfs$Gene), 
-                            cancer_dat = TRUE, 
-                            xlab = "logHR estimate", 
-                            label = "logHR")
+                       SE = geneSig_pfs$SE, 
+                       Study  = geneSig_pfs$Study, 
+                       Pval = geneSig_pfs$Pval, 
+                       N = geneSig_pfs$N, 
+                       feature = unique(geneSig_pfs$Gene), 
+                       cancer_dat = TRUE, 
+                       xlab = "logHR estimate", 
+                       label = "logHR")
      
      
 ```
@@ -717,7 +706,7 @@ AllGeneSig_os <- lapply(1:length(GeneSig_list), function(i){
     
     if(signature$method[i] == "GSVA"){
       
-      geneSig <- getGeneSigGSVA(dat = expr[[k]], 
+      geneSig <- getGeneSigGSVA(dat_icb = expr[[k]], 
                                 sig = sig,
                                 signature_name = signature$Signature[i],
                                 cutoff_n = 20,
@@ -728,7 +717,7 @@ AllGeneSig_os <- lapply(1:length(GeneSig_list), function(i){
     
     if(signature$method[i] == "weighted_mean"){
       
-      geneSig <- getGeneSigMean(dat = expr[[k]], 
+      geneSig <- getGeneSigMean(dat_icb = expr[[k]], 
                                 sig = sig,
                                 signature_name = signature$Signature[i],
                                 cutoff_n = 20,
@@ -739,7 +728,7 @@ AllGeneSig_os <- lapply(1:length(GeneSig_list), function(i){
     
     if(signature$method[i] == "specific" & signature$Signature[i] == "COX_IS"){
       
-      geneSig <- getGeneSigCOX_IS(dat = expr[[k]], 
+      geneSig <- getGeneSigCOX_IS(dat_icb = expr[[k]], 
                                   sig = sig,
                                   signature_name = signature$Signature[i],
                                   cutoff_n = 20,
@@ -750,7 +739,7 @@ AllGeneSig_os <- lapply(1:length(GeneSig_list), function(i){
     
     if(signature$method[i] == "specific" & signature$Signature[i] == "IPS"){
       
-      geneSig <- getGeneSigIPS(dat = expr[[k]], 
+      geneSig <- getGeneSigIPS(dat_icb = expr[[k]], 
                                sig = sig,
                                signature_name = signature$Signature[i],
                                cutoff_n = 20,
@@ -761,7 +750,7 @@ AllGeneSig_os <- lapply(1:length(GeneSig_list), function(i){
     
     if(signature$method[i] == "specific" & signature$Signature[i] == "IPRES"){
       
-      geneSig <- getGeneSigIPRES(dat = expr[[k]], 
+      geneSig <- getGeneSigIPRES(dat_icb = expr[[k]], 
                                  sig = sig,
                                  signature_name = signature$Signature[i],
                                  cutoff_n = 20,
@@ -773,7 +762,7 @@ AllGeneSig_os <- lapply(1:length(GeneSig_list), function(i){
     
     if(sum(!is.na(geneSig)) > 0){
       
-      res <- getGeneSigAssociationSurvival(expr[[k]],
+      res <- getGeneSigAssociationSurvival(dat_icb = expr[[k]],
                                            geneSig = geneSig,
                                            time_censor = 36,
                                            cutoff_n = 20,
@@ -814,7 +803,7 @@ AllGeneSig_meta <- lapply(1:length(AllGeneSig_os), function(j){
                  Study  = AllGeneSig_os[[j]]$Study, 
                  Pval = AllGeneSig_os[[j]]$Pval, 
                  N = AllGeneSig_os[[j]]$N, 
-                 gene = unique(AllGeneSig_os[[j]]$Gene), 
+                 feature = unique(AllGeneSig_os[[j]]$Gene), 
                  cancer_dat = FALSE)
   
   res$meta_summery 
