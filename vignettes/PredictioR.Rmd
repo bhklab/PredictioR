@@ -231,11 +231,13 @@ where
 
 When needed p-values are corrected for multiple testing using the Benjamini-Hochberg (False Discovery Rate, FDR) method. Associations are deemed statistically significant for p-values and/or FDR lower or equal to 5\%.
 
-## Association of Genes with Immunotherapy Response 
+Note that Coef represents the log hazard ratio (logHR) or log odds ratio (logOR) depending on the analysis. 
 
-We assess the association of 100 genes in PredictIO signature with immunotherapy survival (OS), to gain more insight into the mechanism of response and resistance to immunotherapy response. Note that Coef represents the log hazard ratio (logHR) or log odds ratio (logOR) depending on the analysis. 
+## Association of Gene (CXCL9) with Immunotherapy Overall Survival Response 
 
-```{r gene association os, message=FALSE}
+We limit the association of CXCL9 for a selected Pancreas dataset (Mariathasan,[PMID 29443960](https://pubmed.ncbi.nlm.nih.gov/31792460/)). We assess the association of CXCL9 gene with immunotherapy survival response (OS), to gain more insight into the mechanism of response and resistance to immunotherapy response. The results show that CXCL9 is significantly associated with low survival (logHR = -3.47, p = 3e-05). Note the HR represents the logHR.   
+
+```{r gene association os CXCL9, message=FALSE}
 
 app_dir <- str_split(rstudioapi::getActiveDocumentContext()$path,'PredictioR')[[1]][1]
                      
@@ -269,7 +271,72 @@ group <- c("Discovery", "Validation", "Discovery", "Discovery", "Discovery", "Di
 
 expr <- expr[study_icb]
 
+
+
+## Association of CXCL9 gene with OS for selected dataset Mariathasan__Bladder
+
+dat_expr <- as.matrix(assay(expr[["Mariathasan__Bladder"]]))
+dat_clin <- colData(expr[["Mariathasan__Bladder"]]) %>% as.data.frame()
+cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= 20 ] )
+       
+getHRcontinous( surv = dat_clin$event_occurred_os[ dat_clin$cancer_type %in% cancer_type ] ,
+                time = dat_clin$survival_time_os[ dat_clin$cancer_type %in% cancer_type ] ,
+                time_censor = 36 , 
+                variable= as.numeric( scale( dat_expr["CXCL9" , ] )))
+     
+```
+
+## Association of Gene (CXCL9) with Immunotherapy Progression-free Survival Response 
+
+We limit the association of CXCL9 for a selected Pancreas dataset (Padron, [PMID 35662283](https://pubmed.ncbi.nlm.nih.gov/35662283/)). The median cutoff is applied to stratify the continuous expression to the High and Low groups. We assess the association of CXCL9 gene with immunotherapy progression-free survival response (PFS), to gain more insight into the mechanism of response and resistance to immunotherapy response. The results show that CXCL9 is significantly associated with low survival (logHR = -0.72, p = 0.03). Note the HR represents the logHR.     
+
+
+```{r gene association pfs CXCL9 dicho, message=FALSE}
+
+dat_expr <- as.matrix(assay(expr[["Padron__Pancreas"]]))
+dat_clin <- colData(expr[["Padron__Pancreas"]]) %>% as.data.frame()
+cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= 20 ] )
+       
+getHRdicho( surv = dat_clin$event_occurred_pfs[ dat_clin$cancer_type %in% cancer_type ] ,
+                           time = dat_clin$survival_time_pfs[ dat_clin$cancer_type %in% cancer_type ] ,
+                           time_censor= 24,
+                           variable= as.numeric( scale( dat_expr["CXCL9" , ] )),
+                           cutoff_n0 = 5,
+                           cutoff_n1 = 5)
+
+
+```
+
+### Kaplan-Meier Plot
+
+ADDDDDDDDDDDDDDDD
+
+```{r Fig1, message=FALSE, fig.width=5, fig.height=4, fig.cap = "CXCL9 association with immunotherapy PFS", fig.align="center"}
+  
+getKMplot(surv = dat_clin$event_occurred_pfs[ dat_clin$cancer_type %in% cancer_type ],
+          time = dat_clin$survival_time_pfs[ dat_clin$cancer_type %in% cancer_type ],
+          time_censor = 24,
+          variable =  as.numeric(scale(dat_expr["CXCL9", ])), 
+          cutoff = median(as.numeric(scale( as.numeric(dat_expr["CXCL9", ]) ))),
+          title = "CXCL9 and PFS Association",
+          xlab = "Time (Months)",
+          ylab = "Progression-free Survival", 
+          cutoff_n0 = 5, 
+          cutoff_n1= 5)
+
+
+
+```
+
+
+## Association of Genes with Immunotherapy Overall Survival Response
+
+We assess the association of 100 genes in PredictIO signature with immunotherapy survival (OS), to gain more insight into the mechanism of response and resistance to immunotherapy response. 
+
+```{r gene association os , message=FALSE}
+
 ## identify the genes' association with OS
+
 cox_os <- lapply(1:length(study_icb), function(i){
        
        getGeneAssociationSurvival(dat_icb = expr[[i]],
@@ -288,10 +355,11 @@ knitr::kable(head(cox_os[order(cox_os$FDR, decreasing = FALSE), ]), format="html
                   table.attr = "style='width:30%;'", row.names = FALSE) %>% kableExtra::kable_styling()
      
 ```
-     
+
+
 The association results for a selected Melanoma (Van Allen, [PMID 26359337](https://pubmed.ncbi.nlm.nih.gov/26359337/)) dataset show that 36\% of genes are associated with immunotherapy survival with $FDR < 0.05$, where about 92\% of them are associated with worse survival.     
      
-```{r Fig1, message=FALSE, fig.width=5, fig.height=4, fig.cap = "gene association with immunotherapy overall survival", fig.align="center"}
+```{r Fig2, message=FALSE, fig.width=5, fig.height=4, fig.cap = "gene association with immunotherapy overall survival", fig.align="center"}
      
 df <- cox_os[cox_os$Study == "Van_Allen__Melanoma", ]
 p1 <- getVolcanoPlot(feature = df$Gene, 
@@ -331,7 +399,7 @@ knitr::kable(head(logreg[order(logreg$FDR, decreasing = FALSE), ]), format="html
      
 The association results for a selected Bladder (Mariathasan,[PMID 29443960](https://pubmed.ncbi.nlm.nih.gov/31792460/)) show that 35\% of genes are associated with immunotherapy response with $p <0.05$, while 26\% of them are associated with better respond.    
      
-```{r Fig2, message=FALSE, fig.width=5, fig.height=4, fig.cap = "gene association with immunotherapy response (responder vs non-responder)", fig.align="center"}
+```{r Fig3, message=FALSE, fig.width=5, fig.height=4, fig.cap = "gene association with immunotherapy response (responder vs non-responder)", fig.align="center"}
      
 df <- logreg[logreg$Study == "Mariathasan__Bladder", ]
 p2 <- getVolcanoPlot(feature = df$Gene, 
@@ -346,12 +414,12 @@ p2 <- getVolcanoPlot(feature = df$Gene,
 p2
      
 ```
-     
-### Aggregating Associations through Meta-Analysis
+
+### Aggregating Associations through Meta-analysis
      
 To improve reproducibility, the results of individual independent datasets are pooled using random-effects meta-analysis with inverse variance weighting in \textit{DerSimonian and Laird} random-effects models. Heterogeneity across studies is evaluated by using the $Q$ statistic along with $I^2$ index, which describes the total variation across studies attributable to heterogeneity rather than sampling error. Note that $I^2$ value of $>50\%$ along with Cochran’s $Q$ statistic $p < 0.05$ represents moderate-to-high heterogeneity. 
 
-As an example, for a gene CXCL9, to generalize the association with immunotherapy survival, we apply a meta-analysis approach to integrate findings across datasets for pan-cancer analysis. The result shows that the gene is considerably associated with worse survival ($\text{logHR} = -0.2, p = 0.001$), where the significant heterogenity across datasets ($I^2 = 0.44$, $Q$ $p = 0.04$).  
+As an example, for a gene CXCL9, to generalize the association with immunotherapy survival, we apply a meta-analysis approach to integrate findings across datasets for pan-cancer analysis. The result shows that the gene is considerably associated with worse survival ($\text{logHR} = -0.2, p = 0.001$), where the significant heterogenity across datasets ($I^2 = 44\%$, $Q$ $p = 0.04$).  
      
      
 ```{r meta-analysis pan-cancer}
@@ -376,7 +444,7 @@ knitr::kable(res_meta$meta_summery, format="html",
      
 The following forest plot displays the aggregated results across datasets for pan-cancer analysis. For each dataset, the logHR, 95\% confidence intervals (CIs), and p-values are computed.  Horizontal bars represent the 95\% CIs of logHR. The blue diamond represents the aggregated results.
      
-```{r meta-analysis pan-cancer forestplot, fig.width=8, fig.height=5, fig.cap ="Forest plot (CXCL9): Pan-cancer analysis", fig.align= 'center'}
+```{r Fig4, fig.width=8, fig.height=5, fig.cap ="Forest plot (CXCL9): Pan-cancer analysis", fig.align= 'center'}
      
 getForestplotPanCancer(Coef = cox_os[cox_os$Gene == "CXCL9", "Coef"], 
                        SE = cox_os[cox_os$Gene == "CXCL9", "SE"], 
@@ -394,7 +462,7 @@ getForestplotPanCancer(Coef = cox_os[cox_os$Gene == "CXCL9", "Coef"],
 Subgroup meta-analysis analysis is considered to assess the impact of cancer type on the source of moderate-to-high heterogeneity. For cancer-specific analysis, consider subgroup meta-analysis when there are at least 3 datasets. The following forest plot displays the aggregated results across datasets as cancer-specific analysis. 
      
      
-```{r meta-analysis per-cancer, fig.width=8, fig.height=9, fig.cap ="Forest plot (CXCL9): cancer-specific analysis", fig.align= 'center'}
+```{r Fig5, fig.width=8, fig.height=9, fig.cap ="Forest plot (CXCL9): cancer-specific analysis", fig.align= 'center'}
      
 getForestplotPerCancer(Coef = cox_os[cox_os$Gene == "CXCL9", "Coef"], 
                        SE = cox_os[cox_os$Gene == "CXCL9", "SE"], 
@@ -407,7 +475,89 @@ getForestplotPerCancer(Coef = cox_os[cox_os$Gene == "CXCL9", "Coef"],
                        label = "logHR")
      
 ```
+
+## Association of Binary Gene with Immunotherapy Progression-free Survival Response
+
+We assess the association of CXCL9 gene with immunotherapy survival (PFS), to gain more insight into the mechanism of response and resistance to immunotherapy response. Median cutoff is applied to stratify the continuous expression to the High and Low groups. 
+
+```{r gene association pfs, message=FALSE}
+
+cox_pfs <- lapply(1:length(study_icb), function(i){
+       
+       getGeneAssociationSurvivalDicho(dat_icb = expr[[i]],
+                                  time_censor = 24,
+                                  cutoff_n = 20,
+                                  feature = "CXCL9",
+                                  study =  names(expr)[i],
+                                  survival_outcome = "PFS",
+                                  cutoff_n1 = 5,
+                                  cutoff_n0 = 5)
+     })
      
+cox_pfs <- do.call(rbind, cox_pfs)
+cox_pfs <- cox_pfs[!is.na(cox_pfs$Gene), ]
+     
+knitr::kable(cox_pfs, format="html", 
+                  table.attr = "style='width:30%;'", row.names = FALSE) %>% kableExtra::kable_styling()
+
+
+```
+
+### Aggregating Associations through Meta-analysis
+
+As an example, for a gene CXCL9, to generalize the association with immunotherapy PFS, we apply a meta-analysis approach to integrate findings across datasets for pan-cancer analysis. The result shows that the gene is considerably associated with worse survival ($\text{logHR} = -0.47, p = 0.002$), where the significant heterogenity across datasets ($I^2 = 55\%$, $Q$ $p = 0.01$).  
+
+```{r meta-analysis pan-cancer dicho}
+     
+# meta-analysis for all genes across datasets
+res_meta <- getMeta(Coef = cox_pfs[, "Coef"], 
+                    SE = cox_pfs[, "SE"],
+                    Study  = cox_pfs[, "Study"], 
+                    Pval = cox_pfs[, "Pval"], 
+                    N = cox_pfs[, "N"],
+                    feature = "CXCL9", 
+                    cancer_dat = FALSE)
+     
+# summary of meta-analysis results
+knitr::kable(res_meta$meta_summery, format="html", 
+                  table.attr = "style='width:30%;'", row.names = FALSE) %>% kableExtra::kable_styling()
+    
+```
+
+The following forest plot displays the aggregated results across datasets for pan-cancer analysis. For each dataset, the logHR, 95\% confidence intervals (CIs), and p-values are computed.  Horizontal bars represent the 95\% CIs of logHR. The blue diamond represents the aggregated results.
+
+```{r Fig6, fig.width=8, fig.height=5, fig.cap ="Forest plot (CXCL9, binary median cutoff): Pan-cancer analysis", fig.align= 'center'}
+     
+getForestplotPanCancer(Coef = cox_pfs[ , "Coef"], 
+                       SE = cox_pfs[ , "SE"], 
+                       Study  = cox_pfs[ , "Study"], 
+                       Pval = cox_pfs[ , "Pval"], 
+                       N = cox_pfs[ , "N"], 
+                       feature = "CXCL9", 
+                       cancer_dat = FALSE, 
+                       xlab = "logHR estimate", 
+                       label = "logHR")
+     
+     
+```
+
+Subgroup meta-analysis analysis is considered to assess the impact of cancer type on the source of moderate-to-high heterogeneity. For cancer-specific analysis, consider subgroup meta-analysis when there are at least 3 datasets. The following forest plot displays the aggregated results across datasets as cancer-specific analysis. 
+
+```{r Fig7, fig.width=8, fig.height=9, fig.cap ="Forest plot (CXCL9, binary median cutoff): cancer-specific analysis", fig.align= 'center'}
+     
+getForestplotPerCancer(Coef = cox_pfs[ , "Coef"], 
+                       SE = cox_pfs[ , "SE"], 
+                       Study  = cox_pfs[ , "Study"], 
+                       Pval = cox_pfs[ , "Pval"], 
+                       N = cox_pfs[ , "N"], 
+                       feature = "CXCL9", 
+                       cancer_dat = FALSE, 
+                       xlab = "logHR estimate", 
+                       label = "logHR")
+     
+```
+
+
 ## Signature Score Computation
      
 RNA expression signatures including genes without any weight are computed using Gene Set Variation Analysis (GSVA) enrichment score using the \textit{GSVA} R package [REF]. RNA expression signatures containing genes associated with specific weights (+1 and -1 for up and down-regulated genes, respectively) are computed using the weighted mean expression approach. For RNA immunotherapy signatures with specific computational algorithms to get scores such as PredictIO, we can use their original publication to get the signature score. 
@@ -445,7 +595,7 @@ geneSigScore <- geneSigScore[!is.na(geneSigScore$geneSig), ]
      
 The box plots denote the distribution of computed signature score across immunotherapy datasets. 
      
-```{r Fig3, message=FALSE, warning = FALSE, fig.width=10, fig.height=6, fig.cap= "Distribution of APM_Thompson signature score across datasets using GSVA approach.", fig.align= "center"}
+```{r Fig8, message=FALSE, warning = FALSE, fig.width=10, fig.height=6, fig.cap= "Distribution of APM_Thompson signature score across datasets using GSVA approach.", fig.align= "center"}
      
 ggplot(geneSigScore, aes(x = study, y = geneSig)) + 
        geom_boxplot(fill= "#fdb863", color = "#878787") +
@@ -499,7 +649,7 @@ geneSigScore <- geneSigScore[!is.na(geneSigScore$geneSig), ]
      
 The box plots denote the distribution of computed signature score across immunotherapy datasets. 
     
-```{r Fig4, message=FALSE, warning = FALSE, fig.width=10, fig.height=6, fig.cap ="Distribution of IRG_Yang signature score across datasets using weighted mean approach", fig.align= 'center'}
+```{r Fig9, message=FALSE, warning = FALSE, fig.width=10, fig.height=6, fig.cap ="Distribution of IRG_Yang signature score across datasets using weighted mean approach", fig.align= 'center'}
      
 ggplot(geneSigScore, aes(x = study, y = geneSig)) + 
        geom_boxplot(fill= "#a6dba0", color = "#878787") +
@@ -554,7 +704,7 @@ geneSigScore <- geneSigScore[!is.na(geneSigScore$geneSig), ]
      
 The box plots denote the distribution of computed signature score across immunotherapy datasets. 
      
-```{r Fig5, message=FALSE, warning = FALSE, fig.width=10, fig.height=6, fig.cap ="Distribution of PrdictIO signature score across datasets (discovery and validation) using specific algorithm", fig.align= 'center'}
+```{r Fig10, message=FALSE, warning = FALSE, fig.width=10, fig.height=6, fig.cap ="Distribution of PrdictIO signature score across datasets (discovery and validation) using specific algorithm", fig.align= 'center'}
      
 ggplot(geneSigScore, aes(x = study, y = geneSig, fill = status)) + 
        geom_boxplot(color = "#878787") + 
@@ -651,7 +801,7 @@ knitr::kable(res$meta_summery, format="html",
      
 The forest plot shows the pan-cancer analysis. 
      
-```{r Fig6, message=FALSE, warning = FALSE, fig.width=8, fig.height=5, fig.cap ="Forest plot (APM_Thompson signature): cancer-specific analysis", fig.align= 'center'}
+```{r Fig11, message=FALSE, warning = FALSE, fig.width=8, fig.height=5, fig.cap ="Forest plot (APM_Thompson signature): cancer-specific analysis", fig.align= 'center'}
      
 getForestplotPanCancer(Coef = geneSig_pfs$Coef, 
                        SE = geneSig_pfs$SE, 
@@ -669,7 +819,7 @@ getForestplotPanCancer(Coef = geneSig_pfs$Coef,
 The subgroup meta-analysis is also considered to assess the impact of cancer type on the source of moderate-to-high heterogeneity ($I^2=0.45$, $Q$ $p=0.06$). 
      
      
-```{r Fig7, message=FALSE, warning = FALSE, fig.width=8, fig.height=9, fig.cap ="Forest plot (APM_Thompson signature): cancer-specific analysis", fig.align= 'center'}
+```{r Fig12, message=FALSE, warning = FALSE, fig.width=8, fig.height=9, fig.cap ="Forest plot (APM_Thompson signature): cancer-specific analysis", fig.align= 'center'}
      
 getForestplotPerCancer(Coef = geneSig_pfs$Coef, 
                        SE = geneSig_pfs$SE, 
@@ -821,7 +971,7 @@ knitr::kable(head(AllGeneSig_meta[order(AllGeneSig_meta$FDR, decreasing = FALSE)
 The volcano plot denotes the majority of signatures are associated with worse survival with FDR$< 0.05$.  
 
 
-```{r Fig8, message=FALSE, warning = FALSE, fig.width=9, fig.height=5}
+```{r Fig13, message=FALSE, warning = FALSE, fig.width=9, fig.height=5}
 
 p1 <- getVolcanoPlot(feature = AllGeneSig_meta$Gene, 
                      coef = AllGeneSig_meta$Coef, 

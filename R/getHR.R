@@ -60,12 +60,15 @@ getHRcontinous <- function( surv , time , time_censor , variable){
 ########################################################################################
 ## Cox model: OS/PFS analyses and binary expression or signature score (low vs high)
 ########################################################################################
+# cutoff_bin: get binary feature (e.g, fixed as median)
+# cutoff_n0: minimum number of samples less than cutoff
+# cutoff_n1: minimum number of samples greater than cutoff
 
-getHRdicho <- function( surv , time , time_censor , variable , cutoff ){
+getHRdicho <- function( surv , time , time_censor , variable , cutoff_n0, cutoff_n1 ){
 
   data <- data.frame( surv=surv , time=time , variable=variable )
   data$time <- as.numeric(as.character(data$time))
-  data$variable <- ifelse( as.numeric(as.character(data$variable)) >= cutoff , 1 , 0 )
+  data$variable <- ifelse( as.numeric(as.character(data$variable)) >= median(as.numeric(as.character(data$variable))) , 1 , 0 )
 
   for(i in 1:nrow(data)){
 
@@ -76,7 +79,7 @@ getHRdicho <- function( surv , time , time_censor , variable , cutoff ){
     }
   }
 
-  if( length( data$variable[ data$variable == 1 ] )>=5 & length( data$variable[ data$variable == 0 ] ) >= 5 ){
+  if( length( data$variable[ data$variable == 1 ] )>= cutoff_n1 & length( data$variable[ data$variable == 0 ] ) >= cutoff_n0 ){
 
     cox <- coxph( formula= Surv( time , surv ) ~ variable , data=data )
     hr <- summary(cox)$coefficients[, "coef"]
@@ -105,12 +108,15 @@ getHRdicho <- function( surv , time , time_censor , variable , cutoff ){
 ##################################################################################################
 ## Kaplan-Meier (KM) plot: OS/PFS analyses and binary expression or signature score (low vs high)
 ##################################################################################################
+# cutoff_bin: get binary feature (e.g, fixed as median)
+# cutoff_n0: minimum number of samples less than cutoff
+# cutoff_n1: minimum number of samples greater than cutoff
 
-getKMplot <- function( surv , time , time_censor , variable , cutoff , title , xlab, ylab ){
+getKMplot <- function( surv , time , time_censor , variable , title , xlab, ylab, cutoff_bin, cutoff_n0, cutoff_n1){
 
   data <- data.frame( surv=surv , time=time , variable=variable )
   data$time <- as.numeric(as.character(data$time))
-  data$variable <- ifelse( as.numeric(as.character(data$variable)) >= cutoff , 1 , 0 )
+  data$variable <- ifelse( as.numeric(as.character(data$variable)) >= median(as.numeric(as.character(data$variable))) , 1 , 0 )
 
   for(i in 1:nrow(data)){
 
@@ -121,10 +127,10 @@ getKMplot <- function( surv , time , time_censor , variable , cutoff , title , x
     }
   }
 
-  if( length( data$variable[ data$variable == 1 ] )>= 5 & length( data$variable[ data$variable == 0 ] ) >= 5 ){
+  if( length( data$variable[ data$variable == 1 ] )>= cutoff_n1 & length( data$variable[ data$variable == 0 ] ) >= cutoff_n0 ){
 
     km.coxph.plot( Surv( time, surv ) ~ variable , data.s = data, x.label = xlab, y.label = ylab,
-                   main.title = paste( title , "\n(cutoff=" , round( cutoff , 2 ) , ")" , sep="" ) ,
+                   main.title = paste( title , "\n(cutoff=" , round( cutoff_bin , 2 ) , ")" , sep="" ) ,
                    sub.title = "",
                    leg.text = c( "Low" , "High"),
                    leg.pos = "topright",
@@ -156,7 +162,7 @@ getVolcanoPlot <- function(feature, coef, pval, padj, cutoff_pos, cutoff_neg, x_
 
     data$diffexpressed <- "NO"
     data$diffexpressed[data$coef > 0 & data$pval < 0.05] <- "Pval < 0.05, Coef > 0"
-    data$diffexpressed[data$coef < (0) & data$pval < 0.05] <- "Pval < 0.05, Coef < 0"
+    data$diffexpressed[data$coef < 0 & data$pval < 0.05] <- "Pval < 0.05, Coef < 0"
 
     mycolors <- c( "#fee08b","#74add1", "#bababa")
     names(mycolors) <- c("Pval < 0.05, Coef > 0",
@@ -166,7 +172,7 @@ getVolcanoPlot <- function(feature, coef, pval, padj, cutoff_pos, cutoff_neg, x_
     data$delabel <- NA
     data <- data[order(data$pval, decreasing = FALSE), ]
     id_pos <- data[data$coef > 0 , "feature"][1:cutoff_pos]
-    id_neg <- data[data$coef < (0) , "feature"][1:cutoff_neg]
+    id_neg <- data[data$coef < 0 , "feature"][1:cutoff_neg]
     id <- c(id_pos, id_neg)
 
     for(j in 1:length(id)){
@@ -178,7 +184,7 @@ getVolcanoPlot <- function(feature, coef, pval, padj, cutoff_pos, cutoff_neg, x_
 
     data$diffexpressed <- "NO"
     data$diffexpressed[data$coef > 0 & data$FDR < 0.05] <- "FDR < 0.05, Coef > 0"
-    data$diffexpressed[data$coef < (0) & data$FDR < 0.05] <- "FDR < 0.05, Coef < 0"
+    data$diffexpressed[data$coef < 0 & data$FDR < 0.05] <- "FDR < 0.05, Coef < 0"
 
     mycolors <- c( "#fee08b","#74add1", "#bababa")
     names(mycolors) <- c("FDR < 0.05, Coef > 0",
@@ -188,7 +194,7 @@ getVolcanoPlot <- function(feature, coef, pval, padj, cutoff_pos, cutoff_neg, x_
     data$delabel <- NA
     data <- data[order(data$FDR, decreasing = FALSE), ]
     id_pos <- data[data$coef > 0 , "feature"][1:cutoff_pos]
-    id_neg <- data[data$coef < (0) , "feature"][1:cutoff_neg]
+    id_neg <- data[data$coef < 0 , "feature"][1:cutoff_neg]
     id <- c(id_pos, id_neg)
 
     for(j in 1:length(id)){
@@ -223,6 +229,5 @@ getVolcanoPlot <- function(feature, coef, pval, padj, cutoff_pos, cutoff_neg, x_
                     seed = 2356,
                     fontface= "bold",
                     max.overlaps = 50)
-
   }
 
