@@ -46,7 +46,7 @@ getGeneSigAssociationSurvival <- function(dat_icb, geneSig, time_censor, cutoff_
                           SE = cox["SE"],
                           N = cox["N"],
                           Pval = cox["Pval"],
-                          Seq = unique(dat_clin$rna) )
+                          Treatment = unique(dat_clin$treatment))
 
           }else{  res <- data.frame( Outcome = "OS",
                                      Gene = signature_name,
@@ -55,7 +55,7 @@ getGeneSigAssociationSurvival <- function(dat_icb, geneSig, time_censor, cutoff_
                                      SE = NA,
                                      N = NA,
                                      Pval = NA,
-                                     Seq = NA)
+                                     Treatment = NA)
 
           message("lack of number of samples with known immunotherapy survival outcome")
 
@@ -81,7 +81,7 @@ getGeneSigAssociationSurvival <- function(dat_icb, geneSig, time_censor, cutoff_
                                SE = cox["SE"],
                                N = cox["N"],
                                Pval = cox["Pval"],
-                               Seq = unique(dat_clin$rna) )
+                               Treatment = unique(dat_clin$treatment))
 
           }else{  res <- data.frame( Outcome = "PFS",
                                      Gene = signature_name,
@@ -90,7 +90,7 @@ getGeneSigAssociationSurvival <- function(dat_icb, geneSig, time_censor, cutoff_
                                      SE = NA,
                                      N = NA,
                                      Pval = NA,
-                                     Seq = NA)
+                                     Treatment = NA)
 
           message("lack of number of samples with known immunotherapy survival outcome")
 
@@ -153,7 +153,7 @@ getGeneSigAssociationSurvivalDicho <- function(dat_icb, geneSig, time_censor, cu
                          SE = cox["SE"],
                          N = cox["N"],
                          Pval = cox["Pval"],
-                         Seq = unique(dat_clin$rna) )
+                         Treatment = unique(dat_clin$treatment))
 
     }else{  res <- data.frame( Outcome = "OS",
                                Gene = signature_name,
@@ -162,7 +162,7 @@ getGeneSigAssociationSurvivalDicho <- function(dat_icb, geneSig, time_censor, cu
                                SE = NA,
                                N = NA,
                                Pval = NA,
-                               Seq = NA)
+                               Treatment = NA)
 
     message("lack of number of samples with known immunotherapy survival outcome")
 
@@ -190,7 +190,7 @@ getGeneSigAssociationSurvivalDicho <- function(dat_icb, geneSig, time_censor, cu
                          SE = cox["SE"],
                          N = cox["N"],
                          Pval = cox["Pval"],
-                         Seq = unique(dat_clin$rna) )
+                         Treatment = unique(dat_clin$treatment))
 
     }else{  res <- data.frame( Outcome = "PFS",
                                Gene = signature_name,
@@ -199,7 +199,7 @@ getGeneSigAssociationSurvivalDicho <- function(dat_icb, geneSig, time_censor, cu
                                SE = NA,
                                N = NA,
                                Pval = NA,
-                               Seq = NA)
+                               Treatment = NA)
 
     message("lack of number of samples with known immunotherapy survival outcome")
 
@@ -254,7 +254,7 @@ getGeneSigAssociationLogReg <- function(dat, geneSig, cutoff_n, study, signature
                     SE = round( summary(fit)$coefficients[ "geneSig" , "Std. Error" ] , 3 ),
                     N = length(x[!is.na(x)]),
                     Pval = summary(fit)$coefficients[ "geneSig" , "Pr(>|z|)" ],
-                    Seq = unique(dat_clin$rna) )
+                    Treatment = unique(dat_clin$treatment))
 
     }else{  res <- data.frame( Outcome = "R vs NR",
                                Gene = signature_name,
@@ -263,7 +263,7 @@ getGeneSigAssociationLogReg <- function(dat, geneSig, cutoff_n, study, signature
                                SE = NA,
                                N = NA,
                                Pval = NA,
-                               Seq = NA)
+                               Treatment = NA)
 
     message("lack of number of samples with known immunotherapy response outcome")
 

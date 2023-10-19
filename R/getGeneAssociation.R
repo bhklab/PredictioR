@@ -9,7 +9,7 @@ source("C:/PredictioR/R/getSummarizedExperiment.R")
 ##########################################################################
 ##########################################################################
 
-getGeneAssociationSurvival <- function(dat_icb, time_censor, cutoff_n, feature, study, survival_outcome){
+getGeneAssociationSurvival <- function(dat_icb, time_censor, missing_perc, cutoff_n, feature, study, survival_outcome){
 
 
       if( !class(dat_icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
@@ -29,17 +29,17 @@ getGeneAssociationSurvival <- function(dat_icb, time_censor, cutoff_n, feature, 
 
       if( class(dat_icb) == "SummarizedExperiment"){
 
-    dat_expr <- assay(dat_icb)
-    dat_clin <- colData(dat_icb)
+        dat_expr <- assay(dat_icb)
+        dat_clin <- colData(dat_icb)
 
       }
 
         cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= cutoff_n ] )
 
-        message(paste(study, cancer_type, sep="/"))
+        message(paste(study))
 
         data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-        remove <- rem(data)
+        remove <- rem(data, missing_perc)
 
         if( length(remove) ){
           data <- data[-remove,]
@@ -70,7 +70,7 @@ getGeneAssociationSurvival <- function(dat_icb, time_censor, cutoff_n, feature, 
                           SE = cox["SE"],
                           N = cox["N"],
                           Pval = cox["Pval"],
-                          Seq = unique(dat_clin$rna) )
+                          Treatment = unique(dat_clin$treatment))
 
             })
 
@@ -85,7 +85,7 @@ getGeneAssociationSurvival <- function(dat_icb, time_censor, cutoff_n, feature, 
                                      SE = NA,
                                      N = NA,
                                      Pval = NA,
-                                     Seq = NA,
+                                     Treatment = NA,
                                      FDR =NA)
 
           message("none of the genes were found in the study and/or lack of number of samples with known immunotherapy survival outcome")
@@ -118,7 +118,7 @@ getGeneAssociationSurvival <- function(dat_icb, time_censor, cutoff_n, feature, 
                           SE = cox["SE"],
                           N = cox["N"],
                           Pval = cox["Pval"],
-                          Seq = unique(dat_clin$rna) )
+                          Treatment = unique(dat_clin$treatment))
 
             })
 
@@ -133,7 +133,7 @@ getGeneAssociationSurvival <- function(dat_icb, time_censor, cutoff_n, feature, 
                                      SE = NA,
                                      N = NA,
                                      Pval = NA,
-                                     Seq = NA,
+                                     Treatment = NA,
                                      FDR = NA)
 
           message("none of the genes were found in the study and/or lack of number of samples with known immunotherapy survival outcome")
@@ -152,7 +152,7 @@ getGeneAssociationSurvival <- function(dat_icb, time_censor, cutoff_n, feature, 
 ##########################################################################
 ##########################################################################
 
-getGeneAssociationSurvivalDicho <- function(dat_icb, time_censor, cutoff_n, feature, study, survival_outcome, cutoff_n0, cutoff_n1){
+getGeneAssociationSurvivalDicho <- function(dat_icb, time_censor, missing_perc, cutoff_n, feature, study, survival_outcome, cutoff_n0, cutoff_n1){
 
 
   if( !class(dat_icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
@@ -182,7 +182,7 @@ getGeneAssociationSurvivalDicho <- function(dat_icb, time_censor, cutoff_n, feat
   message(paste(study, cancer_type, sep="/"))
 
   data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-  remove <- rem(data)
+  remove <- rem(data, missing_perc)
 
   if( length(remove) ){
     data <- data[-remove,]
@@ -215,7 +215,7 @@ getGeneAssociationSurvivalDicho <- function(dat_icb, time_censor, cutoff_n, feat
                     SE = cox["SE"],
                     N = cox["N"],
                     Pval = cox["Pval"],
-                    Seq = unique(dat_clin$rna) )
+                    Treatment = unique(dat_clin$treatment))
 
       })
 
@@ -230,7 +230,7 @@ getGeneAssociationSurvivalDicho <- function(dat_icb, time_censor, cutoff_n, feat
                                SE = NA,
                                N = NA,
                                Pval = NA,
-                               Seq = NA,
+                               Treatment = NA,
                                FDR =NA)
 
     message("none of the genes were found in the study and/or lack of number of samples with known immunotherapy survival outcome")
@@ -265,7 +265,7 @@ getGeneAssociationSurvivalDicho <- function(dat_icb, time_censor, cutoff_n, feat
                     SE = cox["SE"],
                     N = cox["N"],
                     Pval = cox["Pval"],
-                    Seq = unique(dat_clin$rna) )
+                    Treatment = unique(dat_clin$treatment))
 
       })
 
@@ -280,7 +280,7 @@ getGeneAssociationSurvivalDicho <- function(dat_icb, time_censor, cutoff_n, feat
                                SE = NA,
                                N = NA,
                                Pval = NA,
-                               Seq = NA,
+                               Treatment = NA,
                                FDR = NA)
 
     message("none of the genes were found in the study and/or lack of number of samples with known immunotherapy survival outcome")
@@ -298,7 +298,7 @@ getGeneAssociationSurvivalDicho <- function(dat_icb, time_censor, cutoff_n, feat
 #################################################################
 #################################################################
 
-getGeneAssociationLogReg <- function(dat_icb, cutoff_n, feature, study){
+getGeneAssociationLogReg <- function(dat_icb, missing_perc, cutoff_n, feature, study){
 
   if( !class(dat_icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
 
@@ -327,7 +327,7 @@ getGeneAssociationLogReg <- function(dat_icb, cutoff_n, feature, study){
     message(paste(study, cancer_type, sep="/"))
 
     data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-    remove <- rem(data)
+    remove <- rem(data, missing_perc)
 
     if( length(remove) ){
       data <- data[-remove,]
@@ -355,7 +355,7 @@ getGeneAssociationLogReg <- function(dat_icb, cutoff_n, feature, study){
                     SE = round( summary(fit)$coefficients[ "g" , "Std. Error" ] , 3 ),
                     N = length(x[!is.na(x)]),
                     Pval = summary(fit)$coefficients[ "g" , "Pr(>|z|)" ],
-                    Seq = unique(dat_clin$rna) )
+                    Treatment = unique(dat_clin$treatment))
 
       })
 
@@ -370,7 +370,7 @@ getGeneAssociationLogReg <- function(dat_icb, cutoff_n, feature, study){
                                SE = NA,
                                N = NA,
                                Pval = NA,
-                               Seq = NA,
+                               Treatment = NA,
                                FDR = NA)
 
     message("none of the genes were found in the study and/or lack of number of samples with known immunotherapy survival outcome")

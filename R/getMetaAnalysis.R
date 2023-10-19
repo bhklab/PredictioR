@@ -15,48 +15,17 @@ library(ggrepel)
 
 getCancer <- function( cancer ){
 
-  if( length( grep( "Coef" , colnames( cancer ) ) ) ){
-
-    cancer$Coef <- as.numeric( as.character( cancer$Coef ) )
-
-  }
-
+  cancer$Coef <- as.numeric( as.character( cancer$Coef ) )
   cancer$Study <- as.character( cancer$Study )
   cancer$Cancer_type <- as.character( cancer$Cancer_type )
   cancer$Pval <- as.numeric(as.character( cancer$Pval ))
   cancer$SE <- as.numeric(as.character( cancer$SE ))
 
   tab <- table( cancer$Cancer_type)[ table(cancer$Cancer_type) %in% c(1,2) ]
-
-  cancer$Study <- paste( cancer$Study , ", n = " , cancer$N , sep= "" )
   cancer$Cancer_type[ cancer$Cancer_type %in% names(tab) ] <- "Other"
+  cancer$Study <- as.character(paste(cancer$Study, ", n = ", cancer$N, sep=""))
 
   cancer
-
-}
-
-##############################################################
-##############################################################
-## create a function to specify sequencing analyses
-##############################################################
-##############################################################
-
-getSeq <- function( seq ){
-
-  if( length( grep( "HR" , colnames( seq ) ) ) ){
-    seq$HR <- as.numeric( as.character( seq$HR ) )
-  }else{
-      seq$Coef <- as.numeric( as.character( seq$Coef ) )
-    }
-
-  seq$Study <- as.character( seq$Study )
-  seq$Cancer_type <- as.character( seq$Cancer_type )
-  seq$Pval <- as.numeric(as.character( seq$Pval ))
-  seq$SE <- as.numeric(as.character( seq$SE ))
-
-  seq$Study <- paste( seq$Study , ", n = " , seq$N , sep= "" )
-
-  seq
 
 }
 
@@ -68,18 +37,15 @@ getSeq <- function( seq ){
 
 getTreatment <- function( treatment ){
 
-  if( length( grep( "HR" , colnames( treatment ) ) ) ){
-    treatment$HR <- as.numeric( as.character( treatment$HR ) )
-  }else{
-    treatment$Coef <- as.numeric( as.character( treatment$Coef ) )
-  }
-
+  treatment$Coef <- as.numeric( as.character( treatment$Coef ) )
   treatment$Study <- as.character( treatment$Study )
   treatment$Cancer_type <- as.character( treatment$Cancer_type )
   treatment$Pval <- as.numeric(as.character( treatment$Pval ))
   treatment$SE <- as.numeric(as.character( treatment$SE ))
+  treatment$Study <- as.character(paste(treatment$Study, ", n = ", treatment$N, sep=""))
 
-  treatment$Study <- paste( treatment$Study , ", n = " , treatment$N , sep= "" )
+  tab <- table( treatment$Treatment)[ table(treatment$Treatment) %in% c(1,2) ]
+  treatment$Treatment[ treatment$Treatment %in% names(tab) ] <- "Other"
 
   treatment
 
@@ -91,7 +57,7 @@ getTreatment <- function( treatment ){
 ##############################################################
 ##############################################################
 
-getMeta <- function(Coef, SE, Study, Pval, N, cancer_dat, seq_dat, treatment_dat, feature){
+getMeta <- function(Coef, SE, Study, Pval, N, Cancer_type, Treatment, cancer_spec, treatment_spec, feature){
 
   data <- data.frame( Gene = feature,
                       Study = as.character( Study ),
@@ -99,28 +65,22 @@ getMeta <- function(Coef, SE, Study, Pval, N, cancer_dat, seq_dat, treatment_dat
                       Coef = as.numeric(as.character( Coef )),
                       SE = as.numeric(as.character( SE )),
                       Pval = as.numeric(as.character( Pval )),
-                      Cancer_type = as.character( do.call(rbind, strsplit(Study, split='__', fixed=TRUE))[, 2] ))
+                      Cancer_type = as.character( Cancer_type ),
+                      Treatment = as.character(Treatment))
 
   data <- data[ order( data$Coef ) , ]
 
   ## at least 3 studies needed to do the random effect meta-analyses
   if(nrow(data) < 3){ stop("not enough studies to do meta-analysis") }else{
 
-    if( cancer_dat == TRUE ){
+    if( cancer_spec == TRUE ){
 
       cancer <- getCancer( data )
       data <- cancer[ order( cancer$Coef ) , ]
 
     }
 
-    if( seq_dat == TRUE ){
-
-      seq <- getSeq( data )
-      data <- seq[ order( seq$Coef ) , ]
-
-    }
-
-    if( treatment_dat == TRUE ){
+    if( treatment_spec == TRUE ){
 
       treatment <- getTreatment( data )
       data <- treatment[ order( treatment$Coef ) , ]
@@ -156,12 +116,9 @@ getMeta <- function(Coef, SE, Study, Pval, N, cancer_dat, seq_dat, treatment_dat
 ##############################################################
 ##############################################################
 
-# NEEDS TO BE UPDATED
+getForestplotPanCancer <- function(Coef, SE, Study, Pval, N , Cancer_type, Treatment, xlab , label, feature){
 
-
-getForestplotPanCancer <- function(Coef, SE, Study, Pval, N , xlab , label, feature){
-
-  res <- getMeta(Coef, SE, Study, Pval, N, cancer_dat = FALSE, seq_dat = FALSE, treatment_dat = FALSE, feature)
+  res <- getMeta(Coef, SE, Study, Pval, N, Cancer_type, Treatment, cancer_spec = FALSE, treatment_spec = FALSE, feature)
   data <- res$input_data
   meta <- res$meta_output
 
@@ -205,9 +162,9 @@ getForestplotPanCancer <- function(Coef, SE, Study, Pval, N , xlab , label, feat
 ## Per cancer
 #########################################################
 
-getForestplotPerCancer <- function( Coef, SE, Study, Pval, N , feature, xlab , label){
+getForestplotPerCancer <- function( Coef, SE, Study, Pval, N, Cancer_type, Treatment, xlab , label, feature){
 
-  res <- getMeta(Coef, SE, Study, Pval, N, cancer_dat = TRUE, seq_dat = FALSE, treatment_dat = FALSE, feature)
+  res <- getMeta(Coef, SE, Study, Pval, N, Cancer_type, Treatment, cancer_spec = TRUE, treatment_spec = FALSE, feature)
   cancer <- getCancer(res$input_data)
 
   remove <- names( table( cancer$Cancer_type)[ table(cancer$Cancer_type) %in% c(1,2) ] )
@@ -269,87 +226,18 @@ getForestplotPerCancer <- function( Coef, SE, Study, Pval, N , feature, xlab , l
 
 }
 
-
-#########################################################
-## Per Sequence
-#########################################################
-
-getForestplotPerSeq <- function( Coef, SE, Study, Pval, N , feature, xlab , label){
-
-  res <- getMeta(Coef, SE, Study, Pval, N, cancer_dat = FALSE, seq_dat = TRUE, treatment_dat = FALSE, feature)
-  seq <- getSeq(res$input_data)
-
-  remove <- names( table( seq$Seq )[ table(seq$Seq) %in% c(1,2) ] )
-
-  if( length( unique( seq$Seq[ !seq$Seq %in% remove ] ) ) > 1 ){
-
-    m <- c( min( c( 0 , seq$Coef ) , na.rm=TRUE) - .5 , ( max( c( 0 , abs(seq$Coef) ) , na.rm=TRUE) ) + .5 )
-    meta <- res$meta_output
-
-    if( length(remove) > 0 ){
-
-      meta.subgroup <- update.meta(meta ,
-                                   byvar = Seq ,
-                                   exclude = seq$Seq %in% remove ,
-                                   fixed = FALSE ,
-                                   random = TRUE ,
-                                   control = list( maxiter = 10000 , stepadj=0.5 ) )
-    } else{
-      meta.subgroup <- update.meta(meta ,
-                                   byvar = Seq ,
-                                   comb.random = TRUE ,
-                                   fixed = FALSE ,
-                                   random = TRUE ,
-                                   control = list( maxiter = 10000 , stepadj=0.5 ) )
-    }
-
-  }
-
-  ## needs to be improved !!!!!!!!!!!!!!!!!!!!!!!!!!
-  forest( meta.subgroup,
-          #leftcols = c("studlab", "effect.ci", "Pval"),
-          #leftlabs= c( "Study" , paste(label, "[95%CI]", sep = " ") , "P-value" ) ,
-          digits.se = 2,
-          colgap.forest=unit(10, "mm") ,
-          plotwidth = unit( 30 , "mm") ,
-          xlab = xlab,
-          pooled.totals = TRUE,
-          smlab = " ",
-          comb.random =TRUE,
-          comb.fixed = FALSE,
-          text.fixed.w = FALSE,
-          layout = "JAMA",
-          print.I2.ci = TRUE,
-          print.Q = FALSE,
-          print.pval.Q = TRUE,
-          print.I2 = TRUE,
-          print.tau2 = FALSE,
-          resid.hetstat = FALSE,
-          test.overall.random = TRUE,
-          test.overall.fixed = FALSE,
-          xlim = m ,
-          col.square= "black" ,
-          col.study= "black" ,
-          col.square.lines = "black" ,
-          col.diamond.random  = "#1565c0"  ,
-          col.diamond.lines.random  ="#1565c0" ,
-          col.by = "#1565c0",
-          addrow.subgroups=TRUE )
-
-}
-
 #########################################################
 ## Per Treatment
 #########################################################
 
-getForestplotPerTreatment <- function( Coef, SE, Study, Pval, N , feature, xlab , label){
+getForestplotPerTreatment <- function( Coef, SE, Study, Pval, N , Cancer_type, Treatment, feature, xlab , label){
 
-  res <- getMeta(Coef, SE, Study, Pval, N, cancer_dat = FALSE, seq_dat = FALSE, treatment_dat = TRUE, feature)
+  res <- getMeta(Coef, SE, Study, Pval, N, Cancer_type, Seq, Treatment, cancer_spec = FALSE, treatment_spec = TRUE, feature)
   treatment <- getTreatment(res$input_data)
 
-  remove <- names( table( treatment$treatment )[ table(treatment$treatment) %in% c(1,2) ] )
+  remove <- names( table( treatment$Treatment )[ table(treatment$Treatment) %in% c(1,2) ] )
 
-  if( length( unique( treatment$treatment[ !treatment$treatment %in% remove ] ) ) > 1 ){
+  if( length( unique( treatment$Treatment[ !treatment$Treatment %in% remove ] ) ) > 1 ){
 
     m <- c( min( c( 0 , treatment$Coef ) , na.rm=TRUE) - .5 , ( max( c( 0 , abs(treatment$Coef) ) , na.rm=TRUE) ) + .5 )
     meta <- res$meta_output
@@ -357,14 +245,14 @@ getForestplotPerTreatment <- function( Coef, SE, Study, Pval, N , feature, xlab 
     if( length(remove) > 0 ){
 
       meta.subgroup <- update.meta(meta ,
-                                   byvar = treatment ,
-                                   exclude = treatment$treatment %in% remove ,
+                                   byvar = Treatment ,
+                                   exclude = treatment$Treatment %in% remove ,
                                    fixed = FALSE ,
                                    random = TRUE ,
                                    control = list( maxiter = 10000 , stepadj=0.5 ) )
     } else{
       meta.subgroup <- update.meta(meta ,
-                                   byvar = treatment ,
+                                   byvar = Treatment ,
                                    comb.random = TRUE ,
                                    fixed = FALSE ,
                                    random = TRUE ,
@@ -373,7 +261,6 @@ getForestplotPerTreatment <- function( Coef, SE, Study, Pval, N , feature, xlab 
 
   }
 
-  ## needs to be improved !!!!!!!!!!!!!!!!!!!!!!!!!!
   forest( meta.subgroup,
           #leftcols = c("studlab", "effect.ci", "Pval"),
           #leftlabs= c( "Study" , paste(label, "[95%CI]", sep = " ") , "P-value" ) ,

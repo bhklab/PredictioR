@@ -261,19 +261,20 @@ study_icb <- substr(list.files(dir), 5, nchar(list.files(dir)) - 4)
 names(expr) <- study_icb
 
 ## remove studies with less than 20 patients 
+########## studies Liu__Melanoma and Riaz__Melanoma were removed but will be added soon (i=10 and i=19) 
 study_icb <- study_icb[- which(study_icb %in% c("Shiuan__Kidney", "Roh__Melanoma", 
-                          "Mariathasan__Unknown", "Mariathasan__Lung", "Mariathasan__Liver"))]
+                          "Mariathasan__Unknown", "Mariathasan__Lung", "Mariathasan__Liver", 
+                          "Liu__Melanoma", "Riaz__Melanoma"))]
 
 group <- c("Discovery", "Validation", "Discovery", "Discovery", "Discovery", "Discovery",
-           "Validation", "Discovery", "Discovery", "Discovery", "Discovery", "Discovery",
+           "Validation", "Discovery", "Discovery", "Discovery", "Discovery",
            "Discovery", "Discovery", "Discovery", "Discovery", "Validation", "Validation", 
-           "Discovery", "Discovery", "Discovery", "Validation")
+           "Discovery", "Discovery", "Validation")
 
 expr <- expr[study_icb]
 
 
-
-## Association of CXCL9 gene with OS for selected dataset Mariathasan__Bladder
+## Association of CXCL9 gene with OS for selected dataset Mariathasan Bladder
 dat_expr <- as.matrix(assay(expr[["Mariathasan__Bladder"]]))
 dat_clin <- colData(expr[["Mariathasan__Bladder"]]) %>% as.data.frame()
 cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= 20 ] )
@@ -303,7 +304,6 @@ getHRdicho( surv = dat_clin$event_occurred_pfs[ dat_clin$cancer_type %in% cancer
                            cutoff_n0 = 5,
                            cutoff_n1 = 5)
 
-
 ```
 
 ### Kaplan-Meier Plot
@@ -322,8 +322,6 @@ getKMplot(surv = dat_clin$event_occurred_pfs[ dat_clin$cancer_type %in% cancer_t
           ylab = "Progression-free Survival", 
           cutoff_n0 = 5, 
           cutoff_n1= 5)
-
-
 
 ```
 
@@ -345,8 +343,7 @@ cox_os <- lapply(1:length(study_icb), function(i){
                                   feature = genes,
                                   study =  names(expr)[i],
                                   survival_outcome = "OS")
-       
-     })
+  })
      
 cox_os <- do.call(rbind, cox_os)
 cox_os <- cox_os[!is.na(cox_os$Gene), ]
@@ -362,7 +359,7 @@ The association results for a selected Melanoma (Van Allen, [PMID 26359337](http
 ```{r Fig2, message=FALSE, fig.width=5, fig.height=4, fig.cap = "gene association with immunotherapy overall survival", fig.align="center"}
      
 df <- cox_os[cox_os$Study == "Van_Allen__Melanoma", ]
-p1 <- getVolcanoPlot(feature = df$Gene, 
+p <- getVolcanoPlot(feature = df$Gene, 
                      coef = df$Coef, 
                      pval = df$Pval, 
                      padj = df$FDR, 
@@ -371,7 +368,7 @@ p1 <- getVolcanoPlot(feature = df$Gene,
                      x_lab = "logHR estimate",
                      padj_label = TRUE)
      
-p1
+p
      
 ```
      
@@ -388,7 +385,7 @@ logreg <- lapply(1:length(study_icb), function(i){
                                 feature = genes,
                                 study =  names(expr)[i])
        
-     })
+ })
      
 logreg <- do.call(rbind, logreg)
 logreg <- logreg[!is.na(logreg$Gene), ]
@@ -403,7 +400,7 @@ The association results for a selected Bladder (Mariathasan,[PMID 29443960](http
 ```{r Fig3, message=FALSE, fig.width=5, fig.height=4, fig.cap = "gene association with immunotherapy response (responder vs non-responder)", fig.align="center"}
      
 df <- logreg[logreg$Study == "Mariathasan__Bladder", ]
-p2 <- getVolcanoPlot(feature = df$Gene, 
+p <- getVolcanoPlot(feature = df$Gene, 
                      coef = df$Coef, 
                      pval = df$Pval, 
                      padj = df$FDR, 
@@ -412,7 +409,7 @@ p2 <- getVolcanoPlot(feature = df$Gene,
                      x_lab = "logOR estimate",
                      padj_label = FALSE)
      
-p2
+p
      
 ```
 
@@ -431,8 +428,11 @@ res_meta <- getMeta(Coef = cox_os[cox_os$Gene == "CXCL9", "Coef"],
                     Study  = cox_os[cox_os$Gene == "CXCL9", "Study"], 
                     Pval = cox_os[cox_os$Gene == "CXCL9", "Pval"], 
                     N = cox_os[cox_os$Gene == "CXCL9", "N"],
+                    Cancer_type = do.call(rbind, strsplit(cox_os[cox_os$Gene == "CXCL9", "Study"], split='__', fixed=TRUE))[, 2],
+                    Treatment = cox_os[cox_os$Gene == "CXCL9", "Treatment"],
                     feature = "CXCL9", 
-                    cancer_dat = FALSE)
+                    cancer_spec = FALSE, 
+                    treatment_spec = FALSE)
      
 # meta-analysis results
 res_meta$meta_output
@@ -452,6 +452,8 @@ getForestplotPanCancer(Coef = cox_os[cox_os$Gene == "CXCL9", "Coef"],
                        Study  = cox_os[cox_os$Gene == "CXCL9", "Study"], 
                        Pval = cox_os[cox_os$Gene == "CXCL9", "Pval"], 
                        N = cox_os[cox_os$Gene == "CXCL9", "N"], 
+                       Cancer_type = do.call(rbind, strsplit(cox_os[cox_os$Gene == "CXCL9", "Study"], split='__', fixed=TRUE))[, 2],
+                       Treatment = cox_os[cox_os$Gene == "CXCL9", "Treatment"],
                        feature = "CXCL9", 
                        xlab = "logHR estimate", 
                        label = "logHR")
@@ -462,19 +464,24 @@ getForestplotPanCancer(Coef = cox_os[cox_os$Gene == "CXCL9", "Coef"],
 Subgroup meta-analysis analysis is considered to assess the impact of cancer type on the source of moderate-to-high heterogeneity. For cancer-specific analysis, consider subgroup meta-analysis when there are at least 3 datasets. The following forest plot displays the aggregated results across datasets as cancer-specific analysis. 
      
      
-```{r Fig5, fig.width=8, fig.height=9, fig.cap ="Forest plot (CXCL9): cancer-specific analysis", fig.align= 'center'}
+```{r Fig5a, fig.width=8, fig.height=9, fig.cap ="Forest plot (CXCL9): cancer-specific analysis", fig.align= 'center'}
      
 getForestplotPerCancer(Coef = cox_os[cox_os$Gene == "CXCL9", "Coef"], 
                        SE = cox_os[cox_os$Gene == "CXCL9", "SE"], 
                        Study  = cox_os[cox_os$Gene == "CXCL9", "Study"], 
                        Pval = cox_os[cox_os$Gene == "CXCL9", "Pval"], 
                        N = cox_os[cox_os$Gene == "CXCL9", "N"], 
+                       Cancer_type = do.call(rbind, strsplit(cox_os[cox_os$Gene == "CXCL9", "Study"], split='__', fixed=TRUE))[, 2],
+                       Treatment = cox_os[cox_os$Gene == "CXCL9", "Treatment"],
                        feature = "CXCL9", 
                        xlab = "logHR estimate", 
                        label = "logHR")
      
 ```
 
+############################################################################################################################
+############################################# ALL THE FOLLOWING META-ANALYSIS NEED TO BE UPDATED ###########################
+############################################################################################################################
 ## Association of Binary Gene with Immunotherapy Progression-free Survival Response
 
 We assess the association of CXCL9 gene with immunotherapy survival (PFS), to gain more insight into the mechanism of response and resistance to immunotherapy response. Median cutoff is applied to stratify the continuous expression to the High and Low groups. 
@@ -515,8 +522,11 @@ res_meta <- getMeta(Coef = cox_pfs[, "Coef"],
                     Study  = cox_pfs[, "Study"], 
                     Pval = cox_pfs[, "Pval"], 
                     N = cox_pfs[, "N"],
-                    feature = "CXCL9", 
-                    cancer_dat = FALSE)
+                    Cancer_type = do.call(rbind, strsplit(cox_pfs[, "Study"], split='__', fixed=TRUE))[, 2],
+                    Treatment = cox_pfs[, "Treatment"],
+                    cancer_spec = FALSE,
+                    treatment_spec = FALSE,
+                    feature = "CXCL9")
      
 # summary of meta-analysis results
 knitr::kable(res_meta$meta_summery, format="html", 
@@ -533,6 +543,8 @@ getForestplotPanCancer(Coef = cox_pfs[ , "Coef"],
                        Study  = cox_pfs[ , "Study"], 
                        Pval = cox_pfs[ , "Pval"], 
                        N = cox_pfs[ , "N"], 
+                       Cancer_type = do.call(rbind, strsplit(cox_pfs[, "Study"], split='__', fixed=TRUE))[, 2],
+                       Treatment = cox_pfs[, "Treatment"],
                        feature = "CXCL9", 
                        xlab = "logHR estimate", 
                        label = "logHR")
@@ -548,7 +560,9 @@ getForestplotPerCancer(Coef = cox_pfs[ , "Coef"],
                        SE = cox_pfs[ , "SE"], 
                        Study  = cox_pfs[ , "Study"], 
                        Pval = cox_pfs[ , "Pval"], 
-                       N = cox_pfs[ , "N"], 
+                       N = cox_pfs[ , "N"],
+                       Cancer_type = do.call(rbind, strsplit(cox_pfs[, "Study"], split='__', fixed=TRUE))[, 2],
+                       Treatment = cox_pfs[, "Treatment"],
                        feature = "CXCL9", 
                        xlab = "logHR estimate", 
                        label = "logHR")
@@ -764,7 +778,6 @@ geneSig_pfs <- lapply(1:length(expr), function(k){
                             SE = NA,
                             N = NA,
                             Pval = NA,
-                            Seq = NA,
                             Treatment = NA) 
        }
        
@@ -792,8 +805,11 @@ res <- getMeta(Coef = geneSig_pfs$Coef,
                Study  = geneSig_pfs$Study, 
                Pval = geneSig_pfs$Pval, 
                N = geneSig_pfs$N, 
-               feature = unique(geneSig_pfs$Gene), 
-               cancer_dat = FALSE)
+               Cancer_type = do.call(rbind, strsplit(geneSig_pfs$Study, split='__', fixed=TRUE))[, 2],
+               Treatment = geneSig_pfs$Treatment,
+               feature = unique(geneSig_pfs$Gene),
+               cancer_spec = FALSE,
+               treatment_spec = FALSE)
      
      
 # summary of meta-analysis
@@ -811,6 +827,8 @@ getForestplotPanCancer(Coef = geneSig_pfs$Coef,
                        Study  = geneSig_pfs$Study, 
                        Pval = geneSig_pfs$Pval, 
                        N = geneSig_pfs$N, 
+                       Cancer_type = do.call(rbind, strsplit(geneSig_pfs$Study, split='__', fixed=TRUE))[, 2],
+                       Treatment = geneSig_pfs$Treatment,
                        feature = unique(geneSig_pfs$Gene), 
                        xlab = "logHR estimate", 
                        label = "logHR")
@@ -828,6 +846,8 @@ getForestplotPerCancer(Coef = geneSig_pfs$Coef,
                        Study  = geneSig_pfs$Study, 
                        Pval = geneSig_pfs$Pval, 
                        N = geneSig_pfs$N, 
+                       Cancer_type = do.call(rbind, strsplit(geneSig_pfs$Study, split='__', fixed=TRUE))[, 2],
+                       Treatment = geneSig_pfs$Treatment,
                        feature = unique(geneSig_pfs$Gene), 
                        xlab = "logHR estimate", 
                        label = "logHR")
@@ -936,7 +956,6 @@ AllGeneSig_os <- lapply(1:length(GeneSig_list), function(i){
                          SE = NA,
                          N = NA,
                          Pval = NA,
-                         Seq = NA,
                          Treatment = NA) 
       
       
@@ -961,8 +980,9 @@ AllGeneSig_meta <- lapply(1:length(AllGeneSig_os), function(j){
                  Study  = AllGeneSig_os[[j]]$Study, 
                  Pval = AllGeneSig_os[[j]]$Pval, 
                  N = AllGeneSig_os[[j]]$N, 
-                 feature = unique(AllGeneSig_os[[j]]$Gene), 
-                 cancer_dat = FALSE)
+                 Cancer_type = do.call(rbind, strsplit(AllGeneSig_os[[j]]$Study, split='__', fixed=TRUE))[, 2],
+                 Treatment = AllGeneSig_os[[j]]$Treatment,
+                 feature = unique(AllGeneSig_os[[j]]$Gene))
   
   res$meta_summery 
 })
