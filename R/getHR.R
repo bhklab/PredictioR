@@ -5,18 +5,18 @@ library(GSVA)
 library(MultiAssayExperiment)
 library(data.table)
 
-############################################################
-## Remove genes if with expression zero in 50% (or missing_perc) of sample
-############################################################
+############################################################################
+## Remove genes if with expression zero in 50% (or missing.perc) of sample
+############################################################################
 
-rem <- function(x, missing_perc){
+rem <- function(x, missing.perc){
 
   x <- as.matrix(x)
   x <- t(apply(x,1,as.numeric))
 
   # data is log2(TPM+0.001)
   r <- as.numeric(apply(x, 1, function(i) sum(round(i, 6) == round(log2(0.001), 6)) ))
-  remove <- which(r > dim(x)[2]* missing_perc)
+  remove <- which(r > dim(x)[2]* missing.perc)
   return(remove)
 
  }
@@ -25,17 +25,17 @@ rem <- function(x, missing_perc){
 ## Cox model: OS/PFS analyses and continuous expression or signature score
 ########################################################################################
 
-getHRcontinous <- function( surv , time , time_censor , variable){
+survCont <- function( surv , time , time.censor , var){
 
-  data <- data.frame( surv=surv , time=time , variable=variable )
+  data <- data.frame( surv=surv , time=time , variable=var )
 	data$time <- as.numeric(as.character(data$time))
 	data$variable <- as.numeric( as.character(data$variable) )
 
   	for(i in 1:nrow(data)){
 
-	    if( !is.na(as.numeric(as.character(data[ i , "time" ]))) && as.numeric(as.character(data[ i , "time" ])) > time_censor ){
+	    if( !is.na(as.numeric(as.character(data[ i , "time" ]))) && as.numeric(as.character(data[ i , "time" ])) > time.censor ){
 
-	       data[ i , "time" ] <- time_censor
+	       data[ i , "time" ] <- time.censor
 	       data[ i , "surv" ] <- 0
 
 	       }
@@ -60,26 +60,36 @@ getHRcontinous <- function( surv , time , time_censor , variable){
 ########################################################################################
 ## Cox model: OS/PFS analyses and binary expression or signature score (low vs high)
 ########################################################################################
-# cutoff_bin: get binary feature (e.g, fixed as median)
-# cutoff_n0: minimum number of samples less than cutoff
-# cutoff_n1: minimum number of samples greater than cutoff
+# n0.cutoff: minimum number of samples less than cutoff
+# n1.cutoff: minimum number of samples greater than cutoff
 
-getHRdicho <- function( surv , time , time_censor , variable , cutoff_n0, cutoff_n1 ){
+survDicho <- function( surv , time , time.censor , var , n0.cutoff, n1.cutoff, method ="median"){
 
-  data <- data.frame( surv=surv , time=time , variable=variable )
+  data <- data.frame( surv=surv , time=time , variable=var )
   data$time <- as.numeric(as.character(data$time))
-  data$variable <- ifelse( as.numeric(as.character(data$variable)) >= median(as.numeric(as.character(data$variable))) , 1 , 0 )
+
+  if( method == "median"){
+    data$variable <- ifelse( as.numeric(as.character(data$variable)) >= median(as.numeric(as.character(data$variable))) , 1 , 0 )
+  }
+
+  if( method == "Q1" ){
+   data$variable <- ifelse( as.numeric(as.character(data$variable)) >= quantile(as.numeric(as.character(data$variable)))["25%"] , 1 , 0 )
+  }
+
+  if( method == "Q3" ){
+    data$variable <- ifelse( as.numeric(as.character(data$variable)) >= quantile(as.numeric(as.character(data$variable)))["75%"] , 1 , 0 )
+  }
 
   for(i in 1:nrow(data)){
 
-    if( !is.na(as.numeric(as.character(data[ i , "time" ]))) && as.numeric(as.character(data[ i , "time" ])) > time_censor ){
-      data[ i , "time" ] = time_censor
+    if( !is.na(as.numeric(as.character(data[ i , "time" ]))) && as.numeric(as.character(data[ i , "time" ])) > time.censor ){
+      data[ i , "time" ] = time.censor
       data[ i , "surv" ] = 0
 
     }
   }
 
-  if( length( data$variable[ data$variable == 1 ] )>= cutoff_n1 & length( data$variable[ data$variable == 0 ] ) >= cutoff_n0 ){
+  if( length( data$variable[ data$variable == 1 ] )>= n1.cutoff & length( data$variable[ data$variable == 0 ] ) >= n0.cutoff ){
 
     cox <- coxph( formula= Surv( time , surv ) ~ variable , data=data )
     hr <- summary(cox)$coefficients[, "coef"]
@@ -108,29 +118,42 @@ getHRdicho <- function( surv , time , time_censor , variable , cutoff_n0, cutoff
 ##################################################################################################
 ## Kaplan-Meier (KM) plot: OS/PFS analyses and binary expression or signature score (low vs high)
 ##################################################################################################
-# cutoff_bin: get binary feature (e.g, fixed as median)
-# cutoff_n0: minimum number of samples less than cutoff
-# cutoff_n1: minimum number of samples greater than cutoff
+# n0.cutoff: minimum number of samples less than cutoff
+# n1.cutoff: minimum number of samples greater than cutoff
 
-getKMplot <- function( surv , time , time_censor , variable , title , xlab, ylab, cutoff_bin, cutoff_n0, cutoff_n1){
+KMplot <- function( surv , time , time.censor , var , title , xlab, ylab, method = "median", n0.cutoff, n1.cutoff){
 
-  data <- data.frame( surv=surv , time=time , variable=variable )
+  data <- data.frame( surv=surv , time=time , variable=var )
   data$time <- as.numeric(as.character(data$time))
-  data$variable <- ifelse( as.numeric(as.character(data$variable)) >= median(as.numeric(as.character(data$variable))) , 1 , 0 )
+
+  if( method == "median"){
+    bin.cutoff <- median(as.numeric(as.character(data$variable)))
+    data$variable <- ifelse( as.numeric(as.character(data$variable)) >= bin.cutoff , 1 , 0 )
+  }
+
+  if( method == "Q1" ){
+    bin.cutoff <- quantile(as.numeric(as.character(data$variable)))["25%"]
+    data$variable <- ifelse( as.numeric(as.character(data$variable)) >= bin.cutoff , 1 , 0 )
+  }
+
+  if( method == "Q3" ){
+    bin.cutoff <- quantile(as.numeric(as.character(data$variable)))["75%"]
+    data$variable <- ifelse( as.numeric(as.character(data$variable)) >= bin.cutoff , 1 , 0 )
+  }
 
   for(i in 1:nrow(data)){
 
-    if( !is.na(as.numeric(as.character(data[ i , "time" ]))) && as.numeric(as.character(data[ i , "time" ])) > time_censor ){
-      data[ i , "time" ] = time_censor
+    if( !is.na(as.numeric(as.character(data[ i , "time" ]))) && as.numeric(as.character(data[ i , "time" ])) > time.censor ){
+      data[ i , "time" ] = time.censor
       data[ i , "surv" ] = 0
 
     }
   }
 
-  if( length( data$variable[ data$variable == 1 ] )>= cutoff_n1 & length( data$variable[ data$variable == 0 ] ) >= cutoff_n0 ){
+  if( length( data$variable[ data$variable == 1 ] )>= n1.cutoff & length( data$variable[ data$variable == 0 ] ) >= n0.cutoff ){
 
     km.coxph.plot( Surv( time, surv ) ~ variable , data.s = data, x.label = xlab, y.label = ylab,
-                   main.title = paste( title , "\n(cutoff=" , round( cutoff_bin , 2 ) , ")" , sep="" ) ,
+                   main.title = paste( title , "\n(cutoff=" , round( bin.cutoff , 2 ) , ")" , sep="" ) ,
                    sub.title = "",
                    leg.text = c( "Low" , "High"),
                    leg.pos = "topright",
@@ -151,14 +174,14 @@ getKMplot <- function( surv , time , time_censor , variable , title , xlab, ylab
 ## volcano plot for signatures or genes association with immunotherapy responses results
 ##########################################################################################
 
-getVolcanoPlot <- function(feature, coef, pval, padj, cutoff_pos, cutoff_neg, x_lab, padj_label){
+volcanoplot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab, padj.label){
 
   data <- data.frame(feature = feature,
                      coef = coef,
                      pval = pval,
                      FDR = padj)
 
-  if( padj_label == FALSE){
+  if( padj.label == FALSE){
 
     data$diffexpressed <- "NO"
     data$diffexpressed[data$coef > 0 & data$pval < 0.05] <- "Pval < 0.05, Coef > 0"
@@ -171,8 +194,8 @@ getVolcanoPlot <- function(feature, coef, pval, padj, cutoff_pos, cutoff_neg, x_
 
     data$delabel <- NA
     data <- data[order(data$pval, decreasing = FALSE), ]
-    id_pos <- data[data$coef > 0 , "feature"][1:cutoff_pos]
-    id_neg <- data[data$coef < 0 , "feature"][1:cutoff_neg]
+    id_pos <- data[data$coef > 0 , "feature"][1:pos.cutoff]
+    id_neg <- data[data$coef < 0 , "feature"][1:neg.cutoff]
     id <- c(id_pos, id_neg)
 
     for(j in 1:length(id)){
@@ -193,8 +216,8 @@ getVolcanoPlot <- function(feature, coef, pval, padj, cutoff_pos, cutoff_neg, x_
 
     data$delabel <- NA
     data <- data[order(data$FDR, decreasing = FALSE), ]
-    id_pos <- data[data$coef > 0 , "feature"][1:cutoff_pos]
-    id_neg <- data[data$coef < 0 , "feature"][1:cutoff_neg]
+    id_pos <- data[data$coef > 0 , "feature"][1:pos.cutoff]
+    id_neg <- data[data$coef < 0 , "feature"][1:neg.cutoff]
     id <- c(id_pos, id_neg)
 
     for(j in 1:length(id)){
@@ -207,7 +230,7 @@ getVolcanoPlot <- function(feature, coef, pval, padj, cutoff_pos, cutoff_neg, x_
   ggplot(data=data, aes(x=coef, y=-log10(pval), col= diffexpressed)) +
     geom_point(size = 2.7) + theme_minimal() +
     ylab("-log10 P value") +
-    xlab(x_lab) +
+    xlab(x.lab) +
     scale_colour_manual(values = mycolors) +
     theme(
       axis.text.x=element_text(size=12,  face="bold"),

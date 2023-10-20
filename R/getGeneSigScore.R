@@ -6,16 +6,15 @@ library(GSVA)
 ## create NULL function
 ########################################################
 
-if_NULL <- function( x , colnames , study ){
+#if.NULL <- function( x , colnames , study ){
 
-  if( is.null( x ) ){
+#  if( is.null( x ) ){
 
-    x = as.data.frame( cbind( study , matrix( NA , nrow= length(study) , ncol=length( colnames )-1 ) ) )
+#    x = as.data.frame( cbind( study , matrix( NA , nrow= length(study) , ncol=length( colnames )-1 ) ) )
 
-  }
-  x
-
-}
+#  }
+#  x
+# }
 
 ##########################################################
 ##########################################################
@@ -23,7 +22,7 @@ if_NULL <- function( x , colnames , study ){
 ##########################################################
 ##########################################################
 
-getScale <- function( x ){
+scale.fun <- function( x ){
 
   rid = rownames(x)
   cid = colnames(x)
@@ -38,39 +37,38 @@ getScale <- function( x ){
 ## Get signature score: GSVA
 #####################################################################
 
-getGeneSigGSVA <- function(dat_icb, sig, signature_name, missing_perc, cutoff_n, cutoff_sig, study){
+geneSigGSVA <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc, study){
 
-
-     if( !class(dat_icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+     if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
          stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
        }
 
-    if( class(dat_icb) == "MultiAssayExperiment"){
-        dat <- getSummarizedExperiment(dat_icb)
+    if( class(dat.icb) == "MultiAssayExperiment"){
+        dat <- SummarizedExperiment(dat.icb)
         dat_expr <- assay(dat)
         dat_clin <- colData(dat)
       }
 
-    if( class(dat_icb) == "SummarizedExperiment"){
-       dat_expr <- assay(dat_icb)
-       dat_clin <- colData(dat_icb)
+    if( class(dat.icb) == "SummarizedExperiment"){
+       dat_expr <- assay(dat.icb)
+       dat_clin <- colData(dat.icb)
       }
 
-    cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= cutoff_n ] )
+    cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
 
     data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-    remove <- rem(data, missing_perc)
+    remove <- rem(data, missing.perc)
 
     if( length(remove) ){
       data <- data[-remove,]
     }
 
-    if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > cutoff_sig & ncol(data) > cutoff_n ){
+    if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > sig.perc & ncol(data) > n.cutoff ){
 
       #print( paste( signature_name , "|" , "GSVA" , sep=" " ) )
 
       geneSig <- NULL
-      geneSig <- as.numeric(gsva( getScale( x=data ) , list(sig$gene_name) , verbose=FALSE ) )
+      geneSig <- as.numeric(gsva( scale.fun( x=data ) , list(sig$gene_name) , verbose=FALSE ) )
       names( geneSig ) <- colnames(data)
 
     }else{
@@ -87,42 +85,42 @@ getGeneSigGSVA <- function(dat_icb, sig, signature_name, missing_perc, cutoff_n,
 ## Get signature score: weighted mean
 #####################################################################
 
-getGeneSigMean <- function(dat_icb, sig, signature_name, missing_perc, cutoff_n, cutoff_sig, study){
+geneSigMean <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc, study){
 
-  if( !class(dat_icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
   }
 
-  if( class(dat_icb) == "MultiAssayExperiment"){
-    dat <- getSummarizedExperiment(dat_icb)
+  if( class(dat.icb) == "MultiAssayExperiment"){
+    dat <- SummarizedExperiment(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
   }
 
-  if( class(dat_icb) == "SummarizedExperiment"){
-    dat_expr <- assay(dat_icb)
-    dat_clin <- colData(dat_icb)
+  if( class(dat.icb) == "SummarizedExperiment"){
+    dat_expr <- assay(dat.icb)
+    dat_clin <- colData(dat.icb)
   }
 
-    cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= cutoff_n ] )
+    cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
 
     #message(paste(study))
 
     data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-    remove <- rem(data, missing_perc)
+    remove <- rem(data, missing.perc)
 
     if( length(remove) ){
       data <- data[-remove,]
     }
 
-    if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > cutoff_sig & ncol(data) > cutoff_n ){
+    if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > sig.perc & ncol(data) > n.cutoff ){
 
       #print( paste( signature_name , "|" , "Weighted Mean" , sep=" " ) )
 
       gene <- intersect( rownames(data) , sig$gene_name)
       s <- sig[ sig$gene_name %in% gene, ]
 
-      scaled_dat <- getScale( x= data[ gene , ] )
+      scaled_dat <- scale.fun( x= data[ gene , ] )
 
       remove <- which(is.na(scaled_dat))
       if(length(remove)){
@@ -147,29 +145,29 @@ getGeneSigMean <- function(dat_icb, sig, signature_name, missing_perc, cutoff_n,
 ## Get signature score: PredictIO
 #####################################################################
 
-getGeneSigPredictIO <- function(dat_icb, sig, signature_name, missing_perc, cutoff_n, cutoff_sig, study){
+geneSigPredictIO <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc, study){
 
-  if( !class(dat_icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
   }
 
-  if( class(dat_icb) == "MultiAssayExperiment"){
-    dat <- getSummarizedExperiment(dat_icb)
+  if( class(dat.icb) == "MultiAssayExperiment"){
+    dat <- SummarizedExperiment(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
   }
 
-  if( class(dat_icb) == "SummarizedExperiment"){
-    dat_expr <- assay(dat_icb)
-    dat_clin <- colData(dat_icb)
+  if( class(dat.icb) == "SummarizedExperiment"){
+    dat_expr <- assay(dat.icb)
+    dat_clin <- colData(dat.icb)
   }
 
-    cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= cutoff_n ] )
+    cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
 
     #message(paste(study))
 
     data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-    remove <- rem(data, missing_perc)
+    remove <- rem(data, missing.perc)
 
     if( length(remove) ){
       data <- data[-remove,]
@@ -184,13 +182,13 @@ getGeneSigPredictIO <- function(dat_icb, sig, signature_name, missing_perc, cuto
       resistance <- sig[ sig$weight == "resistance", ]$gene_name
 
       IO_resistance <- NULL
-      if( ifelse( is.null( nrow( data[ rownames(data) %in% resistance , ]) ) , 1 , nrow( data[ rownames(data) %in% resistance , ] ) ) / length( resistance ) > cutoff_sig ){
-        IO_resistance <- as.numeric( gsva( getScale( x= data ) , list(resistance) , verbose=FALSE ) )
+      if( ifelse( is.null( nrow( data[ rownames(data) %in% resistance , ]) ) , 1 , nrow( data[ rownames(data) %in% resistance , ] ) ) / length( resistance ) > sig.perc ){
+        IO_resistance <- as.numeric( gsva( scale.fun( x= data ) , list(resistance) , verbose=FALSE ) )
       }
 
       IO_sensitive <- NULL
-      if( ifelse( is.null( nrow( data[ rownames(data) %in% sensitive , ]) ) , 1 , nrow( data[ rownames(data) %in% sensitive , ] ) ) / length( sensitive ) > cutoff_sig ){
-        IO_sensitive <- as.numeric( gsva( getScale( x= data ) , list(sensitive) , verbose=FALSE ) )
+      if( ifelse( is.null( nrow( data[ rownames(data) %in% sensitive , ]) ) , 1 , nrow( data[ rownames(data) %in% sensitive , ] ) ) / length( sensitive ) > sig.perc ){
+        IO_sensitive <- as.numeric( gsva( scale.fun( x= data ) , list(sensitive) , verbose=FALSE ) )
       }
 
       if( !is.null( IO_resistance ) & !is.null( IO_sensitive ) ){
@@ -220,36 +218,35 @@ getGeneSigPredictIO <- function(dat_icb, sig, signature_name, missing_perc, cuto
 ## Get signature score: COX_IS
 #####################################################################
 
-getGeneSigCOX_IS <- function(dat_icb, sig, signature_name, missing_perc, cutoff_n, cutoff_sig, study){
+geneSigCOX_IS <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc, study){
 
-
-  if( !class(dat_icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
   }
 
-  if( class(dat_icb) == "MultiAssayExperiment"){
-    dat <- getSummarizedExperiment(dat_icb)
+  if( class(dat.icb) == "MultiAssayExperiment"){
+    dat <- SummarizedExperiment(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
   }
 
-  if( class(dat_icb) == "SummarizedExperiment"){
-    dat_expr <- assay(dat_icb)
-    dat_clin <- colData(dat_icb)
+  if( class(dat.icb) == "SummarizedExperiment"){
+    dat_expr <- assay(dat.icb)
+    dat_clin <- colData(dat.icb)
   }
 
-    cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= cutoff_n ] )
+    cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
 
     #message(paste(study))
 
     data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-    remove <- rem(data, missing_perc)
+    remove <- rem(data, missing.perc)
 
     if( length(remove) ){
       data <- data[-remove,]
     }
 
-    if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > cutoff_sig & ncol(data) > cutoff_n ){
+    if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > sig.perc & ncol(data) > n.cutoff ){
 
       #print( paste( signature_name , "|" , "Specific" , sep=" " ) )
 
@@ -260,7 +257,7 @@ getGeneSigCOX_IS <- function(dat_icb, sig, signature_name, missing_perc, cutoff_
       geneSig <- as.numeric( scale( pos / neg ) )
       names(geneSig) <- colnames(data)
 
-      if( length( geneSig[ !is.nan( geneSig ) ] ) < cutoff_n ){
+      if( length( geneSig[ !is.nan( geneSig ) ] ) < n.cutoff ){
 
         geneSig <- NA
         message("not enough samples and/or genes in a data")
@@ -281,6 +278,7 @@ getGeneSigCOX_IS <- function(dat_icb, sig, signature_name, missing_perc, cutoff_
 ## Get signature score: IPS
 #####################################################################
 ## calculate Immunophenoscore
+
 ipsmap <- function (x) {
   if (x<=0) {
     ips<-0
@@ -294,7 +292,7 @@ ipsmap <- function (x) {
   return(ips)
 }
 
-getIPS <- function( expr, sig ){
+IPS.fun <- function( expr, sig ){
 
   expr <- as.data.frame(expr)
   sample_names <- names(expr)
@@ -349,30 +347,30 @@ getIPS <- function( expr, sig ){
   AZ
 }
 
-getGeneSigIPS <- function(dat_icb, sig, signature_name, missing_perc, cutoff_n, cutoff_sig, study){
+geneSigIPS <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc, study){
 
 
-  if( !class(dat_icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
   }
 
-  if( class(dat_icb) == "MultiAssayExperiment"){
-    dat <- getSummarizedExperiment(dat_icb)
+  if( class(dat.icb) == "MultiAssayExperiment"){
+    dat <- SummarizedExperiment(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
   }
 
-  if( class(dat_icb) == "SummarizedExperiment"){
-    dat_expr <- assay(dat_icb)
-    dat_clin <- colData(dat_icb)
+  if( class(dat.icb) == "SummarizedExperiment"){
+    dat_expr <- assay(dat.icb)
+    dat_clin <- colData(dat.icb)
   }
 
-    cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= cutoff_n ] )
+    cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
 
     #message(paste(study))
 
     data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-    remove <- rem(data, missing_perc)
+    remove <- rem(data, missing.perc)
 
     if( length(remove) ){
       data <- data[-remove,]
@@ -384,7 +382,7 @@ getGeneSigIPS <- function(dat_icb, sig, signature_name, missing_perc, cutoff_n, 
 
         #print( paste( signature_name , "|" , "Specific" , sep=" " ) )
 
-        geneSig <- as.numeric( scale( getIPS( expr = data , sig = sig) ) )
+        geneSig <- as.numeric( scale( IPS.fun( expr = data , sig = sig) ) )
         names( geneSig ) <- colnames(data)
 
       }else{
@@ -401,21 +399,21 @@ getGeneSigIPS <- function(dat_icb, sig, signature_name, missing_perc, cutoff_n, 
 ## Get signature score: IPRES
 #####################################################################
 
-getGeneSigIPRES <- function(dat_icb, sig, signature_name, missing_perc, cutoff_n, cutoff_sig, study){
+geneSigIPRES <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc, study){
 
-  if( !class(dat_icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
   }
 
-  if( class(dat_icb) == "MultiAssayExperiment"){
-    dat <- getSummarizedExperiment(dat_icb)
+  if( class(dat.icb) == "MultiAssayExperiment"){
+    dat <- SummarizedExperiment(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
   }
 
-  if( class(dat_icb) == "SummarizedExperiment"){
-    dat_expr <- assay(dat_icb)
-    dat_clin <- colData(dat_icb)
+  if( class(dat.icb) == "SummarizedExperiment"){
+    dat_expr <- assay(dat.icb)
+    dat_clin <- colData(dat.icb)
   }
 
 
@@ -427,12 +425,12 @@ getGeneSigIPRES <- function(dat_icb, sig, signature_name, missing_perc, cutoff_n
     }
     names(sig) <- names(IPRES)
 
-    cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= cutoff_n ] )
+    cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
 
     #message(paste(study))
 
     data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-    remove <- rem(data, missing_perc)
+    remove <- rem(data, missing.perc)
 
     if( length(remove) ){
       data <- data[-remove,]
@@ -441,12 +439,12 @@ getGeneSigIPRES <- function(dat_icb, sig, signature_name, missing_perc, cutoff_n
       #print( paste( signature_name , "|" , "Specific" , sep=" " ) )
 
 
-      scale_data <- getScale( x=data )
+      scale_data <- scale.fun( x=data )
       geneSig <- NULL
 
       for(k in 1:length(sig)){
 
-        if( ifelse( is.null( nrow( scale_data[ rownames(scale_data) %in% sig[[k]] , ]) ) , 1 , nrow( scale_data[ rownames(scale_data) %in% sig[[k]] , ] ) ) / length( sig[[k]] ) >= cutoff_sig & ncol(scale_data) > cutoff_n ){
+        if( ifelse( is.null( nrow( scale_data[ rownames(scale_data) %in% sig[[k]] , ]) ) , 1 , nrow( scale_data[ rownames(scale_data) %in% sig[[k]] , ] ) ) / length( sig[[k]] ) >= sig.perc & ncol(scale_data) > n.cutoff ){
 
           geneSig[[k]] <- gsva(scale_data , list(sig[[k]]) , verbose=FALSE)
 

@@ -9,37 +9,36 @@ source("C:/PredictioR/R/getSummarizedExperiment.R")
 ##########################################################################
 ##########################################################################
 
-getGeneAssociationSurvival <- function(dat_icb, time_censor, missing_perc, cutoff_n, feature, study, survival_outcome){
+geneSurvCont <- function(dat.icb, time.censor, missing.perc, n.cutoff, feature, study, surv.outcome){
 
-
-      if( !class(dat_icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+      if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
 
          stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
 
        }
 
-      if( class(dat_icb) == "MultiAssayExperiment"){
+      if( class(dat.icb) == "MultiAssayExperiment"){
 
 
-        dat <- getSummarizedExperiment(dat_icb)
+        dat <- SummarizedExperiment(dat.icb)
         dat_expr <- assay(dat)
         dat_clin <- colData(dat)
 
       }
 
-      if( class(dat_icb) == "SummarizedExperiment"){
+      if( class(dat.icb) == "SummarizedExperiment"){
 
-        dat_expr <- assay(dat_icb)
-        dat_clin <- colData(dat_icb)
+        dat_expr <- assay(dat.icb)
+        dat_clin <- colData(dat.icb)
 
       }
 
-        cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= cutoff_n ] )
+        cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
 
         message(paste(study))
 
         data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-        remove <- rem(data, missing_perc)
+        remove <- rem(data, missing.perc)
 
         if( length(remove) ){
           data <- data[-remove,]
@@ -48,20 +47,20 @@ getGeneAssociationSurvival <- function(dat_icb, time_censor, missing_perc, cutof
         data <- as.matrix( data[ rownames(data) %in% feature , ] )
 
         ## association with OS
-        if( survival_outcome == "OS"){
+        if( surv.outcome == "OS"){
 
           if( nrow(data) & !( cancer_type %in% "Lymph_node" ) &
-              length( dat_clin$event_occurred_os[ !is.na( dat_clin$event_occurred_os ) & dat_clin$cancer_type %in% cancer_type ] ) >= cutoff_n ){
+              length( dat_clin$event_occurred_os[ !is.na( dat_clin$event_occurred_os ) & dat_clin$cancer_type %in% cancer_type ] ) >= n.cutoff ){
 
             res <- lapply(1:nrow(data), function(k){
 
               g <- as.numeric( scale( data[k , ] ) )
               names( g ) <- colnames( data )
 
-              cox <- getHRcontinous( surv = dat_clin$event_occurred_os[ dat_clin$cancer_type %in% cancer_type ] ,
-                                     time = dat_clin$survival_time_os[ dat_clin$cancer_type %in% cancer_type ] ,
-                                     time_censor= time_censor ,
-                                     variable= g )
+              cox <- survCont( surv = dat_clin$event_occurred_os[ dat_clin$cancer_type %in% cancer_type ] ,
+                               time = dat_clin$survival_time_os[ dat_clin$cancer_type %in% cancer_type ] ,
+                               time.censor = time.censor ,
+                               var = g )
 
               data.frame( Outcome = "OS",
                           Gene = rownames(data)[k],
@@ -95,21 +94,21 @@ getGeneAssociationSurvival <- function(dat_icb, time_censor, missing_perc, cutof
         }
 
         ## association with PFS
-        if( survival_outcome == "PFS"){
+        if( surv.outcome == "PFS"){
 
 
           if( nrow(data) & !( cancer_type %in% "Lymph_node" ) &
-              length( dat_clin$event_occurred_pfs[ !is.na( dat_clin$event_occurred_pfs ) & dat_clin$cancer_type %in% cancer_type ] ) >= cutoff_n ){
+              length( dat_clin$event_occurred_pfs[ !is.na( dat_clin$event_occurred_pfs ) & dat_clin$cancer_type %in% cancer_type ] ) >= n.cutoff ){
 
             res <- lapply(1:nrow(data), function(k){
 
               g <- as.numeric( scale( data[k , ] ) )
               names( g ) <- colnames( data )
 
-              cox <- getHRcontinous( surv = dat_clin$event_occurred_pfs[ dat_clin$cancer_type %in% cancer_type ] ,
-                                     time = dat_clin$survival_time_pfs[ dat_clin$cancer_type %in% cancer_type ] ,
-                                     time_censor= time_censor ,
-                                     variable= g )
+              cox <- survCont( surv = dat_clin$event_occurred_pfs[ dat_clin$cancer_type %in% cancer_type ] ,
+                               time = dat_clin$survival_time_pfs[ dat_clin$cancer_type %in% cancer_type ] ,
+                               time.censor = time.censor ,
+                               var = g )
 
               data.frame( Outcome = "PFS",
                           Gene = rownames(data)[k],
@@ -152,37 +151,35 @@ getGeneAssociationSurvival <- function(dat_icb, time_censor, missing_perc, cutof
 ##########################################################################
 ##########################################################################
 
-getGeneAssociationSurvivalDicho <- function(dat_icb, time_censor, missing_perc, cutoff_n, feature, study, survival_outcome, cutoff_n0, cutoff_n1){
+geneSurvDicho <- function(dat.icb, time.censor, missing.perc, n.cutoff, feature, study, surv.outcome, n0.cutoff, n1.cutoff, method = "median"){
 
-
-  if( !class(dat_icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
 
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
 
   }
 
-  if( class(dat_icb) == "MultiAssayExperiment"){
+  if( class(dat.icb) == "MultiAssayExperiment"){
 
-
-    dat <- getSummarizedExperiment(dat_icb)
+    dat <- SummarizedExperiment(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
 
   }
 
-  if( class(dat_icb) == "SummarizedExperiment"){
+  if( class(dat.icb) == "SummarizedExperiment"){
 
-    dat_expr <- assay(dat_icb)
-    dat_clin <- colData(dat_icb)
+    dat_expr <- assay(dat.icb)
+    dat_clin <- colData(dat.icb)
 
   }
 
-  cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= cutoff_n ] )
+  cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
 
   message(paste(study, cancer_type, sep="/"))
 
   data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-  remove <- rem(data, missing_perc)
+  remove <- rem(data, missing.perc)
 
   if( length(remove) ){
     data <- data[-remove,]
@@ -191,22 +188,23 @@ getGeneAssociationSurvivalDicho <- function(dat_icb, time_censor, missing_perc, 
   data <- as.matrix( data[ rownames(data) %in% feature , ] )
 
   ## association with OS
-  if( survival_outcome == "OS"){
+  if( surv.outcome == "OS"){
 
     if( nrow(data) & !( cancer_type %in% "Lymph_node" ) &
-        length( dat_clin$event_occurred_os[ !is.na( dat_clin$event_occurred_os ) & dat_clin$cancer_type %in% cancer_type ] ) >= cutoff_n ){
+        length( dat_clin$event_occurred_os[ !is.na( dat_clin$event_occurred_os ) & dat_clin$cancer_type %in% cancer_type ] ) >= n.cutoff ){
 
       res <- lapply(1:nrow(data), function(k){
 
         g <- as.numeric( scale( data[k , ] ) )
         names( g ) <- colnames( data )
 
-        cox <- getHRdicho( surv = dat_clin$event_occurred_os[ dat_clin$cancer_type %in% cancer_type ] ,
-                           time = dat_clin$survival_time_os[ dat_clin$cancer_type %in% cancer_type ] ,
-                           time_censor= time_censor ,
-                           variable= g,
-                           cutoff_n0 = cutoff_n0,
-                           cutoff_n1 = cutoff_n1)
+        cox <- survDicho( surv = dat_clin$event_occurred_os[ dat_clin$cancer_type %in% cancer_type ] ,
+                          time = dat_clin$survival_time_os[ dat_clin$cancer_type %in% cancer_type ] ,
+                          time.censor = time.censor ,
+                          var = g,
+                          n0.cutoff = n0.cutoff,
+                          n1.cutoff = n1.cutoff,
+                          method = method)
 
         data.frame( Outcome = "OS",
                     Gene = rownames(data)[k],
@@ -219,11 +217,11 @@ getGeneAssociationSurvivalDicho <- function(dat_icb, time_censor, missing_perc, 
 
       })
 
-      res <- do.call(rbind, res)
-      rownames(res) <- NULL
-      res$FDR <- p.adjust(res$Pval, method = "BH")
+       res <- do.call(rbind, res)
+       rownames(res) <- NULL
+       res$FDR <- p.adjust(res$Pval, method = "BH")
 
-    }else{  res <- data.frame( Outcome = "OS",
+     }else{  res <- data.frame( Outcome = "OS",
                                Gene = NA,
                                Study = study,
                                Coef = NA,
@@ -240,23 +238,24 @@ getGeneAssociationSurvivalDicho <- function(dat_icb, time_censor, missing_perc, 
   }
 
   ## association with PFS
-  if( survival_outcome == "PFS"){
+  if( surv.outcome == "PFS"){
 
 
     if( nrow(data) & !( cancer_type %in% "Lymph_node" ) &
-        length( dat_clin$event_occurred_pfs[ !is.na( dat_clin$event_occurred_pfs ) & dat_clin$cancer_type %in% cancer_type ] ) >= cutoff_n ){
+        length( dat_clin$event_occurred_pfs[ !is.na( dat_clin$event_occurred_pfs ) & dat_clin$cancer_type %in% cancer_type ] ) >= n.cutoff ){
 
       res <- lapply(1:nrow(data), function(k){
 
         g <- as.numeric( scale( data[k , ] ) )
         names( g ) <- colnames( data )
 
-        cox <- getHRdicho( surv = dat_clin$event_occurred_pfs[ dat_clin$cancer_type %in% cancer_type ] ,
-                           time = dat_clin$survival_time_pfs[ dat_clin$cancer_type %in% cancer_type ] ,
-                           time_censor= time_censor ,
-                           variable= g,
-                           cutoff_n0 = cutoff_n0,
-                           cutoff_n1 = cutoff_n1)
+        cox <- survDicho( surv = dat_clin$event_occurred_pfs[ dat_clin$cancer_type %in% cancer_type ] ,
+                          time = dat_clin$survival_time_pfs[ dat_clin$cancer_type %in% cancer_type ] ,
+                          time.censor= time.censor ,
+                          var = g,
+                          n0.cutoff = n0.cutoff,
+                          n1.cutoff = n1.cutoff,
+                          method = method)
 
         data.frame( Outcome = "PFS",
                     Gene = rownames(data)[k],
@@ -298,36 +297,36 @@ getGeneAssociationSurvivalDicho <- function(dat_icb, time_censor, missing_perc, 
 #################################################################
 #################################################################
 
-getGeneAssociationLogReg <- function(dat_icb, missing_perc, cutoff_n, feature, study){
+geneLogReg <- function(dat.icb, missing.perc, n.cutoff, feature, study){
 
-  if( !class(dat_icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
 
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
 
   }
 
-  if( class(dat_icb) == "MultiAssayExperiment"){
+  if( class(dat.icb) == "MultiAssayExperiment"){
 
 
-    dat <- getSummarizedExperiment(dat_icb)
+    dat <- SummarizedExperiment(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
 
   }
 
-  if( class(dat_icb) == "SummarizedExperiment"){
+  if( class(dat.icb) == "SummarizedExperiment"){
 
-    dat_expr <- assay(dat_icb)
-    dat_clin <- colData(dat_icb)
+    dat_expr <- assay(dat.icb)
+    dat_clin <- colData(dat.icb)
 
   }
 
-    cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= cutoff_n ] )
+    cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
 
     message(paste(study, cancer_type, sep="/"))
 
     data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-    remove <- rem(data, missing_perc)
+    remove <- rem(data, missing.perc)
 
     if( length(remove) ){
       data <- data[-remove,]

@@ -13,7 +13,7 @@ library(ggrepel)
 ##############################################################
 ##############################################################
 
-getCancer <- function( cancer ){
+cancer.mod <- function( cancer ){
 
   cancer$Coef <- as.numeric( as.character( cancer$Coef ) )
   cancer$Study <- as.character( cancer$Study )
@@ -35,7 +35,7 @@ getCancer <- function( cancer ){
 ##############################################################
 ##############################################################
 
-getTreatment <- function( treatment ){
+treatment.mod <- function( treatment ){
 
   treatment$Coef <- as.numeric( as.character( treatment$Coef ) )
   treatment$Study <- as.character( treatment$Study )
@@ -57,32 +57,32 @@ getTreatment <- function( treatment ){
 ##############################################################
 ##############################################################
 
-getMeta <- function(Coef, SE, Study, Pval, N, Cancer_type, Treatment, cancer_spec, treatment_spec, feature){
+meta.fun <- function(coef, se, study, pval, n, cancer.type, treatment, cancer.spec, treatment.spec, feature){
 
   data <- data.frame( Gene = feature,
-                      Study = as.character( Study ),
-                      N = N,
-                      Coef = as.numeric(as.character( Coef )),
-                      SE = as.numeric(as.character( SE )),
-                      Pval = as.numeric(as.character( Pval )),
-                      Cancer_type = as.character( Cancer_type ),
-                      Treatment = as.character(Treatment))
+                      Study = as.character( study ),
+                      N = n,
+                      Coef = as.numeric(as.character( coef )),
+                      SE = as.numeric(as.character( se )),
+                      Pval = as.numeric(as.character( pval )),
+                      Cancer_type = as.character( cancer.type ),
+                      Treatment = as.character(treatment))
 
   data <- data[ order( data$Coef ) , ]
 
   ## at least 3 studies needed to do the random effect meta-analyses
   if(nrow(data) < 3){ stop("not enough studies to do meta-analysis") }else{
 
-    if( cancer_spec == TRUE ){
+    if( cancer.spec == TRUE ){
 
-      cancer <- getCancer( data )
+      cancer <- cancer.mod( data )
       data <- cancer[ order( cancer$Coef ) , ]
 
     }
 
-    if( treatment_spec == TRUE ){
+    if( treatment.spec == TRUE ){
 
-      treatment <- getTreatment( data )
+      treatment <- treatment.mod( data )
       data <- treatment[ order( treatment$Coef ) , ]
 
     }
@@ -116,9 +116,9 @@ getMeta <- function(Coef, SE, Study, Pval, N, Cancer_type, Treatment, cancer_spe
 ##############################################################
 ##############################################################
 
-getForestplotPanCancer <- function(Coef, SE, Study, Pval, N , Cancer_type, Treatment, xlab , label, feature){
+forestplotPanCan <- function(coef, se, study, pval, n , cancer.type, treatment, xlab , label, feature){
 
-  res <- getMeta(Coef, SE, Study, Pval, N, Cancer_type, Treatment, cancer_spec = FALSE, treatment_spec = FALSE, feature)
+  res <- meta.fun(coef, se, study, pval, n, cancer.type, treatment, cancer.spec = FALSE, treatment.spec = FALSE, feature)
   data <- res$input_data
   meta <- res$meta_output
 
@@ -162,10 +162,10 @@ getForestplotPanCancer <- function(Coef, SE, Study, Pval, N , Cancer_type, Treat
 ## Per cancer
 #########################################################
 
-getForestplotPerCancer <- function( Coef, SE, Study, Pval, N, Cancer_type, Treatment, xlab , label, feature){
+forestplotPerCan <- function( coef, se, study, pval, n, cancer.type, treatment, xlab , label, feature){
 
-  res <- getMeta(Coef, SE, Study, Pval, N, Cancer_type, Treatment, cancer_spec = TRUE, treatment_spec = FALSE, feature)
-  cancer <- getCancer(res$input_data)
+  res <- meta.fun(coef, se, study, pval, n, cancer.type, treatment, cancer.spec = TRUE, treatment.spec = FALSE, feature)
+  cancer <- cancer.mod(res$input_data)
 
   remove <- names( table( cancer$Cancer_type)[ table(cancer$Cancer_type) %in% c(1,2) ] )
 
@@ -193,10 +193,7 @@ getForestplotPerCancer <- function( Coef, SE, Study, Pval, N, Cancer_type, Treat
 
   }
 
-  ## needs to be improved !!!!!!!!!!!!!!!!!!!!!!!!!!
   forest( meta.subgroup,
-          #leftcols = c("studlab", "effect.ci", "Pval"),
-          #leftlabs= c( "Study" , paste(label, "[95%CI]", sep = " ") , "P-value" ) ,
           digits.se = 2,
           colgap.forest=unit(10, "mm") ,
           plotwidth = unit( 30 , "mm") ,
@@ -230,10 +227,10 @@ getForestplotPerCancer <- function( Coef, SE, Study, Pval, N, Cancer_type, Treat
 ## Per Treatment
 #########################################################
 
-getForestplotPerTreatment <- function( Coef, SE, Study, Pval, N , Cancer_type, Treatment, feature, xlab , label){
+forestplotPerTreatment <- function( Coef, SE, Study, Pval, N , cancer.type, treatment, feature, xlab , label){
 
-  res <- getMeta(Coef, SE, Study, Pval, N, Cancer_type, Seq, Treatment, cancer_spec = FALSE, treatment_spec = TRUE, feature)
-  treatment <- getTreatment(res$input_data)
+  res <- getMeta(Coef, SE, Study, Pval, N, cancer.type, treatment, cancer.spec = FALSE, treatment.spec = TRUE, feature)
+  treatment <- treatment.mod(res$input_data)
 
   remove <- names( table( treatment$Treatment )[ table(treatment$Treatment) %in% c(1,2) ] )
 
