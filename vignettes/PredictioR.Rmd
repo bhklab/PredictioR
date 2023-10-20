@@ -1008,7 +1008,7 @@ p1 <- volcanoplot(feature = AllGeneSig_meta$Gene,
                   padj.label = FALSE)
 
 
-p2 <- volcanoPlot(feature = AllGeneSig_meta$Gene, 
+p2 <- volcanoplot(feature = AllGeneSig_meta$Gene, 
                   coef = AllGeneSig_meta$Coef, 
                   pval = AllGeneSig_meta$Pval, 
                   padj = AllGeneSig_meta$FDR, 
