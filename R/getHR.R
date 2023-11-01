@@ -121,7 +121,7 @@ survDicho <- function( surv , time , time.censor , var , n0.cutoff, n1.cutoff, m
 # n0.cutoff: minimum number of samples less than cutoff
 # n1.cutoff: minimum number of samples greater than cutoff
 
-KMplot <- function( surv , time , time.censor , var , title , xlab, ylab, method = "median", n0.cutoff, n1.cutoff){
+KMPlot <- function( surv , time , time.censor , var , title , xlab, ylab, method = "median", n0.cutoff, n1.cutoff){
 
   data <- data.frame( surv=surv , time=time , variable=var )
   data$time <- as.numeric(as.character(data$time))
@@ -174,7 +174,7 @@ KMplot <- function( surv , time , time.censor , var , title , xlab, ylab, method
 ## volcano plot for signatures or genes association with immunotherapy responses results
 ##########################################################################################
 
-volcanoplot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab, padj.label){
+volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab, padj.label){
 
   data <- data.frame(feature = feature,
                      coef = coef,

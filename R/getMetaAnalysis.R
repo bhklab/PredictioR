@@ -57,7 +57,7 @@ treatment.mod <- function( treatment ){
 ##############################################################
 ##############################################################
 
-meta.fun <- function(coef, se, study, pval, n, cancer.type, treatment, cancer.spec, treatment.spec, feature){
+meta.fun <- function(coef, se, study, pval, n, cancer.type, treatment, cancer.spec = FALSE, treatment.spec = FALSE, feature){
 
   data <- data.frame( Gene = feature,
                       Study = as.character( study ),
@@ -103,20 +103,163 @@ meta.fun <- function(coef, se, study, pval, n, cancer.type, treatment, cancer.sp
                            Pval = meta$pval.random ,
                            I2 = meta$I2 ,
                            Q_Pval = meta$pval.Q )
+         }
 
-    return(list(input_data = data,
-                meta_output = meta,
-                meta_summery = meta_res))
-      }
+  return(list(input_data = data,
+              meta_output = meta,
+              meta_summery = meta_res))
   }
 
 ##############################################################
 ##############################################################
-## create forestplot function
+## create meta-analysis per-cancer function
 ##############################################################
 ##############################################################
 
-forestplotPanCan <- function(coef, se, study, pval, n , cancer.type, treatment, xlab , label, feature){
+metaPerCan.fun <- function(coef, se, study, pval, n, cancer.type, treatment, cancer.spec = TRUE, feature){
+
+  data <- data.frame( Gene = feature,
+                      Study = as.character( study ),
+                      N = n,
+                      Coef = as.numeric(as.character( coef )),
+                      SE = as.numeric(as.character( se )),
+                      Pval = as.numeric(as.character( pval )),
+                      Cancer_type = as.character( cancer.type ),
+                      Treatment = as.character(treatment))
+
+  data <- data[ order( data$Coef ) , ]
+
+  ## at least 3 studies needed to do the random effect meta-analyses
+  if(nrow(data) < 3){ stop("not enough studies to do cancer-specific meta-analysis") }else{
+
+    cancer <- cancer.mod( data )
+    data <- cancer[ order( cancer$Coef ) , ]
+
+    group <- names(table(data$Cancer_type)[table(data$Cancer_type) >= 3])
+
+    if( length(group) > 0){
+
+      res <- lapply(1:length(group), function(i){
+
+        sub_data <- data[data$Cancer_type == group[i], ]
+
+        meta <- metagen( TE = Coef,
+                         seTE = SE ,
+                         data = sub_data ,
+                         studlab = sub_data$Study ,
+                         fixed = FALSE ,
+                         random = TRUE ,
+                         control = list( maxiter = 10000 , stepadj=0.5 ) )
+
+        meta_res <- data.frame(Cancer_type = group[i],
+                               Gene = feature,
+                               Coef = meta$TE.random ,
+                               SE = meta$seTE.random ,
+                               CI_lower = meta$lower.random ,
+                               CI_upper = meta$upper.random ,
+                               Pval = meta$pval.random ,
+                               I2 = meta$I2 ,
+                               Q_Pval = meta$pval.Q )
+
+        list(input_data = sub_data,
+             meta_output = meta,
+             meta_summery = meta_res)
+
+      })
+
+      names(res) <- group
+
+    }else{
+
+      stop("not enough studies to do cancer-specific meta-analysis")
+
+    }
+
+  }
+
+  return(res)
+
+}
+
+##############################################################
+##############################################################
+## create meta-analysis per-treatment function
+##############################################################
+##############################################################
+
+metaPerTreatment.fun <- function(coef, se, study, pval, n, cancer.type, treatment, treatment.spec = TRUE, feature){
+
+  data <- data.frame( Gene = feature,
+                      Study = as.character( study ),
+                      N = n,
+                      Coef = as.numeric(as.character( coef )),
+                      SE = as.numeric(as.character( se )),
+                      Pval = as.numeric(as.character( pval )),
+                      Cancer_type = as.character( cancer.type ),
+                      Treatment = as.character(treatment))
+
+  data <- data[ order( data$Coef ) , ]
+
+  ## at least 3 studies needed to do the random effect meta-analyses
+  if(nrow(data) < 3){ stop("not enough studies to do cancer-specific meta-analysis") }else{
+
+    treatment <- treatment.mod( data )
+    data <- treatment[ order( treatment$Coef ) , ]
+
+    group <- names(table(data$Treatment)[table(data$Treatment) >= 3])
+
+    if( length(group) > 0){
+
+      res <- lapply(1:length(group), function(i){
+
+        sub_data <- data[data$Treatment == group[i], ]
+
+        meta <- metagen( TE = Coef,
+                         seTE = SE ,
+                         data = sub_data ,
+                         studlab = sub_data$Study ,
+                         fixed = FALSE ,
+                         random = TRUE ,
+                         control = list( maxiter = 10000 , stepadj=0.5 ) )
+
+        meta_res <- data.frame(Treatment = group[i],
+                               Gene = feature,
+                               Coef = meta$TE.random ,
+                               SE = meta$seTE.random ,
+                               CI_lower = meta$lower.random ,
+                               CI_upper = meta$upper.random ,
+                               Pval = meta$pval.random ,
+                               I2 = meta$I2 ,
+                               Q_Pval = meta$pval.Q )
+
+        list(input_data = sub_data,
+             meta_output = meta,
+             meta_summery = meta_res)
+
+      })
+
+      names(res) <- group
+
+    }else{
+
+      stop("not enough studies to do cancer-specific meta-analysis")
+
+    }
+
+  }
+
+  return(res)
+
+}
+
+
+##############################################################
+##############################################################
+## create forestplot function: Pan cancer analysis
+##############################################################
+##############################################################
+
+forestPlot <- function(coef, se, study, pval, n , cancer.type, treatment, xlab , label, feature){
 
   res <- meta.fun(coef, se, study, pval, n, cancer.type, treatment, cancer.spec = FALSE, treatment.spec = FALSE, feature)
   data <- res$input_data
@@ -157,12 +300,13 @@ forestplotPanCan <- function(coef, se, study, pval, n , cancer.type, treatment, 
 
   }
 
-
 #########################################################
-## Per cancer
+#########################################################
+## create forestplot function: Per cancer analysis
+#########################################################
 #########################################################
 
-forestplotPerCan <- function( coef, se, study, pval, n, cancer.type, treatment, xlab , label, feature){
+forestPlotPerCan <- function( coef, se, study, pval, n, cancer.type, treatment, xlab , label, feature){
 
   res <- meta.fun(coef, se, study, pval, n, cancer.type, treatment, cancer.spec = TRUE, treatment.spec = FALSE, feature)
   cancer <- cancer.mod(res$input_data)
@@ -224,12 +368,14 @@ forestplotPerCan <- function( coef, se, study, pval, n, cancer.type, treatment, 
 }
 
 #########################################################
-## Per Treatment
+#########################################################
+## create forestplot function: Per treatment analysis
+#########################################################
 #########################################################
 
-forestplotPerTreatment <- function( Coef, SE, Study, Pval, N , cancer.type, treatment, feature, xlab , label){
+forestPlotPerTreatment <- function( coef, se, study, pval, n , cancer.type, treatment, feature, xlab , label){
 
-  res <- getMeta(Coef, SE, Study, Pval, N, cancer.type, treatment, cancer.spec = FALSE, treatment.spec = TRUE, feature)
+  res <- meta.fun(coef, se, study, pval, n, cancer.type, treatment, cancer.spec = FALSE, treatment.spec = TRUE, feature)
   treatment <- treatment.mod(res$input_data)
 
   remove <- names( table( treatment$Treatment )[ table(treatment$Treatment) %in% c(1,2) ] )
