@@ -113,7 +113,6 @@ As an example, the Braun immunotherapy dataset with PMID [32472114](https://pubm
 ```{r load braun data}
 
 # gene expression, clinical characteristics, and gene meta data 
-
 load(file.path(dir, "ICB_Braun__Kidney.rda")) 
 expr <- assay(dat_icb)
 clin <- colData(dat_icb) %>% as.data.frame()
@@ -313,7 +312,7 @@ The log-rank test is the most widely non-parametric used method of comparing two
 
 ```{r Fig1, message=FALSE, fig.width=5, fig.height=4, fig.cap = "CXCL9 association with immunotherapy PFS", fig.align="center"}
   
-KMplot(surv = dat_clin$event_occurred_pfs[ dat_clin$cancer_type %in% cancer_type ],
+KMPlot(surv = dat_clin$event_occurred_pfs[ dat_clin$cancer_type %in% cancer_type ],
        time = dat_clin$survival_time_pfs[ dat_clin$cancer_type %in% cancer_type ],
        time.censor = 24,
        var =  as.numeric(scale(dat_expr["CXCL9", ])), 
@@ -359,7 +358,7 @@ The association results for a selected Melanoma (Van Allen, [PMID 26359337](http
 ```{r Fig2, message=FALSE, fig.width=5, fig.height=4, fig.cap = "gene association with immunotherapy overall survival", fig.align="center"}
      
 df <- cox_os[cox_os$Study == "Van_Allen__Melanoma", ]
-p <- volcanoplot(feature = df$Gene, 
+p <- volcanoPlot(feature = df$Gene, 
                  coef = df$Coef, 
                  pval = df$Pval, 
                  padj = df$FDR, 
@@ -399,7 +398,7 @@ The association results for a selected Bladder (Mariathasan,[PMID 29443960](http
 ```{r Fig3, message=FALSE, fig.width=5, fig.height=4, fig.cap = "gene association with immunotherapy response (responder vs non-responder)", fig.align="center"}
      
 df <- logreg[logreg$Study == "Mariathasan__Bladder", ]
-p <- volcanoplot(feature = df$Gene, 
+p <- volcanoPlot(feature = df$Gene, 
                  coef = df$Coef, 
                  pval = df$Pval, 
                  padj = df$FDR, 
@@ -412,7 +411,7 @@ p
      
 ```
 
-### Aggregating Associations through Meta-analysis
+### Aggregating Associations through Meta-analysis (Pan-cancer)
      
 To improve reproducibility, the results of individual independent datasets are pooled using random-effects meta-analysis with inverse variance weighting in \textit{DerSimonian and Laird} random-effects models. Heterogeneity across studies is evaluated by using the $Q$ statistic along with $I^2$ index, which describes the total variation across studies attributable to heterogeneity rather than sampling error. Note that $I^2$ value of $>50\%$ along with Cochran’s $Q$ statistic $p < 0.05$ represents moderate-to-high heterogeneity. 
 
@@ -421,7 +420,7 @@ As an example, for a gene CXCL9, to generalize the association with immunotherap
      
 ```{r meta-analysis pan-cancer}
      
-# meta-analysis for all genes across datasets
+# meta-analysis for a gene across datasets
 res_meta <- meta.fun(coef = cox_os[cox_os$Gene == "CXCL9", "Coef"], 
                      se = cox_os[cox_os$Gene == "CXCL9", "SE"],
                      study  = cox_os[cox_os$Gene == "CXCL9", "Study"], 
@@ -446,25 +445,69 @@ The following forest plot displays the aggregated results across datasets for pa
      
 ```{r Fig4, fig.width=8, fig.height=5, fig.cap ="Forest plot (CXCL9): Pan-cancer analysis", fig.align= 'center'}
      
-forestplotPanCan(coef = cox_os[cox_os$Gene == "CXCL9", "Coef"], 
-                    se = cox_os[cox_os$Gene == "CXCL9", "SE"], 
-                    study  = cox_os[cox_os$Gene == "CXCL9", "Study"], 
-                    pval = cox_os[cox_os$Gene == "CXCL9", "Pval"], 
-                    n = cox_os[cox_os$Gene == "CXCL9", "N"], 
-                    cancer.type = do.call(rbind, strsplit(cox_os[cox_os$Gene == "CXCL9", "Study"], split='__', fixed=TRUE))[, 2],
-                    treatment = cox_os[cox_os$Gene == "CXCL9", "Treatment"],
-                    feature = "CXCL9", 
-                    xlab = "logHR estimate", 
-                    label = "logHR")
-     
+forestPlot(coef = cox_os[cox_os$Gene == "CXCL9", "Coef"], 
+           se = cox_os[cox_os$Gene == "CXCL9", "SE"], 
+           study  = cox_os[cox_os$Gene == "CXCL9", "Study"], 
+           pval = cox_os[cox_os$Gene == "CXCL9", "Pval"], 
+           n = cox_os[cox_os$Gene == "CXCL9", "N"], 
+           cancer.type = do.call(rbind, strsplit(cox_os[cox_os$Gene == "CXCL9", "Study"], split='__', fixed=TRUE))[, 2],
+           treatment = cox_os[cox_os$Gene == "CXCL9", "Treatment"],
+           feature = "CXCL9", 
+           xlab = "logHR estimate", 
+           label = "logHR")
      
 ```
      
-Subgroup meta-analysis analysis is considered to assess the impact of cancer type on the source of moderate-to-high heterogeneity. For cancer-specific analysis, consider subgroup meta-analysis when there are at least 3 datasets. The following forest plot displays the aggregated results across datasets as cancer-specific analysis. 
+### Aggregating Associations through Meta-analysis (Per-cancer)
+
+For cancer-specific analysis, consider meta-analysis when there are at least 3 datasets. The following forest plot displays the aggregated results across datasets as cancer-specific analysis. 
      
+```{r meta-analysis per-cancer}
+     
+# cancer specific meta-analysis for a gene across datasets
+res_meta <- metaPerCan.fun(coef = cox_os[cox_os$Gene == "CXCL9", "Coef"], 
+                           se = cox_os[cox_os$Gene == "CXCL9", "SE"],
+                           study  = cox_os[cox_os$Gene == "CXCL9", "Study"], 
+                           pval = cox_os[cox_os$Gene == "CXCL9", "Pval"], 
+                           n = cox_os[cox_os$Gene == "CXCL9", "N"],
+                           cancer.type = do.call(rbind, strsplit(cox_os[cox_os$Gene == "CXCL9", "Study"], split='__', fixed=TRUE))[, 2],
+                           treatment = cox_os[cox_os$Gene == "CXCL9", "Treatment"],
+                           feature = "CXCL9", 
+                           cancer.spec = TRUE)
+     
+# summary of meta-analysis results for each cancer types
+knitr::kable(rbind(res_meta$Kidney$meta_summery,
+                   res_meta$Melanoma$meta_summery,
+                   res_meta$Other$meta_summery), format="html", 
+                  table.attr = "style='width:30%;'", row.names = FALSE) %>% kableExtra::kable_styling()
+    
+```
+
+The following forest plot displays the aggregated results across Melanoma datasets. For each dataset, the logHR, 95\% confidence intervals (CIs), and p-values are computed. Horizontal bars represent the 95\% CIs of logHR. The blue diamond represents the aggregated results.
+
 ```{r Fig5a, fig.width=8, fig.height=9, fig.cap ="Forest plot (CXCL9): cancer-specific analysis", fig.align= 'center'}
+
+## Melanoma cancer specific
+dat <- res_meta$Melanoma$input_data
+
+forestPlot(coef = dat[, "Coef"], 
+           se = dat[, "SE"], 
+           study  = dat[, "Study"], 
+           pval = dat[, "Pval"], 
+           n = dat[, "N"], 
+           cancer.type = do.call(rbind, strsplit(dat[, "Study"], split='__', fixed=TRUE))[, 2],
+           treatment = dat[, "Treatment"],
+           feature = "CXCL9", 
+           xlab = "logHR estimate", 
+           label = "logHR")
      
-forestplotPerCan(coef = cox_os[cox_os$Gene == "CXCL9", "Coef"], 
+```
+
+Subgroup meta-analysis analysis is considered to assess the impact of cancer type on the source of moderate-to-high heterogeneity. 
+
+```{r Fig5b, fig.width=8, fig.height=9, fig.cap ="Forest plot (CXCL9): cancer-specific analysis", fig.align= 'center'}
+
+forestPlotPerCan(coef = cox_os[cox_os$Gene == "CXCL9", "Coef"], 
                  se = cox_os[cox_os$Gene == "CXCL9", "SE"], 
                  study  = cox_os[cox_os$Gene == "CXCL9", "Study"], 
                  pval = cox_os[cox_os$Gene == "CXCL9", "Pval"], 
@@ -507,13 +550,13 @@ knitr::kable(cox_pfs, format="html",
 
 ```
 
-### Aggregating Associations through Meta-analysis
+### Aggregating Associations through Meta-analysis (Pan-cancer)
 
 As an example, for a gene CXCL9, to generalize the association with immunotherapy PFS, we apply a meta-analysis approach to integrate findings across datasets for pan-cancer analysis. The result shows that the gene is considerably associated with worse survival ($\text{logHR} = -0.47, p = 0.002$), where the significant heterogenity across datasets ($I^2 = 55\%$, $Q$ $p = 0.01$).  
 
 ```{r meta-analysis pan-cancer dicho}
      
-# meta-analysis for all genes across datasets
+# meta-analysis for a gene across datasets
 res_meta <- meta.fun(coef = cox_pfs[, "Coef"], 
                      se = cox_pfs[, "SE"],
                      study  = cox_pfs[, "Study"], 
@@ -535,34 +578,75 @@ The following forest plot displays the aggregated results across datasets for pa
 
 ```{r Fig6, fig.width=8, fig.height=5, fig.cap ="Forest plot (CXCL9, binary median cutoff): Pan-cancer analysis", fig.align= 'center'}
      
-forestplotPanCan(coef = cox_pfs[ , "Coef"], 
-                 se = cox_pfs[ , "SE"], 
-                 study  = cox_pfs[ , "Study"], 
-                 pval = cox_pfs[ , "Pval"], 
-                 n = cox_pfs[ , "N"], 
-                 cancer.type = do.call(rbind, strsplit(cox_pfs[, "Study"], split='__', fixed=TRUE))[, 2],
-                 treatment = cox_pfs[, "Treatment"],
-                 feature = "CXCL9", 
-                 xlab = "logHR estimate", 
-                 label = "logHR")
+forestPlot(coef = cox_pfs[ , "Coef"], 
+           se = cox_pfs[ , "SE"], 
+           study  = cox_pfs[ , "Study"], 
+           pval = cox_pfs[ , "Pval"], 
+           n = cox_pfs[ , "N"], 
+           cancer.type = do.call(rbind, strsplit(cox_pfs[, "Study"], split='__', fixed=TRUE))[, 2],
+           treatment = cox_pfs[, "Treatment"],
+           feature = "CXCL9", 
+           xlab = "logHR estimate", 
+           label = "logHR")
      
+     
+```
+
+### Aggregating Associations through Meta-analysis (Per-treatment)
+
+For treatment-specific analysis, consider meta-analysis when there are at least 3 datasets. The following forest plot displays the aggregated results across datasets as treatment-specific analysis. 
+
+```{r meta-analysis per-treatment dicho}
+     
+# meta-analysis for a gene across datasets
+res_meta <- metaPerTreatment.fun(coef = cox_pfs[, "Coef"], 
+                                 se = cox_pfs[, "SE"],
+                                 study  = cox_pfs[, "Study"], 
+                                 pval = cox_pfs[, "Pval"], 
+                                 n = cox_pfs[, "N"],
+                                 cancer.type = do.call(rbind, strsplit(cox_pfs[, "Study"], split='__', fixed=TRUE))[, 2],
+                                 treatment = cox_pfs[, "Treatment"],
+                                 treatment.spec = TRUE,
+                                 feature = "CXCL9")
+     
+# summary of meta-analysis results
+knitr::kable(res_meta$meta_summery, format="html", 
+                  table.attr = "style='width:30%;'", row.names = FALSE) %>% kableExtra::kable_styling()
+    
+```
+
+The following forest plot displays the aggregated results across PD-1/PD-L1 datasets. For each dataset, the logHR, 95\% confidence intervals (CIs), and p-values are computed. Horizontal bars represent the 95\% CIs of logHR. The blue diamond represents the aggregated results.
+
+```{r Fig7a, fig.width=8, fig.height=9, fig.cap ="Forest plot (CXCL9, binary median cutoff): treatment-specific analysis", fig.align= 'center'}
+
+dat <- res_meta$`PD-1/PD-L1`$input_data   
+forestPlot(coef = dat[ , "Coef"], 
+           se = dat[ , "SE"], 
+           study  = dat[ , "Study"], 
+           pval = dat[ , "Pval"], 
+           n = dat[ , "N"],
+           cancer.type = do.call(rbind, strsplit(dat[, "Study"], split='__', fixed=TRUE))[, 2],
+           treatment = dat[, "Treatment"],
+           feature = "CXCL9", 
+           xlab = "logHR estimate", 
+           label = "logHR")
      
 ```
 
 Subgroup meta-analysis analysis is considered to assess the impact of cancer type on the source of moderate-to-high heterogeneity. For cancer-specific analysis, consider subgroup meta-analysis when there are at least 3 datasets. The following forest plot displays the aggregated results across datasets as cancer-specific analysis. 
 
-```{r Fig7, fig.width=8, fig.height=9, fig.cap ="Forest plot (CXCL9, binary median cutoff): cancer-specific analysis", fig.align= 'center'}
+```{r Fig7b, fig.width=8, fig.height=9, fig.cap ="Forest plot (CXCL9, binary median cutoff): treatment-specific analysis", fig.align= 'center'}
      
-forestplotPerCan(coef = cox_pfs[ , "Coef"], 
-                    se = cox_pfs[ , "SE"], 
-                    study  = cox_pfs[ , "Study"], 
-                    pval = cox_pfs[ , "Pval"], 
-                    n = cox_pfs[ , "N"],
-                    cancer.type = do.call(rbind, strsplit(cox_pfs[, "Study"], split='__', fixed=TRUE))[, 2],
-                    treatment = cox_pfs[, "Treatment"],
-                    feature = "CXCL9", 
-                    xlab = "logHR estimate", 
-                    label = "logHR")
+forestPlotPerTreatment(coef = cox_pfs[ , "Coef"], 
+                       se = cox_pfs[ , "SE"], 
+                       study  = cox_pfs[ , "Study"], 
+                       pval = cox_pfs[ , "Pval"], 
+                       n = cox_pfs[ , "N"],
+                       cancer.type = do.call(rbind, strsplit(cox_pfs[, "Study"], split='__', fixed=TRUE))[, 2],
+                       treatment = cox_pfs[, "Treatment"],
+                       feature = "CXCL9", 
+                       xlab = "logHR estimate", 
+                       label = "logHR")
      
 ```
 
@@ -819,16 +903,16 @@ The forest plot shows the pan-cancer analysis.
      
 ```{r Fig11, message=FALSE, warning = FALSE, fig.width=8, fig.height=5, fig.cap ="Forest plot (APM_Thompson signature): cancer-specific analysis", fig.align= 'center'}
      
-forestplotPanCan(coef = geneSig_pfs$Coef, 
-                 se = geneSig_pfs$SE, 
-                 study  = geneSig_pfs$Study, 
-                 pval = geneSig_pfs$Pval, 
-                 n = geneSig_pfs$N, 
-                 cancer.type = do.call(rbind, strsplit(geneSig_pfs$Study, split='__', fixed=TRUE))[, 2],
-                 treatment = geneSig_pfs$Treatment,
-                 feature = unique(geneSig_pfs$Gene), 
-                 xlab = "logHR estimate", 
-                 label = "logHR")
+forestPlot(coef = geneSig_pfs$Coef, 
+           se = geneSig_pfs$SE, 
+           study  = geneSig_pfs$Study, 
+           pval = geneSig_pfs$Pval, 
+           n = geneSig_pfs$N, 
+           cancer.type = do.call(rbind, strsplit(geneSig_pfs$Study, split='__', fixed=TRUE))[, 2],
+           treatment = geneSig_pfs$Treatment,
+           feature = unique(geneSig_pfs$Gene), 
+           xlab = "logHR estimate", 
+           label = "logHR")
      
      
 ```
@@ -836,9 +920,9 @@ forestplotPanCan(coef = geneSig_pfs$Coef,
 The subgroup meta-analysis is also considered to assess the impact of cancer type on the source of moderate-to-high heterogeneity ($I^2=0.45$, $Q$ $p=0.06$). 
      
      
-```{r Fig12, message=FALSE, warning = FALSE, fig.width=8, fig.height=9, fig.cap ="Forest plot (APM_Thompson signature): cancer-specific analysis", fig.align= 'center'}
+```{r Fig11a, message=FALSE, warning = FALSE, fig.width=8, fig.height=9, fig.cap ="Forest plot (APM_Thompson signature): cancer-specific analysis", fig.align= 'center'}
      
-forestplotPerCan(coef = geneSig_pfs$Coef, 
+forestPlotPerCan(coef = geneSig_pfs$Coef, 
                  se = geneSig_pfs$SE, 
                  study  = geneSig_pfs$Study, 
                  pval = geneSig_pfs$Pval, 
@@ -848,6 +932,21 @@ forestplotPerCan(coef = geneSig_pfs$Coef,
                  feature = unique(geneSig_pfs$Gene), 
                  xlab = "logHR estimate", 
                  label = "logHR")
+     
+```
+
+```{r Fig11b, message=FALSE, warning = FALSE, fig.width=8, fig.height=9, fig.cap ="Forest plot (APM_Thompson signature): treatment-specific analysis", fig.align= 'center'}
+     
+forestPlotPerTreatment(coef = geneSig_pfs$Coef, 
+                       se = geneSig_pfs$SE, 
+                       study  = geneSig_pfs$Study, 
+                       pval = geneSig_pfs$Pval, 
+                       n = geneSig_pfs$N, 
+                       cancer.type = do.call(rbind, strsplit(geneSig_pfs$Study, split='__', fixed=TRUE))[, 2],
+                       treatment = geneSig_pfs$Treatment,
+                       feature = unique(geneSig_pfs$Gene), 
+                       xlab = "logHR estimate", 
+                       label = "logHR")
      
 ```
      
@@ -998,7 +1097,7 @@ The volcano plot denotes the majority of signatures are associated with worse su
 
 ```{r Fig13, message=FALSE, warning = FALSE, fig.width=9, fig.height=5}
 
-p1 <- volcanoplot(feature = AllGeneSig_meta$Gene, 
+p1 <- volcanoPlot(feature = AllGeneSig_meta$Gene, 
                   coef = AllGeneSig_meta$Coef, 
                   pval = AllGeneSig_meta$Pval, 
                   padj = AllGeneSig_meta$FDR, 
@@ -1008,7 +1107,7 @@ p1 <- volcanoplot(feature = AllGeneSig_meta$Gene,
                   padj.label = FALSE)
 
 
-p2 <- volcanoplot(feature = AllGeneSig_meta$Gene, 
+p2 <- volcanoPlot(feature = AllGeneSig_meta$Gene, 
                   coef = AllGeneSig_meta$Coef, 
                   pval = AllGeneSig_meta$Pval, 
                   padj = AllGeneSig_meta$FDR, 
