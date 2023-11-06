@@ -90,17 +90,12 @@ dir <- file.path(app_dir, 'PredictioR', "data/ICB")
 | Padron      | Validation | 45            | Pancreas     | Available    | PFS/OS   |RNA       | [35662283](https://pubmed.ncbi.nlm.nih.gov/35662283/)|
 | Puch        | Validation | 55            | Melanoma     | Available    | None     |RNA       | [32472114](https://pubmed.ncbi.nlm.nih.gov/32472114/)|
 | Riaz        | Discovery  | 46            | Melanoma     | Available    | OS       |RNA/DNA   | [29033130](https://pubmed.ncbi.nlm.nih.gov/29033130/)|
-| Roh         | Discovery  | 16            | Melanoma     | Available    | OS       |RNA/DNA   | [28251903](https://pubmed.ncbi.nlm.nih.gov/28251903/)|
-| Shiuan      | Validation | 15            | Kidney       | Available    | None     |RNA       | [33806963](https://pubmed.ncbi.nlm.nih.gov/33806963/)|
 | Snyder      | Discovery  | 25            | Ureteral     | Available    | PFS/OS   |RNA       | [28552987](https://pubmed.ncbi.nlm.nih.gov/28552987/)|
 | Van_Allen   | Discovery  | 42            | Melanoma     | Available    | PFS/OS   |RNA/DNA   | [26359337](https://pubmed.ncbi.nlm.nih.gov/26359337/)|
 | VanDenEnde  | Validation | 35            | Esophageal   | Available    | None     |RNA       | [33504550](https://pubmed.ncbi.nlm.nih.gov/33504550/)|
 | Mariathasan | Discovery  | 195           | Bladder      | Available    | OS       |RNA/DNA   | [29443960](https://pubmed.ncbi.nlm.nih.gov/31792460/)| 
 |             | Discovery  | 67            | Kidney       |                                                      | 
-|             | NA         | 5             | Liver        |                                                      | 
-|             | NA         | 10            | Lung         |                                                      | 
 |             | Discovery  | 26            | Lymph_node   |                                                      | 
-|             | NA         | 19            | Unknown      |                                                      | 
 |             | Discovery  | 26            | Ureteral     |                                                      |
 | Total       |            | 1355          | Pan-cancer   | [GitHub](https://github.com/bhklab/ClinSets.git)     |
 
@@ -113,7 +108,7 @@ As an example, the Braun immunotherapy dataset with PMID [32472114](https://pubm
 ```{r load braun data}
 
 # gene expression, clinical characteristics, and gene meta data 
-load(file.path(dir, "ICB_Braun__Kidney.rda")) 
+load(file.path(dir, "ICB_Braun__Kidney__PD-(L)1.rda")) 
 expr <- assay(dat_icb)
 clin <- colData(dat_icb) %>% as.data.frame()
 annot <- rowData(dat_icb) %>% as.data.frame()
@@ -260,22 +255,15 @@ expr <- lapply(1:length(list.files(dir)), function(k){
 study_icb <- substr(list.files(dir), 5, nchar(list.files(dir)) - 4)
 names(expr) <- study_icb
 
-## remove studies with less than 20 patients 
-########## studies Liu__Melanoma and Riaz__Melanoma were removed but will be added soon (i=10 and i=19) 
-study_icb <- study_icb[- which(study_icb %in% c("Shiuan__Kidney", "Roh__Melanoma", 
-                          "Mariathasan__Unknown", "Mariathasan__Lung", "Mariathasan__Liver", 
-                          "Liu__Melanoma", "Riaz__Melanoma"))]
-
 group <- c("Discovery", "Validation", "Discovery", "Discovery", "Discovery", "Discovery",
-           "Validation", "Discovery", "Discovery", "Discovery", "Discovery",
-           "Discovery", "Discovery", "Discovery", "Discovery", "Validation", "Validation", 
-           "Discovery", "Discovery", "Validation")
-
-expr <- expr[study_icb]
+           "Validation", "Discovery", "Discovery", "Discovery", "Discovery", "Discovery",
+           "Discovery", "Discovery", "Discovery", "Discovery", "Discovery", "Validation", 
+           "Validation", "Discovery", "Discovery", "Discovery", "Discovery", "Validation")
 
 ## Association of CXCL9 gene with OS for selected dataset Mariathasan Bladder
-dat_expr <- as.matrix(assay(expr[["Mariathasan__Bladder"]]))
-dat_clin <- colData(expr[["Mariathasan__Bladder"]]) %>% as.data.frame()
+
+dat_expr <- as.matrix(assay(expr[["Mariathasan__Bladder__PD-(L)1"]]))
+dat_clin <- colData(expr[["Mariathasan__Bladder__PD-(L)1"]]) %>% as.data.frame()
 cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= 20 ] )
        
 survCont( surv = dat_clin$event_occurred_os[ dat_clin$cancer_type %in% cancer_type ] ,
@@ -292,8 +280,8 @@ We limit the association of CXCL9 for a selected Pancreas dataset (Padron, [PMID
 
 ```{r gene association pfs CXCL9 dicho, message=FALSE}
 
-dat_expr <- as.matrix(assay(expr[["Padron__Pancreas"]]))
-dat_clin <- colData(expr[["Padron__Pancreas"]]) %>% as.data.frame()
+dat_expr <- as.matrix(assay(expr[["Padron__Pancreas__PD-(L)1"]]))
+dat_clin <- colData(expr[["Padron__Pancreas__PD-(L)1"]]) %>% as.data.frame()
 cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= 20 ] )
        
 survDicho( surv = dat_clin$event_occurred_pfs[ dat_clin$cancer_type %in% cancer_type ] ,
@@ -332,7 +320,6 @@ We assess the association of 100 genes in PredictIO signature with immunotherapy
 ```{r gene association os , message=FALSE}
 
 ## identify the genes' association with OS
-
 cox_os <- lapply(1:length(study_icb), function(i){
        
        geneSurvCont(dat.icb = expr[[i]],
@@ -340,8 +327,11 @@ cox_os <- lapply(1:length(study_icb), function(i){
                     missing.perc = 0.5,
                     n.cutoff = 20,
                     feature = genes,
-                    study =  names(expr)[i],
+                    study = paste(strsplit(names(expr)[i], "__")[[1]][1], 
+                                  strsplit(names(expr)[i], "__")[[1]][2],
+                                  sep="__"),
                     surv.outcome = "OS")
+  
   })
      
 cox_os <- do.call(rbind, cox_os)
@@ -382,7 +372,10 @@ logreg <- lapply(1:length(study_icb), function(i){
                   missing.perc = 0.5,
                   n.cutoff = 20,
                   feature = genes,
-                  study =  names(expr)[i])
+                  study = paste(strsplit(names(expr)[i], "__")[[1]][1], 
+                                  strsplit(names(expr)[i], "__")[[1]][2],
+                                  sep="__"))
+  
  })
      
 logreg <- do.call(rbind, logreg)
@@ -534,7 +527,9 @@ cox_pfs <- lapply(1:length(study_icb), function(i){
                      missing.perc = 0.5,
                      n.cutoff = 20,
                      feature = "CXCL9",
-                     study =  names(expr)[i],
+                     study =  paste(strsplit(names(expr)[i], "__")[[1]][1], 
+                                  strsplit(names(expr)[i], "__")[[1]][2],
+                                  sep="__"),
                      surv.outcome = "PFS",
                      n1.cutoff = 5,
                      n0.cutoff = 5,
@@ -610,7 +605,7 @@ res_meta <- metaPerTreatment.fun(coef = cox_pfs[, "Coef"],
                                  feature = "CXCL9")
      
 # summary of meta-analysis results
-knitr::kable(res_meta$meta_summery, format="html", 
+knitr::kable(res_meta$`PD-1/PD-L1`$meta_summery, format="html", 
                   table.attr = "style='width:30%;'", row.names = FALSE) %>% kableExtra::kable_styling()
     
 ```
@@ -630,23 +625,6 @@ forestPlot(coef = dat[ , "Coef"],
            feature = "CXCL9", 
            xlab = "logHR estimate", 
            label = "logHR")
-     
-```
-
-Subgroup meta-analysis analysis is considered to assess the impact of cancer type on the source of moderate-to-high heterogeneity. For cancer-specific analysis, consider subgroup meta-analysis when there are at least 3 datasets. The following forest plot displays the aggregated results across datasets as cancer-specific analysis. 
-
-```{r Fig7b, fig.width=8, fig.height=9, fig.cap ="Forest plot (CXCL9, binary median cutoff): treatment-specific analysis", fig.align= 'center'}
-     
-forestPlotPerTreatment(coef = cox_pfs[ , "Coef"], 
-                       se = cox_pfs[ , "SE"], 
-                       study  = cox_pfs[ , "Study"], 
-                       pval = cox_pfs[ , "Pval"], 
-                       n = cox_pfs[ , "N"],
-                       cancer.type = do.call(rbind, strsplit(cox_pfs[, "Study"], split='__', fixed=TRUE))[, 2],
-                       treatment = cox_pfs[, "Treatment"],
-                       feature = "CXCL9", 
-                       xlab = "logHR estimate", 
-                       label = "logHR")
      
 ```
 
@@ -674,7 +652,9 @@ geneSigScore <- lapply(1:length(expr), function(k){
                               missing.perc = 0.5,
                               n.cutoff = 20,
                               sig.perc = 0.8, 
-                              study = names(expr)[k])
+                              study = paste(strsplit(names(expr)[k], "__")[[1]][1], 
+                                            strsplit(names(expr)[k], "__")[[1]][2],
+                                            sep="__"))
        
        data.frame(study = names(expr)[k],
                   signature_name = signature$Signature[i], 
@@ -729,7 +709,9 @@ geneSigScore <- lapply(1:length(expr), function(k){
                               missing.perc = 0.5,
                               n.cutoff = 20,
                               sig.perc = 0.8, 
-                              study = names(expr)[k])
+                              study = paste(strsplit(names(expr)[k], "__")[[1]][1], 
+                                            strsplit(names(expr)[k], "__")[[1]][2],
+                                            sep="__"))
        
        data.frame(study = names(expr)[k],
                   signature_name = signature$Signature[i], 
@@ -783,7 +765,9 @@ geneSigScore <- lapply(1:length(expr), function(k){
                                    missing.perc = 0.5,
                                    n.cutoff = 20,
                                    sig.perc = 0.8, 
-                                   study = names(expr)[k])
+                                   study = paste(strsplit(names(expr)[k], "__")[[1]][1], 
+                                                 strsplit(names(expr)[k], "__")[[1]][2],
+                                                 sep="__"))
        
        data.frame(study = names(expr)[k],
                   status = group[k],
@@ -794,7 +778,6 @@ geneSigScore <- lapply(1:length(expr), function(k){
      
 geneSigScore <- do.call(rbind, geneSigScore)
 geneSigScore <- geneSigScore[!is.na(geneSigScore$geneSig), ]  
-     
      
 ```
      
@@ -838,7 +821,9 @@ geneSig_pfs <- lapply(1:length(expr), function(k){
                               missing.perc = 0.5,
                               n.cutoff = 20,
                               sig.perc = 0.8, 
-                              study = names(expr)[k])
+                              study = paste(strsplit(names(expr)[k], "__")[[1]][1], 
+                                            strsplit(names(expr)[k], "__")[[1]][2],
+                                            sep="__"))
        
        if(sum(!is.na(geneSig)) > 0){
          
@@ -846,7 +831,9 @@ geneSig_pfs <- lapply(1:length(expr), function(k){
                                 geneSig = geneSig,
                                 time.censor = 24,
                                 n.cutoff = 20,
-                                study =  names(expr)[k],
+                                study =  paste(strsplit(names(expr)[k], "__")[[1]][1], 
+                                               strsplit(names(expr)[k], "__")[[1]][2],
+                                               sep="__"),
                                 surv.outcome = "PFS",
                                 sig.name = signature$Signature[i])
          
@@ -854,7 +841,9 @@ geneSig_pfs <- lapply(1:length(expr), function(k){
          
          res <- data.frame( Outcome = "PFS",
                             Gene = geneSig, 
-                            Study = names(expr)[k],
+                            Study = paste(strsplit(names(expr)[k], "__")[[1]][1], 
+                                          strsplit(names(expr)[k], "__")[[1]][2],
+                                          sep="__"),
                             Coef = NA,
                             SE = NA,
                             N = NA,
@@ -935,20 +924,6 @@ forestPlotPerCan(coef = geneSig_pfs$Coef,
      
 ```
 
-```{r Fig11b, message=FALSE, warning = FALSE, fig.width=8, fig.height=9, fig.cap ="Forest plot (APM_Thompson signature): treatment-specific analysis", fig.align= 'center'}
-     
-forestPlotPerTreatment(coef = geneSig_pfs$Coef, 
-                       se = geneSig_pfs$SE, 
-                       study  = geneSig_pfs$Study, 
-                       pval = geneSig_pfs$Pval, 
-                       n = geneSig_pfs$N, 
-                       cancer.type = do.call(rbind, strsplit(geneSig_pfs$Study, split='__', fixed=TRUE))[, 2],
-                       treatment = geneSig_pfs$Treatment,
-                       feature = unique(geneSig_pfs$Gene), 
-                       xlab = "logHR estimate", 
-                       label = "logHR")
-     
-```
      
 ## Comparisons
      
@@ -978,7 +953,9 @@ AllGeneSig_os <- lapply(1:length(GeneSig_list), function(i){
                              missing.perc = 0.5,
                              n.cutoff = 20,
                              sig.perc = 0.8, 
-                             study = names(expr)[k]) 
+                             study = paste(strsplit(names(expr)[k], "__")[[1]][1], 
+                                           strsplit(names(expr)[k], "__")[[1]][2],
+                                           sep="__")) 
       
     }     
     
@@ -990,7 +967,9 @@ AllGeneSig_os <- lapply(1:length(GeneSig_list), function(i){
                              missing.perc = 0.5,
                              n.cutoff = 20,
                              sig.perc = 0.8, 
-                             study = names(expr)[k]) 
+                             study = paste(strsplit(names(expr)[k], "__")[[1]][1], 
+                                           strsplit(names(expr)[k], "__")[[1]][2],
+                                           sep="__")) 
       
     }     
     
@@ -1002,7 +981,9 @@ AllGeneSig_os <- lapply(1:length(GeneSig_list), function(i){
                                missing.perc = 0.5,
                                n.cutoff = 20,
                                sig.perc = 0.8, 
-                               study = names(expr)[k]) 
+                               study = paste(strsplit(names(expr)[k], "__")[[1]][1], 
+                                           strsplit(names(expr)[k], "__")[[1]][2],
+                                           sep="__"))  
       
     } 
     
@@ -1014,7 +995,9 @@ AllGeneSig_os <- lapply(1:length(GeneSig_list), function(i){
                             missing.perc = 0.5,
                             n.cutoff = 20,
                             sig.perc = 0.8, 
-                            study = names(expr)[k]) 
+                            study = paste(strsplit(names(expr)[k], "__")[[1]][1], 
+                                           strsplit(names(expr)[k], "__")[[1]][2],
+                                           sep="__")) 
       
     } 
     
@@ -1026,7 +1009,9 @@ AllGeneSig_os <- lapply(1:length(GeneSig_list), function(i){
                               missing.perc = 0.5,
                               n.cutoff = 20,
                               sig.perc = 0.8, 
-                              study = names(expr)[k]) 
+                              study = paste(strsplit(names(expr)[k], "__")[[1]][1], 
+                                           strsplit(names(expr)[k], "__")[[1]][2],
+                                           sep="__"))  
       
     } 
     
@@ -1037,7 +1022,9 @@ AllGeneSig_os <- lapply(1:length(GeneSig_list), function(i){
                              geneSig = geneSig,
                              time.censor = 36,
                              n.cutoff = 20,
-                             study =  names(expr)[k],
+                             study =  paste(strsplit(names(expr)[k], "__")[[1]][1], 
+                                           strsplit(names(expr)[k], "__")[[1]][2],
+                                           sep="__"),
                              surv.outcome = "OS",
                              sig.name = signature$Signature[i])
       
@@ -1045,7 +1032,9 @@ AllGeneSig_os <- lapply(1:length(GeneSig_list), function(i){
       
       res <- data.frame( Outcome = "OS",
                          Gene = geneSig, 
-                         Study = names(expr)[k],
+                         Study = paste(strsplit(names(expr)[k], "__")[[1]][1], 
+                                           strsplit(names(expr)[k], "__")[[1]][2],
+                                           sep="__"),
                          Coef = NA,
                          SE = NA,
                          N = NA,
