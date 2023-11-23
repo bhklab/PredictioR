@@ -63,7 +63,7 @@ geneSigGSVA <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc
       data <- data[-remove,]
     }
 
-    if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > sig.perc & ncol(data) > n.cutoff ){
+    if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > sig.perc & ncol(data) >= n.cutoff ){
 
       #print( paste( signature_name , "|" , "GSVA" , sep=" " ) )
 
@@ -113,7 +113,7 @@ geneSigMean <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc
       data <- data[-remove,]
     }
 
-    if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > sig.perc & ncol(data) > n.cutoff ){
+    if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > sig.perc & ncol(data) >= n.cutoff ){
 
       #print( paste( signature_name , "|" , "Weighted Mean" , sep=" " ) )
 
@@ -174,7 +174,7 @@ geneSigMedian <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.pe
     data <- data[-remove,]
   }
 
-  if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > sig.perc & ncol(data) > n.cutoff ){
+  if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > sig.perc & ncol(data) >= n.cutoff ){
 
     #print( paste( signature_name , "|" , "Median" , sep=" " ) )
 
@@ -235,7 +235,7 @@ geneSigSum <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc,
     data <- data[-remove,]
   }
 
-  if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > sig.perc & ncol(data) > n.cutoff ){
+  if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > sig.perc & ncol(data) >= n.cutoff ){
 
     #print( paste( signature_name , "|" , "Median" , sep=" " ) )
 
@@ -368,7 +368,7 @@ geneSigCOX_IS <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.pe
       data <- data[-remove,]
     }
 
-    if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > sig.perc & ncol(data) > n.cutoff ){
+    if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > sig.perc & ncol(data) >= n.cutoff ){
 
       #print( paste( signature_name , "|" , "Specific" , sep=" " ) )
 
@@ -566,7 +566,7 @@ geneSigIPRES <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.per
 
       for(k in 1:length(sig)){
 
-        if( ifelse( is.null( nrow( scale_data[ rownames(scale_data) %in% sig[[k]] , ]) ) , 1 , nrow( scale_data[ rownames(scale_data) %in% sig[[k]] , ] ) ) / length( sig[[k]] ) >= sig.perc & ncol(scale_data) > n.cutoff ){
+        if( ifelse( is.null( nrow( scale_data[ rownames(scale_data) %in% sig[[k]] , ]) ) , 1 , nrow( scale_data[ rownames(scale_data) %in% sig[[k]] , ] ) ) / length( sig[[k]] ) >= sig.perc & ncol(scale_data) >= n.cutoff ){
 
           geneSig[[k]] <- gsva(scale_data , list(sig[[k]]) , verbose=FALSE)
 

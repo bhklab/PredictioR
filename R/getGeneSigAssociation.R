@@ -218,7 +218,7 @@ geneSigSurvDicho <- function(dat.icb, geneSig, time.censor, n.cutoff, n0.cutoff,
 #####################################################################
 #####################################################################
 
-geneSigLogReg <- function(dat, geneSig, n.cutoff, study, sig.name){
+geneSigLogReg <- function(dat.icb, geneSig, n.cutoff, study, sig.name){
 
        if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
           stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
@@ -248,7 +248,7 @@ geneSigLogReg <- function(dat, geneSig, n.cutoff, study, sig.name){
 
         res <- data.frame( Outcome = "R vs NR",
                            Gene = sig.name,
-                           Study = paste( study, cancer_type, sep="__" ),
+                           Study = study,
                            Coef = round( summary(fit)$coefficients[ "geneSig" , "Estimate"  ] , 3 ),
                            SE = round( summary(fit)$coefficients[ "geneSig" , "Std. Error" ] , 3 ),
                            N = length(x[!is.na(x)]),
