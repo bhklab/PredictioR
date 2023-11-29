@@ -82,6 +82,53 @@ geneSigGSVA <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc
 }
 
 #####################################################################
+## Get signature score: ssGSEA
+#####################################################################
+
+geneSigssGSEA <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc, study){
+
+  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+    stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+  }
+
+  if( class(dat.icb) == "MultiAssayExperiment"){
+    dat <- SummarizedExperiment(dat.icb)
+    dat_expr <- assay(dat)
+    dat_clin <- colData(dat)
+  }
+
+  if( class(dat.icb) == "SummarizedExperiment"){
+    dat_expr <- assay(dat.icb)
+    dat_clin <- colData(dat.icb)
+  }
+
+  cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
+
+  data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
+  remove <- rem(data, missing.perc)
+
+  if( length(remove) ){
+    data <- data[-remove,]
+  }
+
+  if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > sig.perc & ncol(data) >= n.cutoff ){
+
+    #print( paste( signature_name , "|" , "ssGSEA" , sep=" " ) )
+
+    geneSig <- NULL
+    geneSig <- as.numeric(gsva( scale.fun( x=data ) , list(sig$gene_name) ,  method = "ssgsea", verbose=FALSE ) )
+    names( geneSig ) <- colnames(data)
+
+  }else{
+
+    geneSig <- NA
+    message("not enough samples and/or genes in a data")
+
+  }
+
+  return(geneSig)
+}
+#####################################################################
 ## Get signature score: (weighted) mean
 #####################################################################
 
