@@ -64,7 +64,7 @@ library(MultiAssayExperiment)
 
 # Load Immunotherapy Datasets 
 
-The following clinical multimodal immunotherapy datasets are publicly available on [GitHub](https://github.com/bhklab/ClinSets.git) data repository. Datasets are also obtained from the a cloud-based [ORCESTRA](https://www.orcestra.ca/clinical_icb) platform to ensure that the curation and processing of the clinical genomic data are fully transparent and reproducible. The following datasets are used in the biomarker discovery for immunotherapy response via pan-cancer and cancer-specific analyses. 
+The following clinical multimodal immunotherapy datasets are publicly available on [GitHub](https://github.com/bhklab/ClinSets.git) data repository. Datasets are also obtained from the a cloud-based [ORCESTRA](https://www.orcestra.ca/clinical_icb) platform to ensure that the curation and processing of the clinical genomic data are fully transparent and reproducible. The following datasets are used in the biomarker discovery for immunotherapy response via pan-cancer and cancer-specific analyses. [ADD Roh and Shiuan studies]
 
 ```{r load_data, eval=TRUE, results='hide', message=FALSE}
 
@@ -258,13 +258,14 @@ names(expr) <- study_icb
 group <- c("Discovery", "Validation", "Discovery", "Discovery", "Discovery", "Discovery",
            "Validation", "Discovery", "Discovery", "Discovery", "Discovery", "Discovery",
            "Discovery", "Discovery", "Discovery", "Discovery", "Discovery", "Validation", 
-           "Validation", "Discovery", "Discovery", "Discovery", "Discovery", "Validation")
+           "Validation", "Discovery", "Discovery", "Discovery", "Validation", "Discovery", 
+           "Discovery", "Validation")
 
 ## Association of CXCL9 gene with OS for selected dataset Mariathasan Bladder
 
 dat_expr <- as.matrix(assay(expr[["Mariathasan__Bladder__PD-(L)1"]]))
 dat_clin <- colData(expr[["Mariathasan__Bladder__PD-(L)1"]]) %>% as.data.frame()
-cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= 20 ] )
+cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= 15 ] )
        
 survCont( surv = dat_clin$event_occurred_os[ dat_clin$cancer_type %in% cancer_type ] ,
           time = dat_clin$survival_time_os[ dat_clin$cancer_type %in% cancer_type ] ,
@@ -282,7 +283,7 @@ We limit the association of CXCL9 for a selected Pancreas dataset (Padron, [PMID
 
 dat_expr <- as.matrix(assay(expr[["Padron__Pancreas__PD-(L)1"]]))
 dat_clin <- colData(expr[["Padron__Pancreas__PD-(L)1"]]) %>% as.data.frame()
-cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= 20 ] )
+cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= 15 ] )
        
 survDicho( surv = dat_clin$event_occurred_pfs[ dat_clin$cancer_type %in% cancer_type ] ,
            time = dat_clin$survival_time_pfs[ dat_clin$cancer_type %in% cancer_type ] ,
@@ -322,10 +323,12 @@ We assess the association of 100 genes in PredictIO signature with immunotherapy
 ## identify the genes' association with OS
 cox_os <- lapply(1:length(study_icb), function(i){
        
+  print(i)
        geneSurvCont(dat.icb = expr[[i]],
                     time.censor = 36,
                     missing.perc = 0.5,
-                    n.cutoff = 20,
+                    const.int = 0.001,
+                    n.cutoff = 15,
                     feature = genes,
                     study = paste(strsplit(names(expr)[i], "__")[[1]][1], 
                                   strsplit(names(expr)[i], "__")[[1]][2],
@@ -367,10 +370,11 @@ Additionally, we assess the association of genes in PredictIO signature with imm
      
 ## identify genes' association with binary response (R vs NR)
 logreg <- lapply(1:length(study_icb), function(i){
-       
+    
        geneLogReg(dat.icb = expr[[i]],
                   missing.perc = 0.5,
-                  n.cutoff = 20,
+                  const.int = 0.001,
+                  n.cutoff = 15,
                   feature = genes,
                   study = paste(strsplit(names(expr)[i], "__")[[1]][1], 
                                   strsplit(names(expr)[i], "__")[[1]][2],
@@ -525,7 +529,7 @@ cox_pfs <- lapply(1:length(study_icb), function(i){
        geneSurvDicho(dat.icb = expr[[i]],
                      time.censor = 24,
                      missing.perc = 0.5,
-                     n.cutoff = 20,
+                     n.cutoff = 15,
                      feature = "CXCL9",
                      study =  paste(strsplit(names(expr)[i], "__")[[1]][1], 
                                   strsplit(names(expr)[i], "__")[[1]][2],
@@ -617,7 +621,7 @@ The following forest plot displays the aggregated results across PD-1/PD-L1 data
 dat <- res_meta$`PD-1/PD-L1`$input_data   
 forestPlot(coef = dat[ , "Coef"], 
            se = dat[ , "SE"], 
-           study  = dat[ , "Study"], 
+           study  = do.call(rbind, strsplit(dat[, "Study"], split=',', fixed=TRUE))[, 1], 
            pval = dat[ , "Pval"], 
            n = dat[ , "N"],
            cancer.type = do.call(rbind, strsplit(dat[, "Study"], split='__', fixed=TRUE))[, 2],
@@ -650,7 +654,8 @@ geneSigScore <- lapply(1:length(expr), function(k){
                               sig = sig,
                               sig.name = signature$Signature[i],
                               missing.perc = 0.5,
-                              n.cutoff = 20,
+                              const.int = 0.001,
+                              n.cutoff = 15,
                               sig.perc = 0.8, 
                               study = paste(strsplit(names(expr)[k], "__")[[1]][1], 
                                             strsplit(names(expr)[k], "__")[[1]][2],
@@ -707,6 +712,7 @@ geneSigScore <- lapply(1:length(expr), function(k){
                               sig = sig,
                               sig.name = signature$Signature[i],
                               missing.perc = 0.5,
+                              const.int = 0.001,
                               n.cutoff = 20,
                               sig.perc = 0.8, 
                               study = paste(strsplit(names(expr)[k], "__")[[1]][1], 
@@ -763,7 +769,8 @@ geneSigScore <- lapply(1:length(expr), function(k){
                                    sig = sig,
                                    sig.name = signature$Signature[i],
                                    missing.perc = 0.5,
-                                   n.cutoff = 20,
+                                   const.int = 0.001,
+                                   n.cutoff = 15,
                                    sig.perc = 0.8, 
                                    study = paste(strsplit(names(expr)[k], "__")[[1]][1], 
                                                  strsplit(names(expr)[k], "__")[[1]][2],
@@ -819,7 +826,8 @@ geneSig_pfs <- lapply(1:length(expr), function(k){
                               sig = sig,
                               sig.name = signature$Signature[i],
                               missing.perc = 0.5,
-                              n.cutoff = 20,
+                              const.int = 0.001, 
+                              n.cutoff = 15,
                               sig.perc = 0.8, 
                               study = paste(strsplit(names(expr)[k], "__")[[1]][1], 
                                             strsplit(names(expr)[k], "__")[[1]][2],
@@ -830,7 +838,8 @@ geneSig_pfs <- lapply(1:length(expr), function(k){
          res <- geneSigSurvCont(dat.icb = expr[[k]],
                                 geneSig = geneSig,
                                 time.censor = 24,
-                                n.cutoff = 20,
+                                const.int = 0.001,
+                                n.cutoff = 15,
                                 study =  paste(strsplit(names(expr)[k], "__")[[1]][1], 
                                                strsplit(names(expr)[k], "__")[[1]][2],
                                                sep="__"),
@@ -941,17 +950,20 @@ signature <- signature[order(signature$Signature), ]
 
 AllGeneSig_os <- lapply(1:length(GeneSig_list), function(i){  
   
+  print(i)
   load(file.path(dir_GeneSig, GeneSig_list[i]))
   
   geneSig_os <- lapply(1:length(expr), function(k){
     
+    print(k)
     if(signature$method[i] == "GSVA"){
       
       geneSig <- geneSigGSVA(dat.icb = expr[[k]], 
                              sig = sig,
                              sig.name = signature$Signature[i],
                              missing.perc = 0.5,
-                             n.cutoff = 20,
+                             const.int = 0.001, 
+                             n.cutoff = 15,
                              sig.perc = 0.8, 
                              study = paste(strsplit(names(expr)[k], "__")[[1]][1], 
                                            strsplit(names(expr)[k], "__")[[1]][2],
@@ -965,7 +977,8 @@ AllGeneSig_os <- lapply(1:length(GeneSig_list), function(i){
                              sig = sig,
                              sig.name = signature$Signature[i],
                              missing.perc = 0.5,
-                             n.cutoff = 20,
+                             const.int = 0.001, 
+                             n.cutoff = 15,
                              sig.perc = 0.8, 
                              study = paste(strsplit(names(expr)[k], "__")[[1]][1], 
                                            strsplit(names(expr)[k], "__")[[1]][2],
@@ -979,7 +992,8 @@ AllGeneSig_os <- lapply(1:length(GeneSig_list), function(i){
                                sig = sig,
                                sig.name = signature$Signature[i],
                                missing.perc = 0.5,
-                               n.cutoff = 20,
+                               const.int = 0.001, 
+                               n.cutoff = 15,
                                sig.perc = 0.8, 
                                study = paste(strsplit(names(expr)[k], "__")[[1]][1], 
                                            strsplit(names(expr)[k], "__")[[1]][2],
@@ -993,7 +1007,8 @@ AllGeneSig_os <- lapply(1:length(GeneSig_list), function(i){
                             sig = sig,
                             sig.name = signature$Signature[i],
                             missing.perc = 0.5,
-                            n.cutoff = 20,
+                            const.int = 0.001, 
+                            n.cutoff = 15,
                             sig.perc = 0.8, 
                             study = paste(strsplit(names(expr)[k], "__")[[1]][1], 
                                            strsplit(names(expr)[k], "__")[[1]][2],
@@ -1007,7 +1022,8 @@ AllGeneSig_os <- lapply(1:length(GeneSig_list), function(i){
                               sig = sig,
                               sig.name = signature$Signature[i],
                               missing.perc = 0.5,
-                              n.cutoff = 20,
+                              const.int = 0.001, 
+                              n.cutoff = 15,
                               sig.perc = 0.8, 
                               study = paste(strsplit(names(expr)[k], "__")[[1]][1], 
                                            strsplit(names(expr)[k], "__")[[1]][2],
@@ -1021,7 +1037,7 @@ AllGeneSig_os <- lapply(1:length(GeneSig_list), function(i){
       res <- geneSigSurvCont(dat.icb = expr[[k]],
                              geneSig = geneSig,
                              time.censor = 36,
-                             n.cutoff = 20,
+                             n.cutoff = 15,
                              study =  paste(strsplit(names(expr)[k], "__")[[1]][1], 
                                            strsplit(names(expr)[k], "__")[[1]][2],
                                            sep="__"),
