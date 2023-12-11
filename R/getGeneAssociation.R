@@ -37,7 +37,7 @@ geneSurvCont <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n.
 
         message(paste(study))
 
-        data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
+        data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type ]
         remove <- rem(data, missing.perc, const.int)
 
         if( length(remove) ){
@@ -178,7 +178,7 @@ geneSurvDicho <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n
 
   message(paste(study, cancer_type, sep="/"))
 
-  data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
+  data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type]
   remove <- rem(data, missing.perc, const.int)
 
   if( length(remove) ){
@@ -325,7 +325,7 @@ geneLogReg <- function(dat.icb, missing.perc, const.int=0.001, n.cutoff, feature
 
     message(paste(study, cancer_type, sep="/"))
 
-    data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
+    data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type]
     remove <- rem(data, missing.perc, const.int)
 
     if( length(remove) ){

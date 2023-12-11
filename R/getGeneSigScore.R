@@ -56,7 +56,7 @@ geneSigGSVA <- function(dat.icb, sig, sig.name, missing.perc, const.int = 0.001,
 
     cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
 
-    data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
+    data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type]
     remove <- rem(data, missing.perc, const.int)
 
     if( length(remove) ){
@@ -106,7 +106,7 @@ geneSigMean <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, 
 
     #message(paste(study))
 
-    data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
+    data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type ]
     remove <- rem(data, missing.perc, const.int)
 
     if( length(remove) ){
@@ -167,7 +167,7 @@ geneSigMedian <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001
 
   #message(paste(study))
 
-  data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
+  data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type ]
   remove <- rem(data, missing.perc, const.int)
 
   if( length(remove) ){
@@ -228,7 +228,7 @@ geneSigSum <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n
 
   #message(paste(study))
 
-  data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
+  data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type ]
   remove <- rem(data, missing.perc, const.int)
 
   if( length(remove) ){
@@ -288,7 +288,7 @@ geneSigPredictIO <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.
 
     #message(paste(study))
 
-    data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
+    data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type ]
     remove <- rem(data, missing.perc, const.int)
 
     if( length(remove) ){
@@ -361,7 +361,7 @@ geneSigCOX_IS <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001
 
     #message(paste(study))
 
-    data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
+    data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type ]
     remove <- rem(data, missing.perc, const.int)
 
     if( length(remove) ){
@@ -491,7 +491,7 @@ geneSigIPS <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n
 
     #message(paste(study))
 
-    data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
+    data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type ]
     remove <- rem(data, missing.perc, const.int)
 
     if( length(remove) ){
@@ -551,7 +551,7 @@ geneSigIPRES <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001,
 
     #message(paste(study))
 
-    data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
+    data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type ]
     remove <- rem(data, missing.perc, const.int)
 
     if( length(remove) ){
