@@ -260,14 +260,14 @@ metaPerTreatment.fun <- function(coef, se, study, pval, n, cancer.type, treatmen
 ##############################################################
 
 forestPlot <- function(coef, se, study, pval, n , cancer.type, treatment, xlab , label, feature){
-
+  
+  study <- paste( study , ", n = " , n , sep= "" )
   res <- meta.fun(coef, se, study, pval, n, cancer.type, treatment, cancer.spec = FALSE, treatment.spec = FALSE, feature)
   data <- res$input_data
   meta <- res$meta_output
 
   m <- c( min( c( 0 , data$Coef ) , na.rm=TRUE) - .5 , ( max( c( 0 , abs(data$Coef) ) , na.rm=TRUE) ) + .5 )
-  data$Study <- paste( data$Study , ", n = " , data$N , sep= "" )
-
+  
   forest( meta ,
           leftcols = c("studlab", "effect.ci" , "Pval" ),
           leftlabs= c( "Study" , paste(label, "[95%CI]", sep = " ") , "P-value" ) ,
@@ -312,29 +312,37 @@ forestPlotPerCan <- function( coef, se, study, pval, n, cancer.type, treatment, 
   cancer <- cancer.mod(res$input_data)
 
   remove <- names( table( cancer$Cancer_type)[ table(cancer$Cancer_type) %in% c(1,2) ] )
-
-  if( length( unique( cancer$Cancer_type[ !cancer$Cancer_type %in% remove ] ) ) > 1 ){
-
-    m <- c( min( c( 0 , cancer$Coef ) , na.rm=TRUE) - .5 , ( max( c( 0 , abs(cancer$Coef) ) , na.rm=TRUE) ) + .5 )
-    meta <- res$meta_output
-
-    if( length(remove) > 0 ){
-
-      meta.subgroup <- update.meta(meta ,
-                                   byvar = Cancer_type ,
-                                   exclude = cancer$cancer_type %in% remove ,
-                                   fixed = FALSE ,
-                                   random = TRUE ,
-                                   control = list( maxiter = 10000 , stepadj=0.5 ) )
-    } else{
-      meta.subgroup <- update.meta(meta ,
-                                   byvar = Cancer_type ,
-                                   comb.random = TRUE ,
-                                   fixed = FALSE ,
-                                   random = TRUE ,
-                                   control = list( maxiter = 10000 , stepadj=0.5 ) )
+  
+  if(length(table( cancer$Cancer_type )[ table(cancer$Cancer_type) >= 3 ]) > 1){
+    
+    if( length( unique( cancer$Cancer_type[ !cancer$Cancer_type %in% remove ] ) ) > 1 ){
+      
+      m <- c( min( c( 0 , cancer$Coef ) , na.rm=TRUE) - .5 , ( max( c( 0 , abs(cancer$Coef) ) , na.rm=TRUE) ) + .5 )
+      meta <- res$meta_output
+      
+      if( length(remove) > 0 ){
+        
+        meta.subgroup <- update.meta(meta ,
+                                     byvar = Cancer_type ,
+                                     exclude = cancer$cancer_type %in% remove ,
+                                     fixed = FALSE ,
+                                     random = TRUE ,
+                                     control = list( maxiter = 10000 , stepadj=0.5 ) )
+      } else{
+        meta.subgroup <- update.meta(meta ,
+                                     byvar = Cancer_type ,
+                                     comb.random = TRUE ,
+                                     fixed = FALSE ,
+                                     random = TRUE ,
+                                     control = list( maxiter = 10000 , stepadj=0.5 ) )
+      }
+      
     }
-
+    
+  }else{
+    
+    stop("not enough studies to do cancer-specific sub-group meta-analysis")
+    
   }
 
   forest( meta.subgroup,
@@ -380,28 +388,36 @@ forestPlotPerTreatment <- function( coef, se, study, pval, n , cancer.type, trea
 
   remove <- names( table( treatment$Treatment )[ table(treatment$Treatment) %in% c(1,2) ] )
 
-  if( length( unique( treatment$Treatment[ !treatment$Treatment %in% remove ] ) ) > 1 ){
+  if(length(table( treatment$Treatment )[ table(treatment$Treatment) >= 3 ]) > 1){
+    
+    if( length( unique( treatment$Treatment[ !treatment$Treatment %in% remove ] ) ) > 1 ){
+      
+      m <- c( min( c( 0 , treatment$Coef ) , na.rm=TRUE) - .5 , ( max( c( 0 , abs(treatment$Coef) ) , na.rm=TRUE) ) + .5 )
+      meta <- res$meta_output
+      
+      if( length(remove) > 0 ){
+        
+        meta.subgroup <- update.meta(meta ,
+                                     byvar = Treatment ,
+                                     exclude = treatment$Treatment %in% remove ,
+                                     fixed = FALSE ,
+                                     random = TRUE ,
+                                     control = list( maxiter = 10000 , stepadj=0.5 ) )
+      } else{
+        meta.subgroup <- update.meta(meta ,
+                                     byvar = Treatment ,
+                                     comb.random = TRUE ,
+                                     fixed = FALSE ,
+                                     random = TRUE ,
+                                     control = list( maxiter = 10000 , stepadj=0.5 ) )
+      }
+      
+    } 
 
-    m <- c( min( c( 0 , treatment$Coef ) , na.rm=TRUE) - .5 , ( max( c( 0 , abs(treatment$Coef) ) , na.rm=TRUE) ) + .5 )
-    meta <- res$meta_output
-
-    if( length(remove) > 0 ){
-
-      meta.subgroup <- update.meta(meta ,
-                                   byvar = Treatment ,
-                                   exclude = treatment$Treatment %in% remove ,
-                                   fixed = FALSE ,
-                                   random = TRUE ,
-                                   control = list( maxiter = 10000 , stepadj=0.5 ) )
-    } else{
-      meta.subgroup <- update.meta(meta ,
-                                   byvar = Treatment ,
-                                   comb.random = TRUE ,
-                                   fixed = FALSE ,
-                                   random = TRUE ,
-                                   control = list( maxiter = 10000 , stepadj=0.5 ) )
-    }
-
+  }else{
+   
+    stop("not enough studies to do treatment-specific sub-group meta-analysis")
+    
   }
 
   forest( meta.subgroup,
