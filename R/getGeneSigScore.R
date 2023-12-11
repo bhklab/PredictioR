@@ -37,7 +37,7 @@ scale.fun <- function( x ){
 ## Get signature score: GSVA
 #####################################################################
 
-geneSigGSVA <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc, study){
+geneSigGSVA <- function(dat.icb, sig, sig.name, missing.perc, const.int = 0.001, n.cutoff, sig.perc, study){
 
      if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
          stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
@@ -57,7 +57,7 @@ geneSigGSVA <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc
     cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
 
     data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-    remove <- rem(data, missing.perc)
+    remove <- rem(data, missing.perc, const.int)
 
     if( length(remove) ){
       data <- data[-remove,]
@@ -82,57 +82,10 @@ geneSigGSVA <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc
 }
 
 #####################################################################
-## Get signature score: ssGSEA
-#####################################################################
-
-geneSigssGSEA <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc, study){
-
-  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
-    stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
-  }
-
-  if( class(dat.icb) == "MultiAssayExperiment"){
-    dat <- SummarizedExperiment(dat.icb)
-    dat_expr <- assay(dat)
-    dat_clin <- colData(dat)
-  }
-
-  if( class(dat.icb) == "SummarizedExperiment"){
-    dat_expr <- assay(dat.icb)
-    dat_clin <- colData(dat.icb)
-  }
-
-  cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
-
-  data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-  remove <- rem(data, missing.perc)
-
-  if( length(remove) ){
-    data <- data[-remove,]
-  }
-
-  if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > sig.perc & ncol(data) >= n.cutoff ){
-
-    #print( paste( signature_name , "|" , "ssGSEA" , sep=" " ) )
-
-    geneSig <- NULL
-    geneSig <- as.numeric(gsva( scale.fun( x=data ) , list(sig$gene_name) ,  method = "ssgsea", verbose=FALSE ) )
-    names( geneSig ) <- colnames(data)
-
-  }else{
-
-    geneSig <- NA
-    message("not enough samples and/or genes in a data")
-
-  }
-
-  return(geneSig)
-}
-#####################################################################
 ## Get signature score: (weighted) mean
 #####################################################################
 
-geneSigMean <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc, study){
+geneSigMean <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
@@ -154,7 +107,7 @@ geneSigMean <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc
     #message(paste(study))
 
     data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-    remove <- rem(data, missing.perc)
+    remove <- rem(data, missing.perc, const.int)
 
     if( length(remove) ){
       data <- data[-remove,]
@@ -193,7 +146,7 @@ geneSigMean <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc
 ## Get signature score: Median
 #####################################################################
 
-geneSigMedian <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc, study){
+geneSigMedian <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
@@ -215,7 +168,7 @@ geneSigMedian <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.pe
   #message(paste(study))
 
   data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-  remove <- rem(data, missing.perc)
+  remove <- rem(data, missing.perc, const.int)
 
   if( length(remove) ){
     data <- data[-remove,]
@@ -254,7 +207,7 @@ geneSigMedian <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.pe
 ## Get signature score: Summation
 #####################################################################
 
-geneSigSum <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc, study){
+geneSigSum <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
@@ -276,7 +229,7 @@ geneSigSum <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc,
   #message(paste(study))
 
   data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-  remove <- rem(data, missing.perc)
+  remove <- rem(data, missing.perc, const.int)
 
   if( length(remove) ){
     data <- data[-remove,]
@@ -314,7 +267,7 @@ geneSigSum <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc,
 ## Get signature score: PredictIO
 #####################################################################
 
-geneSigPredictIO <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc, study){
+geneSigPredictIO <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
@@ -336,7 +289,7 @@ geneSigPredictIO <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig
     #message(paste(study))
 
     data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-    remove <- rem(data, missing.perc)
+    remove <- rem(data, missing.perc, const.int)
 
     if( length(remove) ){
       data <- data[-remove,]
@@ -387,7 +340,7 @@ geneSigPredictIO <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig
 ## Get signature score: COX_IS
 #####################################################################
 
-geneSigCOX_IS <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc, study){
+geneSigCOX_IS <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
@@ -409,7 +362,7 @@ geneSigCOX_IS <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.pe
     #message(paste(study))
 
     data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-    remove <- rem(data, missing.perc)
+    remove <- rem(data, missing.perc, const.int)
 
     if( length(remove) ){
       data <- data[-remove,]
@@ -516,7 +469,7 @@ IPS.fun <- function( expr, sig ){
   AZ
 }
 
-geneSigIPS <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc, study){
+geneSigIPS <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
 
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
@@ -539,7 +492,7 @@ geneSigIPS <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc,
     #message(paste(study))
 
     data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-    remove <- rem(data, missing.perc)
+    remove <- rem(data, missing.perc, const.int)
 
     if( length(remove) ){
       data <- data[-remove,]
@@ -568,7 +521,7 @@ geneSigIPS <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc,
 ## Get signature score: IPRES
 #####################################################################
 
-geneSigIPRES <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.perc, study){
+geneSigIPRES <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
@@ -599,7 +552,7 @@ geneSigIPRES <- function(dat.icb, sig, sig.name, missing.perc, n.cutoff, sig.per
     #message(paste(study))
 
     data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-    remove <- rem(data, missing.perc)
+    remove <- rem(data, missing.perc, const.int)
 
     if( length(remove) ){
       data <- data[-remove,]

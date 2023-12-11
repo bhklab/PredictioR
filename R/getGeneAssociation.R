@@ -9,7 +9,7 @@ source("C:/PredictioR/R/getSummarizedExperiment.R")
 ##########################################################################
 ##########################################################################
 
-geneSurvCont <- function(dat.icb, time.censor, missing.perc, n.cutoff, feature, study, surv.outcome){
+geneSurvCont <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n.cutoff, feature, study, surv.outcome){
 
       if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
 
@@ -38,7 +38,7 @@ geneSurvCont <- function(dat.icb, time.censor, missing.perc, n.cutoff, feature, 
         message(paste(study))
 
         data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-        remove <- rem(data, missing.perc)
+        remove <- rem(data, missing.perc, const.int)
 
         if( length(remove) ){
           data <- data[-remove,]
@@ -151,7 +151,7 @@ geneSurvCont <- function(dat.icb, time.censor, missing.perc, n.cutoff, feature, 
 ##########################################################################
 ##########################################################################
 
-geneSurvDicho <- function(dat.icb, time.censor, missing.perc, n.cutoff, feature, study, surv.outcome, n0.cutoff, n1.cutoff, method = "median"){
+geneSurvDicho <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n.cutoff, feature, study, surv.outcome, n0.cutoff, n1.cutoff, method = "median"){
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
 
@@ -179,7 +179,7 @@ geneSurvDicho <- function(dat.icb, time.censor, missing.perc, n.cutoff, feature,
   message(paste(study, cancer_type, sep="/"))
 
   data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-  remove <- rem(data, missing.perc)
+  remove <- rem(data, missing.perc, const.int)
 
   if( length(remove) ){
     data <- data[-remove,]
@@ -297,7 +297,7 @@ geneSurvDicho <- function(dat.icb, time.censor, missing.perc, n.cutoff, feature,
 #################################################################
 #################################################################
 
-geneLogReg <- function(dat.icb, missing.perc, n.cutoff, feature, study){
+geneLogReg <- function(dat.icb, missing.perc, const.int=0.001, n.cutoff, feature, study){
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
 
@@ -326,7 +326,7 @@ geneLogReg <- function(dat.icb, missing.perc, n.cutoff, feature, study){
     message(paste(study, cancer_type, sep="/"))
 
     data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type & dat_clin$rna %in% c( "fpkm" , "tpm" )]
-    remove <- rem(data, missing.perc)
+    remove <- rem(data, missing.perc, const.int)
 
     if( length(remove) ){
       data <- data[-remove,]

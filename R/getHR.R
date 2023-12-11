@@ -9,13 +9,13 @@ library(data.table)
 ## Remove genes if with expression zero in 50% (or missing.perc) of sample
 ############################################################################
 
-rem <- function(x, missing.perc){
+rem <- function(x, missing.perc, const.int){
 
   x <- as.matrix(x)
   x <- t(apply(x,1,as.numeric))
 
   # data is log2(TPM+0.001)
-  r <- as.numeric(apply(x, 1, function(i) sum(round(i, 6) == round(log2(0.001), 6)) ))
+  r <- as.numeric(apply(x, 1, function(i) sum(round(i, 6) == round(log2(const.int), 6)) ))
   remove <- which(r > dim(x)[2]* missing.perc)
   return(remove)
 
