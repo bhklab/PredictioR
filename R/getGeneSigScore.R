@@ -117,7 +117,7 @@ geneSigssGSEA <- function(dat.icb, sig, sig.name, missing.perc, const.int = 0.00
     #print( paste( signature_name , "|" , "ssGSEA" , sep=" " ) )
 
     geneSig <- NULL
-    geneSig <- as.numeric(gsva( scale.fun( x=data ) , list(sig$gene_name) , method = "ssGSEA", verbose=FALSE ) )
+    geneSig <- as.numeric(gsva( scale.fun( x=data ) , list(sig$gene_name) , method = "ssgsea", verbose=FALSE ) )
     names( geneSig ) <- colnames(data)
 
   }else{
