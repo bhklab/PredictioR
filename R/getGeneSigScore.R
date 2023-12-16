@@ -608,14 +608,14 @@ geneSigIPRES <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001,
     }
 
       #print( paste( signature_name , "|" , "Specific" , sep=" " ) )
-
+      scale.data <- scale.fun( data )
       geneSig <- NULL
 
       for(k in 1:length(sig)){
 
-        if( ifelse( is.null( nrow( data[ rownames(data) %in% sig[[k]] , ]) ) , 1 , nrow( data[ rownames(data) %in% sig[[k]] , ] ) ) / length( sig[[k]] ) >= sig.perc & ncol(scale_data) >= n.cutoff ){
+        if( ifelse( is.null( nrow( scale.data[ rownames(scale.data) %in% sig[[k]] , ]) ) , 1 , nrow( scale.data[ rownames(scale.data) %in% sig[[k]] , ] ) ) / length( sig[[k]] ) >= sig.perc & ncol(scale.data) >= n.cutoff ){
 
-          geneSig[[k]] <- gsva(data , list(sig[[k]]) , method = "ssgsea",verbose=FALSE)
+          geneSig[[k]] <- gsva(scale.data , list(sig[[k]]) , method = "ssgsea", verbose=FALSE)
 
          }else{
 
@@ -636,7 +636,6 @@ geneSigIPRES <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001,
       if( sum(!is.na(geneSig)) != 0){
 
         geneSig <- do.call(rbind, geneSig)
-        geneSig <- scale.fun( x=geneSig )
 
         ## should be mean or is there any other way to integrate signatures? Check the paper.
         geneSig <- apply( geneSig , 2 , mean , na.rm=TRUE )
