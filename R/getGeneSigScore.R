@@ -587,14 +587,13 @@ geneSigIPRES <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001,
     dat_clin <- colData(dat.icb)
   }
 
-
-    IPRES <- sig
+    IPRES.dat <- sig
 
     sig <- list()
-    for( j in 1:length(IPRES)){
-      sig[[j]] <-  IPRES[[j]]$gene_name
+    for( j in 1:length(IPRES.dat)){
+      sig[[j]] <-  IPRES.dat[[j]]$gene_name
     }
-    names(sig) <- names(IPRES)
+    names(sig) <- names(IPRES.dat)
 
     cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
 
