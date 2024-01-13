@@ -239,7 +239,9 @@ geneSigLogReg <- function(dat.icb, geneSig, n.cutoff, study, sig.name){
 
     message(paste(study, cancer_type, sep="/"))
 
-    if( !( cancer_type %in% "Lymph_node" ) ){
+    dat_clin <- dat_clin[!is.na(dat_clin$response), ]
+
+    if( !( cancer_type %in% "Lymph_node" ) & length(dat_clin$response) >= n.cutoff ){
 
         x <- ifelse( dat_clin$response[ dat_clin$cancer_type %in% cancer_type ] %in% "R" , 0 ,
                      ifelse( dat_clin$response[ dat_clin$cancer_type %in% cancer_type ] %in% "NR" , 1 , NA ) )
