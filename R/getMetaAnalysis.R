@@ -71,7 +71,7 @@ meta.fun <- function(coef, se, study, pval, n, cancer.type, treatment, cancer.sp
   data <- data[ order( data$Coef ) , ]
 
   ## at least 3 studies needed to do the random effect meta-analyses
-  if(nrow(data) < 3){ stop("not enough studies to do meta-analysis") }else{
+  if(nrow(data) >= 3){
 
     if( cancer.spec == TRUE ){
 
@@ -103,6 +103,18 @@ meta.fun <- function(coef, se, study, pval, n, cancer.type, treatment, cancer.sp
                            Pval = meta$pval.random ,
                            I2 = meta$I2 ,
                            Q_Pval = meta$pval.Q )
+  }else{
+
+    print("not enough studies to do meta-analysis")
+    meta <- NA
+    meta_res <- data.frame(Gene = feature,
+                           Coef = NA,
+                           SE =  NA,
+                           CI_lower = NA,
+                           CI_upper = NA,
+                           Pval = NA,
+                           I2= NA,
+                           Q_Pval = NA)
          }
 
   return(list(input_data = data,
@@ -130,7 +142,7 @@ metaPerCan.fun <- function(coef, se, study, pval, n, cancer.type, treatment, can
   data <- data[ order( data$Coef ) , ]
 
   ## at least 3 studies needed to do the random effect meta-analyses
-  if(nrow(data) < 3){ stop("not enough studies to do cancer-specific meta-analysis") }else{
+  if(nrow(data) >= 3){
 
     cancer <- cancer.mod( data )
     data <- cancer[ order( cancer$Coef ) , ]
@@ -171,9 +183,14 @@ metaPerCan.fun <- function(coef, se, study, pval, n, cancer.type, treatment, can
 
     }else{
 
-      stop("not enough studies to do cancer-specific meta-analysis")
+      print("not enough studies to do cancer-specific meta-analysis")
 
     }
+
+  }else{
+
+    print("not enough studies to do cancer-specific meta-analysis")
+    res <- NA
 
   }
 
@@ -201,7 +218,7 @@ metaPerTreatment.fun <- function(coef, se, study, pval, n, cancer.type, treatmen
   data <- data[ order( data$Coef ) , ]
 
   ## at least 3 studies needed to do the random effect meta-analyses
-  if(nrow(data) < 3){ stop("not enough studies to do cancer-specific meta-analysis") }else{
+  if(nrow(data) >= 3){
 
     treatment <- treatment.mod( data )
     data <- treatment[ order( treatment$Coef ) , ]
@@ -242,9 +259,14 @@ metaPerTreatment.fun <- function(coef, se, study, pval, n, cancer.type, treatmen
 
     }else{
 
-      stop("not enough studies to do cancer-specific meta-analysis")
+      print("not enough studies to do cancer-specific meta-analysis")
 
     }
+
+  }else{
+
+    print("not enough studies to do cancer-specific meta-analysis")
+    res <- NA
 
   }
 
@@ -260,14 +282,14 @@ metaPerTreatment.fun <- function(coef, se, study, pval, n, cancer.type, treatmen
 ##############################################################
 
 forestPlot <- function(coef, se, study, pval, n , cancer.type, treatment, xlab , label, feature){
-  
+
   study <- paste( study , ", n = " , n , sep= "" )
   res <- meta.fun(coef, se, study, pval, n, cancer.type, treatment, cancer.spec = FALSE, treatment.spec = FALSE, feature)
   data <- res$input_data
   meta <- res$meta_output
 
   m <- c( min( c( 0 , data$Coef ) , na.rm=TRUE) - .5 , ( max( c( 0 , abs(data$Coef) ) , na.rm=TRUE) ) + .5 )
-  
+
   forest( meta ,
           leftcols = c("studlab", "effect.ci" , "Pval" ),
           leftlabs= c( "Study" , paste(label, "[95%CI]", sep = " ") , "P-value" ) ,
@@ -312,16 +334,16 @@ forestPlotPerCan <- function( coef, se, study, pval, n, cancer.type, treatment, 
   cancer <- cancer.mod(res$input_data)
 
   remove <- names( table( cancer$Cancer_type)[ table(cancer$Cancer_type) %in% c(1,2) ] )
-  
+
   if(length(table( cancer$Cancer_type )[ table(cancer$Cancer_type) >= 3 ]) > 1){
-    
+
     if( length( unique( cancer$Cancer_type[ !cancer$Cancer_type %in% remove ] ) ) > 1 ){
-      
+
       m <- c( min( c( 0 , cancer$Coef ) , na.rm=TRUE) - .5 , ( max( c( 0 , abs(cancer$Coef) ) , na.rm=TRUE) ) + .5 )
       meta <- res$meta_output
-      
+
       if( length(remove) > 0 ){
-        
+
         meta.subgroup <- update.meta(meta ,
                                      byvar = Cancer_type ,
                                      exclude = cancer$cancer_type %in% remove ,
@@ -336,13 +358,13 @@ forestPlotPerCan <- function( coef, se, study, pval, n, cancer.type, treatment, 
                                      random = TRUE ,
                                      control = list( maxiter = 10000 , stepadj=0.5 ) )
       }
-      
+
     }
-    
+
   }else{
-    
+
     stop("not enough studies to do cancer-specific sub-group meta-analysis")
-    
+
   }
 
   forest( meta.subgroup,
@@ -389,14 +411,14 @@ forestPlotPerTreatment <- function( coef, se, study, pval, n , cancer.type, trea
   remove <- names( table( treatment$Treatment )[ table(treatment$Treatment) %in% c(1,2) ] )
 
   if(length(table( treatment$Treatment )[ table(treatment$Treatment) >= 3 ]) > 1){
-    
+
     if( length( unique( treatment$Treatment[ !treatment$Treatment %in% remove ] ) ) > 1 ){
-      
+
       m <- c( min( c( 0 , treatment$Coef ) , na.rm=TRUE) - .5 , ( max( c( 0 , abs(treatment$Coef) ) , na.rm=TRUE) ) + .5 )
       meta <- res$meta_output
-      
+
       if( length(remove) > 0 ){
-        
+
         meta.subgroup <- update.meta(meta ,
                                      byvar = Treatment ,
                                      exclude = treatment$Treatment %in% remove ,
@@ -411,13 +433,13 @@ forestPlotPerTreatment <- function( coef, se, study, pval, n , cancer.type, trea
                                      random = TRUE ,
                                      control = list( maxiter = 10000 , stepadj=0.5 ) )
       }
-      
-    } 
+
+    }
 
   }else{
-   
+
     stop("not enough studies to do treatment-specific sub-group meta-analysis")
-    
+
   }
 
   forest( meta.subgroup,
@@ -450,7 +472,8 @@ forestPlotPerTreatment <- function( coef, se, study, pval, n , cancer.type, trea
           col.by = "#1565c0",
           addrow.subgroups=TRUE )
 
-}
+
+ }
 
 
 
