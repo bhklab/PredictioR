@@ -2,20 +2,6 @@
 
 library(GSVA)
 
-########################################################
-## create NULL function
-########################################################
-
-#if.NULL <- function( x , colnames , study ){
-
-#  if( is.null( x ) ){
-
-#    x = as.data.frame( cbind( study , matrix( NA , nrow= length(study) , ncol=length( colnames )-1 ) ) )
-
-#  }
-#  x
-# }
-
 ##########################################################
 ##########################################################
 # scale data
@@ -68,6 +54,8 @@ geneSigGSVA <- function(dat.icb, sig, sig.name, missing.perc, const.int = 0.001,
       #print( paste( signature_name , "|" , "GSVA" , sep=" " ) )
 
       geneSig <- NULL
+      #gsvaPar <- gsvaParam(scale.fun( x=data ) , list(sig$gene_name))
+      #geneSig <- gsva(gsvaPar, verbose=FALSE)
       geneSig <- as.numeric(gsva( scale.fun( x=data ) , list(sig$gene_name) , verbose=FALSE ) )
       names( geneSig ) <- colnames(data)
 
@@ -117,7 +105,8 @@ geneSigssGSEA <- function(dat.icb, sig, sig.name, missing.perc, const.int = 0.00
     #print( paste( signature_name , "|" , "ssGSEA" , sep=" " ) )
 
     geneSig <- NULL
-    geneSig <- as.numeric(gsva( scale.fun( x=data ) , list(sig$gene_name) , method = "ssgsea", verbose=FALSE ) )
+    geneSig <- as.numeric(gsva( scale.fun( x=data ) , list(sig$gene_name) ,
+                                method = "ssgsea", kcdf = "Gaussian", verbose=FALSE ) )
     names( geneSig ) <- colnames(data)
 
   }else{
@@ -177,7 +166,7 @@ geneSigMean <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, 
       }else{ scaled_dat }
 
       geneSig <- NULL
-      geneSig <- apply( scaled_dat , 2 , function(x) ( sum( ( x * s$weight ) ) /  nrow( s ) ) )
+      geneSig <- apply( scaled_dat , 2 , function(x) ( sum( x * s$weight, na.rm=TRUE  )  /  nrow( s ) ) )
       names( geneSig ) <- colnames(data)
 
     }else{
@@ -238,7 +227,7 @@ geneSigMedian <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001
     }else{ scaled_dat }
 
     geneSig <- NULL
-    geneSig <- apply( scaled_dat , 2 , function(x) ( median(x) ) )
+    geneSig <- apply( scaled_dat , 2 , function(x) ( median(x, na.rm=TRUE) ) )
     names( geneSig ) <- colnames(data)
 
   }else{
@@ -253,7 +242,7 @@ geneSigMedian <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001
 
 
 #####################################################################
-## Get signature score: Summation
+## Get signature score: (weighted) summation
 #####################################################################
 
 geneSigSum <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
@@ -299,7 +288,62 @@ geneSigSum <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n
     }else{ scaled_dat }
 
     geneSig <- NULL
-    geneSig <- apply( scaled_dat , 2 , function(x) ( sum(x) ) )
+    geneSig <- apply( scaled_dat , 2 , function(x) ( sum( x * s$weight , na.rm=TRUE ) ) )
+    names( geneSig ) <- colnames(data)
+
+  }else{
+
+    geneSig <- NA
+    message("not enough samples and/or genes in a data")
+
+  }
+
+  return(geneSig)
+}
+
+#####################################################################
+## Get signature score: Geometric mean
+#####################################################################
+
+geneSigGMean <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
+
+  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+    stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+  }
+
+  if( class(dat.icb) == "MultiAssayExperiment"){
+    dat <- SummarizedExperiment(dat.icb)
+    dat_expr <- assay(dat)
+    dat_clin <- colData(dat)
+  }
+
+  if( class(dat.icb) == "SummarizedExperiment"){
+    dat_expr <- assay(dat.icb)
+    dat_clin <- colData(dat.icb)
+  }
+
+  cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
+
+  #message(paste(study))
+
+  data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type ]
+  remove <- rem(data, missing.perc, const.int)
+
+  if( length(remove) ){
+    data <- data[-remove,]
+  }
+
+  if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > sig.perc & ncol(data) >= n.cutoff ){
+
+    #print( paste( signature_name , "|" , "Weighted Mean" , sep=" " ) )
+
+    gene <- intersect( rownames(data) , sig$gene_name)
+    s <- sig[ sig$gene_name %in% gene, ]
+
+    data <- data[ gene , ]
+
+    geneSig <- NULL
+    geneSig <- apply( data , 2 , function(x) ( exp(mean(x, na.rm=TRUE )) ) )
     names( geneSig ) <- colnames(data)
 
   }else{
@@ -422,8 +466,8 @@ geneSigCOX_IS <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001
       #print( paste( signature_name , "|" , "Specific" , sep=" " ) )
 
       geneSig <- NULL
-      pos <- apply( data[ rownames(data) %in% sig[ sig$weight %in% 1 , ]$gene_name , ] , 2 , function(x){ ( sum( x ) /  length( x ) ) } )
-      neg <- apply( data[ rownames(data) %in% sig[ sig$weight %in% -1 , ]$gene_name , ] , 2 , function(x){ ( sum( x ) /  length( x ) ) } )
+      pos <- apply( data[ rownames(data) %in% sig[ sig$weight %in% 1 , ]$gene_name , ] , 2 , function(x){ ( sum( x) /  length( x) ) } )
+      neg <- apply( data[ rownames(data) %in% sig[ sig$weight %in% -1 , ]$gene_name , ] , 2 , function(x){ ( sum( x) /  length( x) ) } )
 
       geneSig <- as.numeric( scale( pos / neg ) )
       names(geneSig) <- colnames(data)
@@ -490,8 +534,8 @@ IPS.fun <- function( expr, sig ){
 
   for (i in 1:length(sample_names)) {
     GE <- expr[[i]]
-    mGE <- mean(GE, na.rm=T)
-    sGE <- sd(GE, na.rm=T)
+    mGE <- mean(GE, na.rm=TRUE)
+    sGE <- sd(GE, na.rm=TRUE)
     Z1 <- (expr[as.vector(sig$gene_name),i] - mGE)/sGE
     W1 <- sig$weight
     coef <- NULL
@@ -501,16 +545,16 @@ IPS.fun <- function( expr, sig ){
     for (gen in unique_ips_genes) {
 
       MIG[k] <- mean(Z1[which (as.vector(sig$name)==gen)], na.rm=TRUE)
-      coef[k] <- mean(W1[which (as.vector(sig$name)==gen)], na.rm=T)
+      coef[k] <- mean(W1[which (as.vector(sig$name)==gen)], na.rm=TRUE)
       k <- k+1
 
     }
 
     WG <- MIG * coef
-    MHC[i] <- mean(WG[1:10], na.rm=T)
-    CP[i] <- mean(WG[11:20], na.rm=T)
-    EC[i] <- mean(WG[21:24], na.rm=T)
-    SC[i] <- mean(WG[25:26], na.rm=T)
+    MHC[i] <- mean(WG[1:10], na.rm=TRUE)
+    CP[i] <- mean(WG[11:20], na.rm=TRUE)
+    EC[i] <- mean(WG[21:24], na.rm=TRUE)
+    SC[i] <- mean(WG[25:26], na.rm=TRUE)
     AZ[i] <- sum(MHC[i], CP[i], EC[i], SC[i])
     IPS[i] <- ipsmap(AZ[i])
   }
