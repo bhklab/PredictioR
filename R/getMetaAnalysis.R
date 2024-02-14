@@ -1,6 +1,5 @@
 ## load libraries
 
-library(qs)
 library(meta)
 library(metafor)
 library(forestplot)
@@ -184,6 +183,7 @@ metaPerCan.fun <- function(coef, se, study, pval, n, cancer.type, treatment, can
     }else{
 
       print("not enough studies to do cancer-specific meta-analysis")
+      res <- NA
 
     }
 
@@ -260,6 +260,7 @@ metaPerTreatment.fun <- function(coef, se, study, pval, n, cancer.type, treatmen
     }else{
 
       print("not enough studies to do cancer-specific meta-analysis")
+      res <- NA
 
     }
 
@@ -344,14 +345,14 @@ forestPlotPerCan <- function( coef, se, study, pval, n, cancer.type, treatment, 
 
       if( length(remove) > 0 ){
 
-        meta.subgroup <- update.meta(meta ,
+        meta.subgroup <- update(meta ,
                                      byvar = Cancer_type ,
                                      exclude = cancer$cancer_type %in% remove ,
                                      fixed = FALSE ,
                                      random = TRUE ,
                                      control = list( maxiter = 10000 , stepadj=0.5 ) )
       } else{
-        meta.subgroup <- update.meta(meta ,
+        meta.subgroup <- update(meta ,
                                      byvar = Cancer_type ,
                                      comb.random = TRUE ,
                                      fixed = FALSE ,
@@ -419,14 +420,14 @@ forestPlotPerTreatment <- function( coef, se, study, pval, n , cancer.type, trea
 
       if( length(remove) > 0 ){
 
-        meta.subgroup <- update.meta(meta ,
+        meta.subgroup <- update(meta ,
                                      byvar = Treatment ,
                                      exclude = treatment$Treatment %in% remove ,
                                      fixed = FALSE ,
                                      random = TRUE ,
                                      control = list( maxiter = 10000 , stepadj=0.5 ) )
       } else{
-        meta.subgroup <- update.meta(meta ,
+        meta.subgroup <- update(meta ,
                                      byvar = Treatment ,
                                      comb.random = TRUE ,
                                      fixed = FALSE ,

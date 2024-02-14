@@ -25,7 +25,7 @@ scale.fun <- function( x ){
 
 geneSigGSVA <- function(dat.icb, sig, sig.name, missing.perc, const.int = 0.001, n.cutoff, sig.perc, study){
 
-     if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+    if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
          stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
        }
 
