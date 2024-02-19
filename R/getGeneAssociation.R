@@ -75,7 +75,7 @@ geneSurvCont <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n.
 
             res <- do.call(rbind, res)
             rownames(res) <- NULL
-            res$FDR <- p.adjust(res$Pval, method = "BH")
+            # res$FDR <- p.adjust(res$Pval, method = "BH")
 
           }else{  res <- data.frame( Outcome = "OS",
                                      Gene = NA,
@@ -84,8 +84,7 @@ geneSurvCont <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n.
                                      SE = NA,
                                      N = NA,
                                      Pval = NA,
-                                     Treatment = NA,
-                                     FDR =NA)
+                                     Treatment = NA)
 
           message("none of the genes were found in the study and/or lack of number of samples with known immunotherapy survival outcome")
 
@@ -123,7 +122,7 @@ geneSurvCont <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n.
 
             res <- do.call(rbind, res)
             rownames(res) <- NULL
-            res$FDR <- p.adjust(res$Pval, method = "BH")
+           # res$FDR <- p.adjust(res$Pval, method = "BH")
 
           }else{  res <- data.frame( Outcome = "PFS",
                                      Gene = NA,
@@ -132,8 +131,7 @@ geneSurvCont <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n.
                                      SE = NA,
                                      N = NA,
                                      Pval = NA,
-                                     Treatment = NA,
-                                     FDR = NA)
+                                     Treatment = NA)
 
           message("none of the genes were found in the study and/or lack of number of samples with known immunotherapy survival outcome")
 
@@ -219,7 +217,7 @@ geneSurvDicho <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n
 
        res <- do.call(rbind, res)
        rownames(res) <- NULL
-       res$FDR <- p.adjust(res$Pval, method = "BH")
+     #  res$FDR <- p.adjust(res$Pval, method = "BH")
 
      }else{  res <- data.frame( Outcome = "OS",
                                Gene = NA,
@@ -228,8 +226,7 @@ geneSurvDicho <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n
                                SE = NA,
                                N = NA,
                                Pval = NA,
-                               Treatment = NA,
-                               FDR =NA)
+                               Treatment = NA)
 
     message("none of the genes were found in the study and/or lack of number of samples with known immunotherapy survival outcome")
 
@@ -270,7 +267,7 @@ geneSurvDicho <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n
 
       res <- do.call(rbind, res)
       rownames(res) <- NULL
-      res$FDR <- p.adjust(res$Pval, method = "BH")
+     # res$FDR <- p.adjust(res$Pval, method = "BH")
 
     }else{  res <- data.frame( Outcome = "PFS",
                                Gene = NA,
@@ -279,8 +276,7 @@ geneSurvDicho <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n
                                SE = NA,
                                N = NA,
                                Pval = NA,
-                               Treatment = NA,
-                               FDR = NA)
+                               Treatment = NA)
 
     message("none of the genes were found in the study and/or lack of number of samples with known immunotherapy survival outcome")
 
@@ -360,7 +356,7 @@ geneLogReg <- function(dat.icb, missing.perc, const.int=0.001, n.cutoff, feature
 
       res <- do.call(rbind, res)
       rownames(res) <- NULL
-      res$FDR <- p.adjust(res$Pval, method = "BH")
+    #  res$FDR <- p.adjust(res$Pval, method = "BH")
 
     }else{  res <- data.frame( Outcome = "R vs NR",
                                Gene = NA,
@@ -369,8 +365,7 @@ geneLogReg <- function(dat.icb, missing.perc, const.int=0.001, n.cutoff, feature
                                SE = NA,
                                N = NA,
                                Pval = NA,
-                               Treatment = NA,
-                               FDR = NA)
+                               Treatment = NA)
 
     message("none of the genes were found in the study and/or lack of number of samples with known immunotherapy survival outcome")
 
