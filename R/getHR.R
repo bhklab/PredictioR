@@ -115,6 +115,54 @@ survDicho <- function( surv , time , time.censor , var , n0.cutoff, n1.cutoff, m
 
  }
 
+
+########################################################################################
+## Cox model: OS/PFS analyses and sex (Female vs Male)
+########################################################################################
+# n0.cutoff: minimum number of samples less than cutoff
+# n1.cutoff: minimum number of samples greater than cutoff
+
+survDichoSex <- function( surv , time , time.censor , var , n0.cutoff, n1.cutoff){
+
+  data <- data.frame( surv=surv , time=time , variable=var )
+  data$time <- as.numeric(as.character(data$time))
+  data$variable <- ifelse( data$variable == "F" , 1 , 0 )
+
+  for(i in 1:nrow(data)){
+
+    if( !is.na(as.numeric(as.character(data[ i , "time" ]))) && as.numeric(as.character(data[ i , "time" ])) > time.censor ){
+      data[ i , "time" ] = time.censor
+      data[ i , "surv" ] = 0
+
+    }
+  }
+
+  if( length( data$variable[ data$variable == 1 ] )>= n1.cutoff & length( data$variable[ data$variable == 0 ] ) >= n0.cutoff ){
+
+    cox <- coxph( formula= Surv( time , surv ) ~ variable , data=data )
+    hr <- summary(cox)$coefficients[, "coef"]
+    se <- summary(cox)$coefficients[, "se(coef)"]
+    n <- round(summary(cox)$n)
+    low <- summary(cox)$conf.int[, "lower .95"]
+    up <- summary(cox)$conf.int[, "upper .95"]
+    pval <- summary(cox)$coefficients[, "Pr(>|z|)"]
+
+  } else{
+
+    hr <- NA
+    se = NA
+    low <- NA
+    up <- NA
+    pval <- NA
+
+  }
+
+  res <- c( hr , se , n, low , up , pval )
+  names(res) <- c( "HR" , "SE" , "N", "Low" , "Up" , "Pval")
+  return(res)
+
+}
+
 ##################################################################################################
 ## Kaplan-Meier (KM) plot: OS/PFS analyses and binary expression or signature score (low vs high)
 ##################################################################################################
