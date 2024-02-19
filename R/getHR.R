@@ -28,6 +28,7 @@ rem <- function(x, missing.perc, const.int){
 survCont <- function( surv , time , time.censor , var){
 
   data <- data.frame( surv=surv , time=time , variable=var )
+  data <- data[!is.na(data$variable), ]
 	data$time <- as.numeric(as.character(data$time))
 	data$variable <- as.numeric( as.character(data$variable) )
 
@@ -66,6 +67,7 @@ survCont <- function( surv , time , time.censor , var){
 survDicho <- function( surv , time , time.censor , var , n0.cutoff, n1.cutoff, method ="median"){
 
   data <- data.frame( surv=surv , time=time , variable=var )
+  data <- data[!is.na(data$variable), ]
   data$time <- as.numeric(as.character(data$time))
 
   if( method == "median"){
@@ -125,6 +127,7 @@ survDicho <- function( surv , time , time.censor , var , n0.cutoff, n1.cutoff, m
 survDichoSex <- function( surv , time , time.censor , var , n0.cutoff, n1.cutoff){
 
   data <- data.frame( surv=surv , time=time , variable=var )
+  data <- data[!is.na(data$variable), ]
   data$time <- as.numeric(as.character(data$time))
   data$variable <- ifelse( data$variable == "F" , 1 , 0 )
 
@@ -172,6 +175,7 @@ survDichoSex <- function( surv , time , time.censor , var , n0.cutoff, n1.cutoff
 KMPlot <- function( surv , time , time.censor , var , title , xlab, ylab, method = "median", n0.cutoff, n1.cutoff){
 
   data <- data.frame( surv=surv , time=time , variable=var )
+  data <- data[!is.na(data$variable), ]
   data$time <- as.numeric(as.character(data$time))
 
   if( method == "median"){
