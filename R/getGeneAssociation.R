@@ -335,8 +335,8 @@ geneLogReg <- function(dat.icb, missing.perc, const.int=0.001, n.cutoff, feature
     data <- as.matrix( data[ rownames(data) %in% feature , ] )
 
     if( nrow(data) & length(dat_clin$response) >= n.cutoff &
-        sum(dat_clin$response == "NR", na.omit= TRUE) >= n1.cutoff &
-        sum(dat_clin$response == "R", na.omit= TRUE) >= n0.cutoff ){
+        sum(dat_clin$response == "NR", na.rm = TRUE) >= n1.cutoff &
+        sum(dat_clin$response == "R", na.rm = TRUE) >= n0.cutoff ){
 
       res <- lapply(1:nrow(data), function(k){
 

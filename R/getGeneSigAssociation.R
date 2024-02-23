@@ -247,8 +247,8 @@ geneSigLogReg <- function(dat.icb, geneSig, n.cutoff, study, sig.name, n0.cutoff
     geneSig <- geneSig[names(geneSig) %in% rownames(dat_clin)] #dat_clin$patientid
 
     if( length(dat_clin$response) >= n.cutoff &
-        sum(dat_clin$response == "NR", na.omit= TRUE) >= n1.cutoff &
-        sum(dat_clin$response == "R", na.omit= TRUE) >= n0.cutoff ){
+        sum(dat_clin$response == "NR", na.rm = TRUE) >= n1.cutoff &
+        sum(dat_clin$response == "R", na.rm = TRUE) >= n0.cutoff ){
 
         x <- ifelse( dat_clin$response[ dat_clin$cancer_type %in% cancer_type ] %in% "R" , 0 ,
                      ifelse( dat_clin$response[ dat_clin$cancer_type %in% cancer_type ] %in% "NR" , 1 , NA ) )
