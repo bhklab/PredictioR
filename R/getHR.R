@@ -170,7 +170,7 @@ KMPlot <- function( surv , time , time.censor , var , title , xlab, ylab, method
                    sub.title = "",
                    leg.text = c( "Low" , "High"),
                    leg.pos = "topright",
-                   .col = c( "#d73027","#4575b4"),
+                   .col = c( "#b2182b","#2166ac"),
                    show.n.risk = TRUE,
                    n.risk.step = 7,
                    n.risk.cex = 0.70,
