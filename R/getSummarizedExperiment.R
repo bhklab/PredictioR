@@ -7,7 +7,7 @@ library(data.table)
 ## Extract expression, clinical, and annotation from MAE class
 #################################################################
 
-SummarizedExperiment <- function(dat.icb){
+createSE <- function(dat.icb){
 
   ## slot names for expression data
   dat_type <- c("expr", "expr_gene_tpm")

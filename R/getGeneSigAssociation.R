@@ -14,7 +14,7 @@ geneSigSurvCont <- function(dat.icb, geneSig, time.censor, n.cutoff, study, surv
             }
 
         if( class(dat.icb) == "MultiAssayExperiment"){
-          dat <- SummarizedExperiment(dat.icb)
+          dat <- createSE(dat.icb)
           dat_expr <- assay(dat)
           dat_clin <- colData(dat)
           }
@@ -119,7 +119,7 @@ geneSigSurvDicho <- function(dat.icb, geneSig, time.censor, n.cutoff, n0.cutoff,
   }
 
   if( class(dat.icb) == "MultiAssayExperiment"){
-    dat <- SummarizedExperiment(dat.icb)
+    dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
   }
@@ -225,7 +225,7 @@ geneSigLogReg <- function(dat.icb, geneSig, n.cutoff, study, sig.name){
          }
 
        if( class(dat.icb) == "MultiAssayExperiment"){
-         dat <- SummarizedExperiment(dat.icb)
+         dat <- createSE(dat.icb)
          dat_expr <- assay(dat)
          dat_clin <- colData(dat)
         }

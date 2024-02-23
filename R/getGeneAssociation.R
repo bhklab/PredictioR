@@ -20,7 +20,7 @@ geneSurvCont <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n.
       if( class(dat.icb) == "MultiAssayExperiment"){
 
 
-        dat <- SummarizedExperiment(dat.icb)
+        dat <- createSE(dat.icb)
         dat_expr <- assay(dat)
         dat_clin <- colData(dat)
 
@@ -159,7 +159,7 @@ geneSurvDicho <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n
 
   if( class(dat.icb) == "MultiAssayExperiment"){
 
-    dat <- SummarizedExperiment(dat.icb)
+    dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
 
@@ -304,7 +304,7 @@ geneLogReg <- function(dat.icb, missing.perc, const.int=0.001, n.cutoff, feature
   if( class(dat.icb) == "MultiAssayExperiment"){
 
 
-    dat <- SummarizedExperiment(dat.icb)
+    dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
 

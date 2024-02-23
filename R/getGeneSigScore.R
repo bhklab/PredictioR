@@ -30,7 +30,7 @@ geneSigGSVA <- function(dat.icb, sig, sig.name, missing.perc, const.int = 0.001,
        }
 
     if( class(dat.icb) == "MultiAssayExperiment"){
-        dat <- SummarizedExperiment(dat.icb)
+        dat <- createSE(dat.icb)
         dat_expr <- assay(dat)
         dat_clin <- colData(dat)
       }
@@ -81,7 +81,7 @@ geneSigssGSEA <- function(dat.icb, sig, sig.name, missing.perc, const.int = 0.00
   }
 
   if( class(dat.icb) == "MultiAssayExperiment"){
-    dat <- SummarizedExperiment(dat.icb)
+    dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
   }
@@ -130,7 +130,7 @@ geneSigMean <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, 
   }
 
   if( class(dat.icb) == "MultiAssayExperiment"){
-    dat <- SummarizedExperiment(dat.icb)
+    dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
   }
@@ -191,7 +191,7 @@ geneSigMedian <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001
   }
 
   if( class(dat.icb) == "MultiAssayExperiment"){
-    dat <- SummarizedExperiment(dat.icb)
+    dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
   }
@@ -252,7 +252,7 @@ geneSigSum <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n
   }
 
   if( class(dat.icb) == "MultiAssayExperiment"){
-    dat <- SummarizedExperiment(dat.icb)
+    dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
   }
@@ -312,7 +312,7 @@ geneSigGMean <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001,
   }
 
   if( class(dat.icb) == "MultiAssayExperiment"){
-    dat <- SummarizedExperiment(dat.icb)
+    dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
   }
@@ -367,7 +367,7 @@ geneSigPredictIO <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.
   }
 
   if( class(dat.icb) == "MultiAssayExperiment"){
-    dat <- SummarizedExperiment(dat.icb)
+    dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
   }
@@ -440,7 +440,7 @@ geneSigCOX_IS <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001
   }
 
   if( class(dat.icb) == "MultiAssayExperiment"){
-    dat <- SummarizedExperiment(dat.icb)
+    dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
   }
@@ -570,7 +570,7 @@ geneSigIPS <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n
   }
 
   if( class(dat.icb) == "MultiAssayExperiment"){
-    dat <- SummarizedExperiment(dat.icb)
+    dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
   }
@@ -621,7 +621,7 @@ geneSigIPRES <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001,
   }
 
   if( class(dat.icb) == "MultiAssayExperiment"){
-    dat <- SummarizedExperiment(dat.icb)
+    dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
   }
