@@ -149,7 +149,7 @@ geneSurvCont <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n.
 ##########################################################################
 ##########################################################################
 
-geneSurvDicho <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n.cutoff, feature, study, surv.outcome, n0.cutoff, n1.cutoff, method = "median"){
+geneSurvDicho <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n.cutoff, feature, study, surv.outcome, n0.cutoff, n1.cutoff, method = "median", var.type){
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
 
@@ -203,7 +203,7 @@ geneSurvDicho <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n
                           n0.cutoff = n0.cutoff,
                           n1.cutoff = n1.cutoff,
                           method = method,
-                          var.type = FALSE)
+                          var.type = var.type)
 
         data.frame( Outcome = "OS",
                     Gene = rownames(data)[k],
@@ -253,7 +253,8 @@ geneSurvDicho <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n
                           var = g,
                           n0.cutoff = n0.cutoff,
                           n1.cutoff = n1.cutoff,
-                          method = method)
+                          method = method,
+                          var.type = var.type)
 
         data.frame( Outcome = "PFS",
                     Gene = rownames(data)[k],
@@ -333,18 +334,17 @@ geneLogReg <- function(dat.icb, missing.perc, const.int=0.001, n.cutoff, feature
 
     data <- as.matrix( data[ rownames(data) %in% feature , ] )
 
-    if( nrow(data) & !( cancer_type %in% "Lymph_node" ) ){
+    if( nrow(data) & length(dat_clin$response) >= n.cutoff &
+        sum(dat_clin$response == "NR", na.omit= TRUE) >= n1.cutoff &
+        sum(dat_clin$response == "R", na.omit= TRUE) >= n0.cutoff ){
 
       res <- lapply(1:nrow(data), function(k){
 
         g <- as.numeric( scale( data[k , ] ) )
         names( g ) <- colnames( data )
 
-        ## QUESTION: any filtration based on length of x?
         x <- ifelse( dat_clin$response[ dat_clin$cancer_type %in% cancer_type ] %in% "R" , 0 ,
                      ifelse( dat_clin$response[ dat_clin$cancer_type %in% cancer_type ] %in% "NR" , 1 , NA ) )
-
-        if(sum(x == 1) >= n1.cutoff & sum(x == 0) >= n0.cutoff){
 
           fit <- glm( x ~ g , family=binomial( link="logit" ) )
 
@@ -356,23 +356,6 @@ geneLogReg <- function(dat.icb, missing.perc, const.int=0.001, n.cutoff, feature
                       N = length(x[!is.na(x)]),
                       Pval = summary(fit)$coefficients[ "g" , "Pr(>|z|)" ],
                       Treatment = unique(dat_clin$treatment))
-
-        }else{
-
-          data.frame( Outcome = "R vs NR",
-                      Gene = rownames(data)[k],
-                      Study = study,
-                      Coef = NA,
-                      SE = NA,
-                      N = NA,
-                      Pval = NA,
-                      Treatment = unique(dat_clin$treatment))
-
-          message("lack of number of samples with known response immunotherapy survival outcome")
-
-        }
-
-
 
       })
 

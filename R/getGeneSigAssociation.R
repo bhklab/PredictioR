@@ -112,7 +112,7 @@ geneSigSurvCont <- function(dat.icb, geneSig, time.censor, n.cutoff, study, surv
 #########################################################################
 #########################################################################
 
-geneSigSurvDicho <- function(dat.icb, geneSig, time.censor, n.cutoff, n0.cutoff, n1.cutoff, study, surv.outcome, sig.name, method = "median"){
+geneSigSurvDicho <- function(dat.icb, geneSig, time.censor, n.cutoff, n0.cutoff, n1.cutoff, study, surv.outcome, sig.name, method = "median", var.type){
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
@@ -145,7 +145,8 @@ geneSigSurvDicho <- function(dat.icb, geneSig, time.censor, n.cutoff, n0.cutoff,
                         var = geneSig,
                         n0.cutoff = n0.cutoff,
                         n1.cutoff = n1.cutoff,
-                        method = method)
+                        method = method,
+                        var.type = var.type)
 
       res <- data.frame( Outcome = "OS",
                          Gene = sig.name,
@@ -183,7 +184,8 @@ geneSigSurvDicho <- function(dat.icb, geneSig, time.censor, n.cutoff, n0.cutoff,
                         var = geneSig,
                         n0.cutoff = n0.cutoff,
                         n1.cutoff = n1.cutoff,
-                        method = method)
+                        method = method,
+                        var.type = var.type)
 
       res <- data.frame( Outcome = "PFS",
                          Gene = sig.name,
@@ -217,8 +219,10 @@ geneSigSurvDicho <- function(dat.icb, geneSig, time.censor, n.cutoff, n0.cutoff,
 ## Get gene association (as continuous) with response (R vs NR)
 #####################################################################
 #####################################################################
+# n1.cutoff: cutoff for NR (== 1) samples
+# n0.cutoff: cutoff for R (== 0) samples
 
-geneSigLogReg <- function(dat.icb, geneSig, n.cutoff, study, sig.name){
+geneSigLogReg <- function(dat.icb, geneSig, n.cutoff, study, sig.name, n0.cutoff, n1.cutoff){
 
        if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
           stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
@@ -242,21 +246,24 @@ geneSigLogReg <- function(dat.icb, geneSig, n.cutoff, study, sig.name){
     dat_clin <- dat_clin[!is.na(dat_clin$response), ]
     geneSig <- geneSig[names(geneSig) %in% rownames(dat_clin)] #dat_clin$patientid
 
-    if( !( cancer_type %in% "Lymph_node" ) & length(dat_clin$response) >= n.cutoff ){
+    if( length(dat_clin$response) >= n.cutoff &
+        sum(dat_clin$response == "NR", na.omit= TRUE) >= n1.cutoff &
+        sum(dat_clin$response == "R", na.omit= TRUE) >= n0.cutoff ){
 
         x <- ifelse( dat_clin$response[ dat_clin$cancer_type %in% cancer_type ] %in% "R" , 0 ,
                      ifelse( dat_clin$response[ dat_clin$cancer_type %in% cancer_type ] %in% "NR" , 1 , NA ) )
 
-        fit <- glm( x ~ geneSig , family=binomial( link="logit" ) )
+          fit <- glm( x ~ geneSig , family=binomial( link="logit" ) )
 
-        res <- data.frame( Outcome = "R vs NR",
-                           Gene = sig.name,
-                           Study = study,
-                           Coef = round( summary(fit)$coefficients[ "geneSig" , "Estimate"  ] , 3 ),
-                           SE = round( summary(fit)$coefficients[ "geneSig" , "Std. Error" ] , 3 ),
-                           N = length(x[!is.na(x)]),
-                           Pval = summary(fit)$coefficients[ "geneSig" , "Pr(>|z|)" ],
-                           Treatment = unique(dat_clin$treatment))
+          res <- data.frame( Outcome = "R vs NR",
+                             Gene = sig.name,
+                             Study = study,
+                             Coef = round( summary(fit)$coefficients[ "geneSig" , "Estimate"  ] , 3 ),
+                             SE = round( summary(fit)$coefficients[ "geneSig" , "Std. Error" ] , 3 ),
+                             N = length(x[!is.na(x)]),
+                             Pval = summary(fit)$coefficients[ "geneSig" , "Pr(>|z|)" ],
+                             Treatment = unique(dat_clin$treatment))
+
 
     }else{  res <- data.frame( Outcome = "R vs NR",
                                Gene = sig.name,
