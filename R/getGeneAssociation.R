@@ -69,6 +69,7 @@ geneSurvCont <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n.
                           SE = cox["SE"],
                           N = cox["N"],
                           Pval = cox["Pval"],
+                          Cancer_type = unique(dat_clin$cancer_type),
                           Treatment = unique(dat_clin$treatment))
 
             })
@@ -84,6 +85,7 @@ geneSurvCont <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n.
                                      SE = NA,
                                      N = NA,
                                      Pval = NA,
+                                     Cancer_type = NA,
                                      Treatment = NA)
 
           message("none of the genes were found in the study and/or lack of number of samples with known immunotherapy survival outcome")
@@ -116,6 +118,7 @@ geneSurvCont <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n.
                           SE = cox["SE"],
                           N = cox["N"],
                           Pval = cox["Pval"],
+                          Cancer_type = unique(dat_clin$cancer_type),
                           Treatment = unique(dat_clin$treatment))
 
             })
@@ -131,6 +134,7 @@ geneSurvCont <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n.
                                      SE = NA,
                                      N = NA,
                                      Pval = NA,
+                                     Cancer_type = NA,
                                      Treatment = NA)
 
           message("none of the genes were found in the study and/or lack of number of samples with known immunotherapy survival outcome")
@@ -212,6 +216,7 @@ geneSurvDicho <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n
                     SE = cox["SE"],
                     N = cox["N"],
                     Pval = cox["Pval"],
+                    Cancer_type = unique(dat_clin$cancer_type),
                     Treatment = unique(dat_clin$treatment))
 
       })
@@ -227,6 +232,7 @@ geneSurvDicho <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n
                                SE = NA,
                                N = NA,
                                Pval = NA,
+                               Cancer_type = NA,
                                Treatment = NA)
 
     message("none of the genes were found in the study and/or lack of number of samples with known immunotherapy survival outcome")
@@ -263,6 +269,7 @@ geneSurvDicho <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n
                     SE = cox["SE"],
                     N = cox["N"],
                     Pval = cox["Pval"],
+                    Cancer_type = unique(dat_clin$cancer_type),
                     Treatment = unique(dat_clin$treatment))
 
       })
@@ -278,6 +285,7 @@ geneSurvDicho <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n
                                SE = NA,
                                N = NA,
                                Pval = NA,
+                               Cancer_type = NA,
                                Treatment = NA)
 
     message("none of the genes were found in the study and/or lack of number of samples with known immunotherapy survival outcome")
@@ -355,6 +363,7 @@ geneLogReg <- function(dat.icb, missing.perc, const.int=0.001, n.cutoff, feature
                       SE = round( summary(fit)$coefficients[ "g" , "Std. Error" ] , 3 ),
                       N = length(x[!is.na(x)]),
                       Pval = summary(fit)$coefficients[ "g" , "Pr(>|z|)" ],
+                      Cancer_type = unique(dat_clin$cancer_type),
                       Treatment = unique(dat_clin$treatment))
 
       })
@@ -370,6 +379,7 @@ geneLogReg <- function(dat.icb, missing.perc, const.int=0.001, n.cutoff, feature
                                SE = NA,
                                N = NA,
                                Pval = NA,
+                               Cancer_type = NA,
                                Treatment = NA)
 
     message("none of the genes were found in the study and/or lack of number of samples with known immunotherapy survival outcome")

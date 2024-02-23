@@ -46,6 +46,7 @@ geneSigSurvCont <- function(dat.icb, geneSig, time.censor, n.cutoff, study, surv
                           SE = cox["SE"],
                           N = cox["N"],
                           Pval = cox["Pval"],
+                          Cancer_type = unique(dat_clin$cancer_type),
                           Treatment = unique(dat_clin$treatment))
 
           }else{  res <- data.frame( Outcome = "OS",
@@ -55,6 +56,7 @@ geneSigSurvCont <- function(dat.icb, geneSig, time.censor, n.cutoff, study, surv
                                      SE = NA,
                                      N = NA,
                                      Pval = NA,
+                                     Cancer_type = NA,
                                      Treatment = NA)
 
           message("lack of number of samples with known immunotherapy survival outcome")
@@ -81,6 +83,7 @@ geneSigSurvCont <- function(dat.icb, geneSig, time.censor, n.cutoff, study, surv
                                SE = cox["SE"],
                                N = cox["N"],
                                Pval = cox["Pval"],
+                               Cancer_type = unique(dat_clin$cancer_type),
                                Treatment = unique(dat_clin$treatment))
 
           }else{  res <- data.frame( Outcome = "PFS",
@@ -90,6 +93,7 @@ geneSigSurvCont <- function(dat.icb, geneSig, time.censor, n.cutoff, study, surv
                                      SE = NA,
                                      N = NA,
                                      Pval = NA,
+                                     Cancer_type = NA,
                                      Treatment = NA)
 
           message("lack of number of samples with known immunotherapy survival outcome")
@@ -155,6 +159,7 @@ geneSigSurvDicho <- function(dat.icb, geneSig, time.censor, n.cutoff, n0.cutoff,
                          SE = cox["SE"],
                          N = cox["N"],
                          Pval = cox["Pval"],
+                         Cancer_type = unique(dat_clin$cancer_type),
                          Treatment = unique(dat_clin$treatment))
 
     }else{  res <- data.frame( Outcome = "OS",
@@ -164,6 +169,7 @@ geneSigSurvDicho <- function(dat.icb, geneSig, time.censor, n.cutoff, n0.cutoff,
                                SE = NA,
                                N = NA,
                                Pval = NA,
+                               Cancer_type = NA,
                                Treatment = NA)
 
     message("lack of number of samples with known immunotherapy survival outcome")
@@ -194,6 +200,7 @@ geneSigSurvDicho <- function(dat.icb, geneSig, time.censor, n.cutoff, n0.cutoff,
                          SE = cox["SE"],
                          N = cox["N"],
                          Pval = cox["Pval"],
+                         Cancer_type = unique(dat_clin$cancer_type),
                          Treatment = unique(dat_clin$treatment))
 
     }else{  res <- data.frame( Outcome = "PFS",
@@ -203,6 +210,7 @@ geneSigSurvDicho <- function(dat.icb, geneSig, time.censor, n.cutoff, n0.cutoff,
                                SE = NA,
                                N = NA,
                                Pval = NA,
+                               Cancer_type = NA,
                                Treatment = NA)
 
     message("lack of number of samples with known immunotherapy survival outcome")
@@ -262,6 +270,7 @@ geneSigLogReg <- function(dat.icb, geneSig, n.cutoff, study, sig.name, n0.cutoff
                              SE = round( summary(fit)$coefficients[ "geneSig" , "Std. Error" ] , 3 ),
                              N = length(x[!is.na(x)]),
                              Pval = summary(fit)$coefficients[ "geneSig" , "Pr(>|z|)" ],
+                             Cancer_type = unique(dat_clin$cancer_type),
                              Treatment = unique(dat_clin$treatment))
 
 
@@ -272,6 +281,7 @@ geneSigLogReg <- function(dat.icb, geneSig, n.cutoff, study, sig.name, n0.cutoff
                                SE = NA,
                                N = NA,
                                Pval = NA,
+                               Cancer_type = NA,
                                Treatment = NA)
 
     message("lack of number of samples with known immunotherapy response outcome")
