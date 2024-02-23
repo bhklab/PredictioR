@@ -21,9 +21,9 @@ rem <- function(x, missing.perc, const.int){
 
  }
 
-########################################################################################
-## Cox model: OS/PFS analyses and continuous expression or signature score
-########################################################################################
+##################################################################################################
+## Cox model: OS/PFS analyses and continuous expression, signature score, clinical data (var)
+##################################################################################################
 
 survCont <- function( surv , time , time.censor , var){
 
@@ -63,23 +63,28 @@ survCont <- function( surv , time , time.censor , var){
 ########################################################################################
 # n0.cutoff: minimum number of samples less than cutoff
 # n1.cutoff: minimum number of samples greater than cutoff
+# var.type: if variable (var) is dicho (by default), then var.type is TRUE
 
-survDicho <- function( surv , time , time.censor , var , n0.cutoff, n1.cutoff, method ="median"){
+survDicho <- function(surv , time , time.censor , var , n0.cutoff, n1.cutoff, method ="median", var.type = TRUE){
 
   data <- data.frame( surv=surv , time=time , variable=var )
   data <- data[!is.na(data$variable), ]
   data$time <- as.numeric(as.character(data$time))
 
-  if( method == "median"){
-    data$variable <- ifelse( as.numeric(as.character(data$variable)) >= median(as.numeric(as.character(data$variable))) , 1 , 0 )
-  }
+  if(var.type != TRUE){
 
-  if( method == "Q1" ){
-   data$variable <- ifelse( as.numeric(as.character(data$variable)) >= quantile(as.numeric(as.character(data$variable)))["25%"] , 1 , 0 )
-  }
+    if( method == "median"){
+      data$variable <- ifelse( as.numeric(as.character(data$variable)) >= median(as.numeric(as.character(data$variable))) , 1 , 0 )
+    }
 
-  if( method == "Q3" ){
-    data$variable <- ifelse( as.numeric(as.character(data$variable)) >= quantile(as.numeric(as.character(data$variable)))["75%"] , 1 , 0 )
+    if( method == "Q1" ){
+      data$variable <- ifelse( as.numeric(as.character(data$variable)) >= quantile(as.numeric(as.character(data$variable)))["25%"] , 1 , 0 )
+    }
+
+    if( method == "Q3" ){
+      data$variable <- ifelse( as.numeric(as.character(data$variable)) >= quantile(as.numeric(as.character(data$variable)))["75%"] , 1 , 0 )
+    }
+
   }
 
   for(i in 1:nrow(data)){
@@ -171,26 +176,31 @@ survDichoSex <- function( surv , time , time.censor , var , n0.cutoff, n1.cutoff
 ##################################################################################################
 # n0.cutoff: minimum number of samples less than cutoff
 # n1.cutoff: minimum number of samples greater than cutoff
+# var.type: if variable (var) is dicho (by default), then var.type is TRUE
 
-KMPlot <- function( surv , time , time.censor , var , title , xlab, ylab, method = "median", n0.cutoff, n1.cutoff){
+KMPlot <- function( surv , time , time.censor , var , title , xlab, ylab, method = "median", n0.cutoff, n1.cutoff, var.type = TRUE){
 
   data <- data.frame( surv=surv , time=time , variable=var )
   data <- data[!is.na(data$variable), ]
   data$time <- as.numeric(as.character(data$time))
 
-  if( method == "median"){
-    bin.cutoff <- median(as.numeric(as.character(data$variable)))
-    data$variable <- ifelse( as.numeric(as.character(data$variable)) >= bin.cutoff , 1 , 0 )
-  }
+  if( var.type != TRUE){
 
-  if( method == "Q1" ){
-    bin.cutoff <- quantile(as.numeric(as.character(data$variable)))["25%"]
-    data$variable <- ifelse( as.numeric(as.character(data$variable)) >= bin.cutoff , 1 , 0 )
-  }
+    if( method == "median"){
+      bin.cutoff <- median(as.numeric(as.character(data$variable)))
+      data$variable <- ifelse( as.numeric(as.character(data$variable)) >= bin.cutoff , 1 , 0 )
+    }
 
-  if( method == "Q3" ){
-    bin.cutoff <- quantile(as.numeric(as.character(data$variable)))["75%"]
-    data$variable <- ifelse( as.numeric(as.character(data$variable)) >= bin.cutoff , 1 , 0 )
+    if( method == "Q1" ){
+      bin.cutoff <- quantile(as.numeric(as.character(data$variable)))["25%"]
+      data$variable <- ifelse( as.numeric(as.character(data$variable)) >= bin.cutoff , 1 , 0 )
+    }
+
+    if( method == "Q3" ){
+      bin.cutoff <- quantile(as.numeric(as.character(data$variable)))["75%"]
+      data$variable <- ifelse( as.numeric(as.character(data$variable)) >= bin.cutoff , 1 , 0 )
+    }
+
   }
 
   for(i in 1:nrow(data)){
