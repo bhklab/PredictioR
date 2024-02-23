@@ -200,7 +200,7 @@ volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab
     data$diffexpressed[data$coef > 0 & data$pval < 0.05] <- "Pval < 0.05, Coef > 0"
     data$diffexpressed[data$coef < 0 & data$pval < 0.05] <- "Pval < 0.05, Coef < 0"
 
-    mycolors <- c( "#fee08b","#74add1", "#bababa")
+    mycolors <- c( "#984ea3","#386cb0", "#999999")
     names(mycolors) <- c("Pval < 0.05, Coef > 0",
                          "Pval < 0.05, Coef < 0",
                          "NO")
@@ -222,7 +222,7 @@ volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab
     data$diffexpressed[data$coef > 0 & data$FDR < 0.05] <- "FDR < 0.05, Coef > 0"
     data$diffexpressed[data$coef < 0 & data$FDR < 0.05] <- "FDR < 0.05, Coef < 0"
 
-    mycolors <- c( "#fee08b","#74add1", "#bababa")
+    mycolors <- c( "#984ea3","#386cb0", "#999999")
     names(mycolors) <- c("FDR < 0.05, Coef > 0",
                          "FDR < 0.05, Coef < 0",
                          "NO")
@@ -241,7 +241,7 @@ volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab
   }
 
   ggplot(data=data, aes(x=coef, y=-log10(pval), col= diffexpressed)) +
-    geom_point(size = 2.7) + theme_minimal() +
+    geom_point(size = 3) + theme_minimal() +
     ylab("-log10 P value") +
     xlab(x.lab) +
     scale_colour_manual(values = mycolors) +
