@@ -202,7 +202,8 @@ geneSurvDicho <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n
                           var = g,
                           n0.cutoff = n0.cutoff,
                           n1.cutoff = n1.cutoff,
-                          method = method)
+                          method = method,
+                          var.type = FALSE)
 
         data.frame( Outcome = "OS",
                     Gene = rownames(data)[k],
@@ -292,8 +293,10 @@ geneSurvDicho <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n
 ## Get gene association (as continuous) with response (R vs NR)
 #################################################################
 #################################################################
+# n1.cutoff: cutoff for NR (== 1) samples
+# n0.cutoff: cutoff for R (== 0) samples
 
-geneLogReg <- function(dat.icb, missing.perc, const.int=0.001, n.cutoff, feature, study){
+geneLogReg <- function(dat.icb, missing.perc, const.int=0.001, n.cutoff, feature, study, n0.cutoff, n1.cutoff){
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
 
@@ -341,16 +344,35 @@ geneLogReg <- function(dat.icb, missing.perc, const.int=0.001, n.cutoff, feature
         x <- ifelse( dat_clin$response[ dat_clin$cancer_type %in% cancer_type ] %in% "R" , 0 ,
                      ifelse( dat_clin$response[ dat_clin$cancer_type %in% cancer_type ] %in% "NR" , 1 , NA ) )
 
-        fit <- glm( x ~ g , family=binomial( link="logit" ) )
+        if(sum(x == 1) >= n1.cutoff & sum(x == 0) >= n0.cutoff){
 
-        data.frame( Outcome = "R vs NR",
-                    Gene = rownames(data)[k],
-                    Study = study,
-                    Coef = round( summary(fit)$coefficients[ "g" , "Estimate"  ] , 3 ),
-                    SE = round( summary(fit)$coefficients[ "g" , "Std. Error" ] , 3 ),
-                    N = length(x[!is.na(x)]),
-                    Pval = summary(fit)$coefficients[ "g" , "Pr(>|z|)" ],
-                    Treatment = unique(dat_clin$treatment))
+          fit <- glm( x ~ g , family=binomial( link="logit" ) )
+
+          data.frame( Outcome = "R vs NR",
+                      Gene = rownames(data)[k],
+                      Study = study,
+                      Coef = round( summary(fit)$coefficients[ "g" , "Estimate"  ] , 3 ),
+                      SE = round( summary(fit)$coefficients[ "g" , "Std. Error" ] , 3 ),
+                      N = length(x[!is.na(x)]),
+                      Pval = summary(fit)$coefficients[ "g" , "Pr(>|z|)" ],
+                      Treatment = unique(dat_clin$treatment))
+
+        }else{
+
+          data.frame( Outcome = "R vs NR",
+                      Gene = rownames(data)[k],
+                      Study = study,
+                      Coef = NA,
+                      SE = NA,
+                      N = NA,
+                      Pval = NA,
+                      Treatment = unique(dat_clin$treatment))
+
+          message("lack of number of samples with known response immunotherapy survival outcome")
+
+        }
+
+
 
       })
 
