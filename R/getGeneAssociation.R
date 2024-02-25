@@ -1,8 +1,3 @@
-## load functions and libraries
-
-source("C:/PredictioR/R/getHR.R")
-source("C:/PredictioR/R/getSummarizedExperiment.R")
-
 ##########################################################################
 ##########################################################################
 ## Get gene association (as continuous) with survival outcome (OS/PFS)

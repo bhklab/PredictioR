@@ -1,9 +1,11 @@
 ## load libraries
 library(here)
 library(survcomp)
+library(survival)
+library(surv)
 library(GSVA)
-library(MultiAssayExperiment)
 library(data.table)
+library(MultiAssayExperiment)
 
 ############################################################################
 ## Remove genes if with expression zero in 50% (or missing.perc) of sample
