@@ -2,7 +2,6 @@
 library(here)
 library(survcomp)
 library(survival)
-library(surv)
 library(GSVA)
 library(data.table)
 library(MultiAssayExperiment)
