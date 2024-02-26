@@ -188,7 +188,7 @@ KMPlot <- function( surv , time , time.censor , var , title , xlab, ylab, method
 ## volcano plot for signatures or genes association with immunotherapy responses results
 ##########################################################################################
 
-volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab, padj.label){
+volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab, padj.label, cutoff){
 
   data <- data.frame(feature = feature,
                      coef = coef,
@@ -198,12 +198,12 @@ volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab
   if( padj.label == FALSE){
 
     data$diffexpressed <- "NO"
-    data$diffexpressed[data$coef > 0 & data$pval < 0.05] <- "Pval < 0.05, Coef > 0"
-    data$diffexpressed[data$coef < 0 & data$pval < 0.05] <- "Pval < 0.05, Coef < 0"
+    data$diffexpressed[data$coef > 0 & data$pval < cutoff] <- paste(paste("Pval < ", cutoff, sep=""), "Coef > 0", sep=", ")
+    data$diffexpressed[data$coef < 0 & data$pval < cutoff] <- paste(paste("Pval < ", cutoff, sep=""), "Coef < 0", sep=", ")
 
     mycolors <- c( "#984ea3","#386cb0", "#999999")
-    names(mycolors) <- c("Pval < 0.05, Coef > 0",
-                         "Pval < 0.05, Coef < 0",
+    names(mycolors) <- c(paste(paste("Pval < ", cutoff, sep=""), "Coef > 0", sep=", "),
+                         paste(paste("Pval < ", cutoff, sep=""), "Coef < 0", sep=", "),
                          "NO")
 
     data$delabel <- NA
@@ -220,12 +220,12 @@ volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab
   }else{
 
     data$diffexpressed <- "NO"
-    data$diffexpressed[data$coef > 0 & data$FDR < 0.05] <- "FDR < 0.05, Coef > 0"
-    data$diffexpressed[data$coef < 0 & data$FDR < 0.05] <- "FDR < 0.05, Coef < 0"
+    data$diffexpressed[data$coef > 0 & data$FDR < cutoff] <- paste(paste("FDR < ", cutoff, sep=""), "Coef > 0", sep=", ")
+    data$diffexpressed[data$coef < 0 & data$FDR < cutoff] <- paste(paste("FDR < ", cutoff, sep=""), "Coef < 0", sep=", ")
 
     mycolors <- c( "#984ea3","#386cb0", "#999999")
-    names(mycolors) <- c("FDR < 0.05, Coef > 0",
-                         "FDR < 0.05, Coef < 0",
+    names(mycolors) <- c(paste(paste("FDR < ", cutoff, sep=""), "Coef > 0", sep=", "),
+                         paste(paste("FDR < ", cutoff, sep=""), "Coef < 0", sep=", "),
                          "NO")
 
     data$delabel <- NA
