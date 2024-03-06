@@ -4,9 +4,9 @@
 ##########################################################################
 ##########################################################################
 
-geneSurvCont <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n.cutoff, feature, study, surv.outcome){
+geneSurvCont <- function(dat.icb, clin = NULL, time.censor, missing.perc, const.int=0.001, n.cutoff, feature, study, surv.outcome){
 
-      if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+      if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
 
          stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
 
@@ -28,6 +28,13 @@ geneSurvCont <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n.
 
       }
 
+     if( sum(nrow(clin)) > 0  ){
+
+        dat_expr <- dat.icb
+        dat_clin <- clin
+
+     }
+
         cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
 
         message(paste(study))
@@ -42,7 +49,7 @@ geneSurvCont <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n.
         data <- as.matrix( data[ rownames(data) %in% feature , ] )
 
         ## association with OS
-        if( surv.outcome == "OS"){
+        if( surv.outcome == "OS" ){
 
           if( nrow(data) & !( cancer_type %in% "Lymph_node" ) &
               length( dat_clin$event_occurred_os[ !is.na( dat_clin$event_occurred_os ) & dat_clin$cancer_type %in% cancer_type ] ) >= n.cutoff ){
@@ -148,15 +155,16 @@ geneSurvCont <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n.
 ##########################################################################
 ##########################################################################
 
-geneSurvDicho <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n.cutoff, feature, study, surv.outcome, n0.cutoff, n1.cutoff, method = "median", var.type){
+geneSurvDicho <- function(dat.icb, clin = NULL, time.censor, missing.perc, const.int=0.001, n.cutoff, feature, study, surv.outcome, n0.cutoff, n1.cutoff, method = "median", var.type){
 
-  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
 
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
 
   }
 
   if( class(dat.icb) == "MultiAssayExperiment"){
+
 
     dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
@@ -168,6 +176,13 @@ geneSurvDicho <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n
 
     dat_expr <- assay(dat.icb)
     dat_clin <- colData(dat.icb)
+
+  }
+
+  if( sum(nrow(clin)) > 0  ){
+
+    dat_expr <- dat.icb
+    dat_clin <- clin
 
   }
 
@@ -300,9 +315,9 @@ geneSurvDicho <- function(dat.icb, time.censor, missing.perc, const.int=0.001, n
 # n1.cutoff: cutoff for NR (== 1) samples
 # n0.cutoff: cutoff for R (== 0) samples
 
-geneLogReg <- function(dat.icb, missing.perc, const.int=0.001, n.cutoff, feature, study, n0.cutoff, n1.cutoff){
+geneLogReg <- function(dat.icb, clin = NULL, missing.perc, const.int=0.001, n.cutoff, feature, study, n0.cutoff, n1.cutoff){
 
-  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
 
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
 
@@ -324,6 +339,12 @@ geneLogReg <- function(dat.icb, missing.perc, const.int=0.001, n.cutoff, feature
 
   }
 
+  if( sum(nrow(clin)) > 0  ){
+
+    dat_expr <- dat.icb
+    dat_clin <- clin
+
+  }
     cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
 
     message(paste(study, cancer_type, sep="/"))
