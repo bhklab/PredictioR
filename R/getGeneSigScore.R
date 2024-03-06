@@ -88,7 +88,7 @@ geneSigGSVA <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const
 ## Get signature score: ssGSEA
 #####################################################################
 
-geneSigssGSEA <- function(dat.icb, sig, sig.name, missing.perc, const.int = 0.001, n.cutoff, sig.perc, study){
+geneSigssGSEA <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const.int = 0.001, n.cutoff, sig.perc, study){
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
 
@@ -150,7 +150,7 @@ geneSigssGSEA <- function(dat.icb, sig, sig.name, missing.perc, const.int = 0.00
 ## Get signature score: (weighted) mean
 #####################################################################
 
-geneSigMean <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
+geneSigMean <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
 
@@ -224,7 +224,7 @@ geneSigMean <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, 
 ## Get signature score: Median
 #####################################################################
 
-geneSigMedian <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
+geneSigMedian <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
 
@@ -299,7 +299,7 @@ geneSigMedian <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001
 ## Get signature score: (weighted) summation
 #####################################################################
 
-geneSigSum <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
+geneSigSum <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
 
@@ -373,7 +373,7 @@ geneSigSum <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n
 ## Get signature score: Geometric mean
 #####################################################################
 
-geneSigGMean <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
+geneSigGMean <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
 
@@ -442,7 +442,7 @@ geneSigGMean <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001,
 ## Get signature score: PredictIO
 #####################################################################
 
-geneSigPredictIO <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
+geneSigPredictIO <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
 
@@ -529,7 +529,7 @@ geneSigPredictIO <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.
 ## Get signature score: COX_IS
 #####################################################################
 
-geneSigCOX_IS <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
+geneSigCOX_IS <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
 
@@ -672,7 +672,7 @@ IPS.fun <- function( expr, sig ){
   AZ
 }
 
-geneSigIPS <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
+geneSigIPS <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
 
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
@@ -738,7 +738,7 @@ geneSigIPS <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n
 ## Get signature score: IPRES
 #####################################################################
 
-geneSigIPRES <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
+geneSigIPRES <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
 
