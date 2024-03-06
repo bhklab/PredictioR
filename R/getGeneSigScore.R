@@ -23,22 +23,36 @@ scale.fun <- function( x ){
 ## Get signature score: GSVA
 #####################################################################
 
-geneSigGSVA <- function(dat.icb, sig, sig.name, missing.perc, const.int = 0.001, n.cutoff, sig.perc, study){
+geneSigGSVA <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const.int = 0.001, n.cutoff, sig.perc, study){
 
-    if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
-         stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
-       }
+  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
 
-    if( class(dat.icb) == "MultiAssayExperiment"){
-        dat <- createSE(dat.icb)
-        dat_expr <- assay(dat)
-        dat_clin <- colData(dat)
-      }
+    stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
 
-    if( class(dat.icb) == "SummarizedExperiment"){
-       dat_expr <- assay(dat.icb)
-       dat_clin <- colData(dat.icb)
-      }
+  }
+
+  if( class(dat.icb) == "MultiAssayExperiment"){
+
+
+    dat <- createSE(dat.icb)
+    dat_expr <- assay(dat)
+    dat_clin <- colData(dat)
+
+  }
+
+  if( class(dat.icb) == "SummarizedExperiment"){
+
+    dat_expr <- assay(dat.icb)
+    dat_clin <- colData(dat.icb)
+
+  }
+
+  if( sum(nrow(clin)) > 0  ){
+
+    dat_expr <- dat.icb
+    dat_clin <- clin
+
+  }
 
     cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
 
@@ -76,21 +90,34 @@ geneSigGSVA <- function(dat.icb, sig, sig.name, missing.perc, const.int = 0.001,
 
 geneSigssGSEA <- function(dat.icb, sig, sig.name, missing.perc, const.int = 0.001, n.cutoff, sig.perc, study){
 
-  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
+
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+
   }
 
   if( class(dat.icb) == "MultiAssayExperiment"){
+
+
     dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
+
   }
 
   if( class(dat.icb) == "SummarizedExperiment"){
+
     dat_expr <- assay(dat.icb)
     dat_clin <- colData(dat.icb)
+
   }
 
+  if( sum(nrow(clin)) > 0  ){
+
+    dat_expr <- dat.icb
+    dat_clin <- clin
+
+  }
   cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
 
   data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type]
@@ -125,21 +152,34 @@ geneSigssGSEA <- function(dat.icb, sig, sig.name, missing.perc, const.int = 0.00
 
 geneSigMean <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
 
-  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
+
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+
   }
 
   if( class(dat.icb) == "MultiAssayExperiment"){
+
+
     dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
+
   }
 
   if( class(dat.icb) == "SummarizedExperiment"){
+
     dat_expr <- assay(dat.icb)
     dat_clin <- colData(dat.icb)
+
   }
 
+  if( sum(nrow(clin)) > 0  ){
+
+    dat_expr <- dat.icb
+    dat_clin <- clin
+
+  }
     cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
 
     #message(paste(study))
@@ -186,19 +226,33 @@ geneSigMean <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, 
 
 geneSigMedian <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
 
-  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
+
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+
   }
 
   if( class(dat.icb) == "MultiAssayExperiment"){
+
+
     dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
+
   }
 
   if( class(dat.icb) == "SummarizedExperiment"){
+
     dat_expr <- assay(dat.icb)
     dat_clin <- colData(dat.icb)
+
+  }
+
+  if( sum(nrow(clin)) > 0  ){
+
+    dat_expr <- dat.icb
+    dat_clin <- clin
+
   }
 
   cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
@@ -247,19 +301,33 @@ geneSigMedian <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001
 
 geneSigSum <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
 
-  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
+
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+
   }
 
   if( class(dat.icb) == "MultiAssayExperiment"){
+
+
     dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
+
   }
 
   if( class(dat.icb) == "SummarizedExperiment"){
+
     dat_expr <- assay(dat.icb)
     dat_clin <- colData(dat.icb)
+
+  }
+
+  if( sum(nrow(clin)) > 0  ){
+
+    dat_expr <- dat.icb
+    dat_clin <- clin
+
   }
 
   cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
@@ -307,19 +375,33 @@ geneSigSum <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n
 
 geneSigGMean <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
 
-  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
+
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+
   }
 
   if( class(dat.icb) == "MultiAssayExperiment"){
+
+
     dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
+
   }
 
   if( class(dat.icb) == "SummarizedExperiment"){
+
     dat_expr <- assay(dat.icb)
     dat_clin <- colData(dat.icb)
+
+  }
+
+  if( sum(nrow(clin)) > 0  ){
+
+    dat_expr <- dat.icb
+    dat_clin <- clin
+
   }
 
   cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
@@ -362,19 +444,33 @@ geneSigGMean <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001,
 
 geneSigPredictIO <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
 
-  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
+
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+
   }
 
   if( class(dat.icb) == "MultiAssayExperiment"){
+
+
     dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
+
   }
 
   if( class(dat.icb) == "SummarizedExperiment"){
+
     dat_expr <- assay(dat.icb)
     dat_clin <- colData(dat.icb)
+
+  }
+
+  if( sum(nrow(clin)) > 0  ){
+
+    dat_expr <- dat.icb
+    dat_clin <- clin
+
   }
 
     cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
@@ -435,19 +531,33 @@ geneSigPredictIO <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.
 
 geneSigCOX_IS <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
 
-  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
+
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+
   }
 
   if( class(dat.icb) == "MultiAssayExperiment"){
+
+
     dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
+
   }
 
   if( class(dat.icb) == "SummarizedExperiment"){
+
     dat_expr <- assay(dat.icb)
     dat_clin <- colData(dat.icb)
+
+  }
+
+  if( sum(nrow(clin)) > 0  ){
+
+    dat_expr <- dat.icb
+    dat_clin <- clin
+
   }
 
     cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
@@ -565,19 +675,33 @@ IPS.fun <- function( expr, sig ){
 geneSigIPS <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
 
 
-  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
+
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+
   }
 
   if( class(dat.icb) == "MultiAssayExperiment"){
+
+
     dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
+
   }
 
   if( class(dat.icb) == "SummarizedExperiment"){
+
     dat_expr <- assay(dat.icb)
     dat_clin <- colData(dat.icb)
+
+  }
+
+  if( sum(nrow(clin)) > 0  ){
+
+    dat_expr <- dat.icb
+    dat_clin <- clin
+
   }
 
     cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
@@ -616,19 +740,33 @@ geneSigIPS <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n
 
 geneSigIPRES <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
 
-  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
+  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
+
     stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+
   }
 
   if( class(dat.icb) == "MultiAssayExperiment"){
+
+
     dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
     dat_clin <- colData(dat)
+
   }
 
   if( class(dat.icb) == "SummarizedExperiment"){
+
     dat_expr <- assay(dat.icb)
     dat_clin <- colData(dat.icb)
+
+  }
+
+  if( sum(nrow(clin)) > 0  ){
+
+    dat_expr <- dat.icb
+    dat_clin <- clin
+
   }
 
     IPRES.dat <- sig

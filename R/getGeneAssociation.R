@@ -6,34 +6,27 @@
 
 geneSurvCont <- function(dat.icb, clin = NULL, time.censor, missing.perc, const.int=0.001, n.cutoff, feature, study, surv.outcome){
 
-      if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
+  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "data.frame", "matrix") ){
+    stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+  }
 
-         stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+  if( class(dat.icb) == "MultiAssayExperiment"){
+    dat <- createSE(dat.icb)
+    dat_expr <- assay(dat)
+    dat_clin <- colData(dat)
+  }
 
-       }
+  if( class(dat.icb) == "SummarizedExperiment"){
+    dat_expr <- assay(dat.icb)
+    dat_clin <- colData(dat.icb)
+  }
 
-      if( class(dat.icb) == "MultiAssayExperiment"){
+  if( sum(nrow(clin)) > 0  ){
 
+    dat_expr <- dat.icb
+    dat_clin <- clin
 
-        dat <- createSE(dat.icb)
-        dat_expr <- assay(dat)
-        dat_clin <- colData(dat)
-
-      }
-
-      if( class(dat.icb) == "SummarizedExperiment"){
-
-        dat_expr <- assay(dat.icb)
-        dat_clin <- colData(dat.icb)
-
-      }
-
-     if( sum(nrow(clin)) > 0  ){
-
-        dat_expr <- dat.icb
-        dat_clin <- clin
-
-     }
+  }
 
         cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
 
@@ -345,6 +338,7 @@ geneLogReg <- function(dat.icb, clin = NULL, missing.perc, const.int=0.001, n.cu
     dat_clin <- clin
 
   }
+
     cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
 
     message(paste(study, cancer_type, sep="/"))
