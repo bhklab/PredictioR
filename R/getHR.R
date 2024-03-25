@@ -1,5 +1,4 @@
 ## load libraries
-library(here)
 library(survcomp)
 library(survival)
 library(GSVA)
@@ -97,7 +96,8 @@ survDicho <- function(surv , time , time.censor , var , n0.cutoff, n1.cutoff, me
     }
   }
 
-  if( length( data$variable[ data$variable == 1 ] )>= n1.cutoff & length( data$variable[ data$variable == 0 ] ) >= n0.cutoff ){
+  if( length( data$variable[ data$variable == 1 ] )>= n1.cutoff &
+      length( data$variable[ data$variable == 0 ] ) >= n0.cutoff ){
 
     cox <- coxph( formula= Surv( time , surv ) ~ variable , data=data )
     hr <- summary(cox)$coefficients[, "coef"]
@@ -130,7 +130,8 @@ survDicho <- function(surv , time , time.censor , var , n0.cutoff, n1.cutoff, me
 # n1.cutoff: minimum number of samples greater than cutoff
 # var.type: if variable (var) is dicho (by default), then var.type is TRUE
 
-KMPlot <- function( surv , time , time.censor , var , title , xlab, ylab, method = "median", n0.cutoff, n1.cutoff, var.type = TRUE){
+KMPlot <- function( surv , time , time.censor , var , title , xlab, ylab,
+                    method = "median", n0.cutoff, n1.cutoff, var.type = TRUE){
 
   data <- data.frame( surv=surv , time=time , variable=var )
   data <- data[!is.na(data$variable), ]

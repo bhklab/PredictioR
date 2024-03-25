@@ -4,10 +4,11 @@
 ##########################################################################
 ##########################################################################
 
-geneSurvCont <- function(dat.icb, clin = NULL, time.censor, missing.perc, const.int=0.001, n.cutoff, feature, study, surv.outcome){
+geneSurvCont <- function(dat.icb, clin = NULL, time.censor, missing.perc, const.int=0.001,
+                         n.cutoff, feature, study, surv.outcome, cancer.type, treatment){
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "data.frame", "matrix") ){
-    stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+    stop(message("function requires SummarizedExperiment, MultiAssayExperiment, data.frame, or matrix class of data"))
   }
 
   if( class(dat.icb) == "MultiAssayExperiment"){
@@ -28,11 +29,12 @@ geneSurvCont <- function(dat.icb, clin = NULL, time.censor, missing.perc, const.
 
   }
 
-        cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
+        #cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
 
-        message(paste(study))
+        #message(paste(study))
 
-        data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type ]
+        #data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type ]
+        data <- dat_expr
         remove <- rem(data, missing.perc, const.int)
 
         if( length(remove) ){
@@ -45,15 +47,15 @@ geneSurvCont <- function(dat.icb, clin = NULL, time.censor, missing.perc, const.
         if( surv.outcome == "OS" ){
 
           if( nrow(data) & !( cancer_type %in% "Lymph_node" ) &
-              length( dat_clin$event_occurred_os[ !is.na( dat_clin$event_occurred_os ) & dat_clin$cancer_type %in% cancer_type ] ) >= n.cutoff ){
+              length( dat_clin$event_occurred_os[ !is.na( dat_clin$event_occurred_os ) ] ) >= n.cutoff ){
 
             res <- lapply(1:nrow(data), function(k){
 
               g <- as.numeric( scale( data[k , ] ) )
               names( g ) <- colnames( data )
 
-              cox <- survCont( surv = dat_clin$event_occurred_os[ dat_clin$cancer_type %in% cancer_type ] ,
-                               time = dat_clin$survival_time_os[ dat_clin$cancer_type %in% cancer_type ] ,
+              cox <- survCont( surv = dat_clin$event_occurred_os ,
+                               time = dat_clin$survival_time_os ,
                                time.censor = time.censor ,
                                var = g )
 
@@ -64,8 +66,8 @@ geneSurvCont <- function(dat.icb, clin = NULL, time.censor, missing.perc, const.
                           SE = cox["SE"],
                           N = cox["N"],
                           Pval = cox["Pval"],
-                          Cancer_type = unique(dat_clin$cancer_type),
-                          Treatment = unique(dat_clin$treatment))
+                          Cancer_type = cancer.type,
+                          Treatment = treatment)
 
             })
 
@@ -83,7 +85,7 @@ geneSurvCont <- function(dat.icb, clin = NULL, time.censor, missing.perc, const.
                                      Cancer_type = NA,
                                      Treatment = NA)
 
-          message("none of the genes were found in the study and/or lack of number of samples with known immunotherapy survival outcome")
+          message("lack of number of samples and/or genes with known immunotherapy survival outcome")
 
           }
 
@@ -94,15 +96,15 @@ geneSurvCont <- function(dat.icb, clin = NULL, time.censor, missing.perc, const.
 
 
           if( nrow(data) & !( cancer_type %in% "Lymph_node" ) &
-              length( dat_clin$event_occurred_pfs[ !is.na( dat_clin$event_occurred_pfs ) & dat_clin$cancer_type %in% cancer_type ] ) >= n.cutoff ){
+              length( dat_clin$event_occurred_pfs[ !is.na( dat_clin$event_occurred_pfs ) ] ) >= n.cutoff ){
 
             res <- lapply(1:nrow(data), function(k){
 
               g <- as.numeric( scale( data[k , ] ) )
               names( g ) <- colnames( data )
 
-              cox <- survCont( surv = dat_clin$event_occurred_pfs[ dat_clin$cancer_type %in% cancer_type ] ,
-                               time = dat_clin$survival_time_pfs[ dat_clin$cancer_type %in% cancer_type ] ,
+              cox <- survCont( surv = dat_clin$event_occurred_pfs ,
+                               time = dat_clin$survival_time_pfs ,
                                time.censor = time.censor ,
                                var = g )
 
@@ -113,8 +115,8 @@ geneSurvCont <- function(dat.icb, clin = NULL, time.censor, missing.perc, const.
                           SE = cox["SE"],
                           N = cox["N"],
                           Pval = cox["Pval"],
-                          Cancer_type = unique(dat_clin$cancer_type),
-                          Treatment = unique(dat_clin$treatment))
+                          Cancer_type = cancer.type,
+                          Treatment = treatment)
 
             })
 
@@ -132,7 +134,7 @@ geneSurvCont <- function(dat.icb, clin = NULL, time.censor, missing.perc, const.
                                      Cancer_type = NA,
                                      Treatment = NA)
 
-          message("none of the genes were found in the study and/or lack of number of samples with known immunotherapy survival outcome")
+          message("lack of number of samples and/or genes with known immunotherapy survival outcome")
 
           }
 
@@ -148,11 +150,12 @@ geneSurvCont <- function(dat.icb, clin = NULL, time.censor, missing.perc, const.
 ##########################################################################
 ##########################################################################
 
-geneSurvDicho <- function(dat.icb, clin = NULL, time.censor, missing.perc, const.int=0.001, n.cutoff, feature, study, surv.outcome, n0.cutoff, n1.cutoff, method = "median", var.type){
+geneSurvDicho <- function(dat.icb, clin = NULL, time.censor, missing.perc, const.int=0.001, n.cutoff, feature,
+                          study, surv.outcome, n0.cutoff, n1.cutoff, method = "median", var.type, cancer.type, treatment){
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
 
-    stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+    stop(message("function requires SummarizedExperiment, MultiAssayExperiment, data.frame, or matrix class of data"))
 
   }
 
@@ -179,11 +182,12 @@ geneSurvDicho <- function(dat.icb, clin = NULL, time.censor, missing.perc, const
 
   }
 
-  cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
+  #cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
 
-  message(paste(study, cancer_type, sep="/"))
+  #message(paste(study, cancer_type, sep="/"))
 
-  data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type]
+  #data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type]
+  data <- dat_expr
   remove <- rem(data, missing.perc, const.int)
 
   if( length(remove) ){
@@ -196,15 +200,15 @@ geneSurvDicho <- function(dat.icb, clin = NULL, time.censor, missing.perc, const
   if( surv.outcome == "OS"){
 
     if( nrow(data) & !( cancer_type %in% "Lymph_node" ) &
-        length( dat_clin$event_occurred_os[ !is.na( dat_clin$event_occurred_os ) & dat_clin$cancer_type %in% cancer_type ] ) >= n.cutoff ){
+        length( dat_clin$event_occurred_os[ !is.na( dat_clin$event_occurred_os ) ] ) >= n.cutoff ){
 
       res <- lapply(1:nrow(data), function(k){
 
         g <- as.numeric( scale( data[k , ] ) )
         names( g ) <- colnames( data )
 
-        cox <- survDicho( surv = dat_clin$event_occurred_os[ dat_clin$cancer_type %in% cancer_type ] ,
-                          time = dat_clin$survival_time_os[ dat_clin$cancer_type %in% cancer_type ] ,
+        cox <- survDicho( surv = dat_clin$event_occurred_os ,
+                          time = dat_clin$survival_time_os ,
                           time.censor = time.censor ,
                           var = g,
                           n0.cutoff = n0.cutoff,
@@ -219,8 +223,8 @@ geneSurvDicho <- function(dat.icb, clin = NULL, time.censor, missing.perc, const
                     SE = cox["SE"],
                     N = cox["N"],
                     Pval = cox["Pval"],
-                    Cancer_type = unique(dat_clin$cancer_type),
-                    Treatment = unique(dat_clin$treatment))
+                    Cancer_type = cancer.type,
+                    Treatment = treatment)
 
       })
 
@@ -238,7 +242,7 @@ geneSurvDicho <- function(dat.icb, clin = NULL, time.censor, missing.perc, const
                                Cancer_type = NA,
                                Treatment = NA)
 
-    message("none of the genes were found in the study and/or lack of number of samples with known immunotherapy survival outcome")
+    message("lack of number of samples and/or genes with known immunotherapy survival outcome")
 
     }
 
@@ -249,15 +253,15 @@ geneSurvDicho <- function(dat.icb, clin = NULL, time.censor, missing.perc, const
 
 
     if( nrow(data) & !( cancer_type %in% "Lymph_node" ) &
-        length( dat_clin$event_occurred_pfs[ !is.na( dat_clin$event_occurred_pfs ) & dat_clin$cancer_type %in% cancer_type ] ) >= n.cutoff ){
+        length( dat_clin$event_occurred_pfs[ !is.na( dat_clin$event_occurred_pfs ) ) >= n.cutoff ){
 
       res <- lapply(1:nrow(data), function(k){
 
         g <- as.numeric( scale( data[k , ] ) )
         names( g ) <- colnames( data )
 
-        cox <- survDicho( surv = dat_clin$event_occurred_pfs[ dat_clin$cancer_type %in% cancer_type ] ,
-                          time = dat_clin$survival_time_pfs[ dat_clin$cancer_type %in% cancer_type ] ,
+        cox <- survDicho( surv = dat_clin$event_occurred_pfs ,
+                          time = dat_clin$survival_time_pfs ,
                           time.censor= time.censor ,
                           var = g,
                           n0.cutoff = n0.cutoff,
@@ -272,8 +276,8 @@ geneSurvDicho <- function(dat.icb, clin = NULL, time.censor, missing.perc, const
                     SE = cox["SE"],
                     N = cox["N"],
                     Pval = cox["Pval"],
-                    Cancer_type = unique(dat_clin$cancer_type),
-                    Treatment = unique(dat_clin$treatment))
+                    Cancer_type = cancer.type,
+                    Treatment = treatment)
 
       })
 
@@ -291,7 +295,7 @@ geneSurvDicho <- function(dat.icb, clin = NULL, time.censor, missing.perc, const
                                Cancer_type = NA,
                                Treatment = NA)
 
-    message("none of the genes were found in the study and/or lack of number of samples with known immunotherapy survival outcome")
+    message("lack of number of samples and/or genes with known immunotherapy survival outcome")
 
     }
 
@@ -308,16 +312,16 @@ geneSurvDicho <- function(dat.icb, clin = NULL, time.censor, missing.perc, const
 # n1.cutoff: cutoff for NR (== 1) samples
 # n0.cutoff: cutoff for R (== 0) samples
 
-geneLogReg <- function(dat.icb, clin = NULL, missing.perc, const.int=0.001, n.cutoff, feature, study, n0.cutoff, n1.cutoff){
+geneLogReg <- function(dat.icb, clin = NULL, missing.perc, const.int=0.001, n.cutoff, feature, study,
+                       n0.cutoff, n1.cutoff, cancer.type, treatment){
 
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "matrix", "data.frame") ){
 
-    stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+    stop(message("function requires SummarizedExperiment, MultiAssayExperiment, data.frame, or matrix class of data"))
 
   }
 
   if( class(dat.icb) == "MultiAssayExperiment"){
-
 
     dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
@@ -339,11 +343,12 @@ geneLogReg <- function(dat.icb, clin = NULL, missing.perc, const.int=0.001, n.cu
 
   }
 
-    cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
+    #cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
 
-    message(paste(study, cancer_type, sep="/"))
+    #message(paste(study, cancer_type, sep="/"))
 
-    data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type]
+    #data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type]
+    data <- dat_expr
     remove <- rem(data, missing.perc, const.int)
 
     if( length(remove) ){
@@ -361,8 +366,8 @@ geneLogReg <- function(dat.icb, clin = NULL, missing.perc, const.int=0.001, n.cu
         g <- as.numeric( scale( data[k , ] ) )
         names( g ) <- colnames( data )
 
-        x <- ifelse( dat_clin$response[ dat_clin$cancer_type %in% cancer_type ] %in% "R" , 0 ,
-                     ifelse( dat_clin$response[ dat_clin$cancer_type %in% cancer_type ] %in% "NR" , 1 , NA ) )
+        x <- ifelse( dat_clin$response %in% "R" , 0 ,
+                     ifelse( dat_clin$response %in% "NR" , 1 , NA ) )
 
           fit <- glm( x ~ g , family=binomial( link="logit" ) )
 
@@ -373,8 +378,8 @@ geneLogReg <- function(dat.icb, clin = NULL, missing.perc, const.int=0.001, n.cu
                       SE = round( summary(fit)$coefficients[ "g" , "Std. Error" ] , 3 ),
                       N = length(x[!is.na(x)]),
                       Pval = summary(fit)$coefficients[ "g" , "Pr(>|z|)" ],
-                      Cancer_type = unique(dat_clin$cancer_type),
-                      Treatment = unique(dat_clin$treatment))
+                      Cancer_type = cancer.type,
+                      Treatment = treatment)
 
       })
 
@@ -392,7 +397,7 @@ geneLogReg <- function(dat.icb, clin = NULL, missing.perc, const.int=0.001, n.cu
                                Cancer_type = NA,
                                Treatment = NA)
 
-    message("none of the genes were found in the study and/or lack of number of samples with known immunotherapy survival outcome")
+    message("lack of number of samples and/or genes with known immunotherapy survival outcome")
 
     }
 

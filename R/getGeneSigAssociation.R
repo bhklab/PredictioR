@@ -4,10 +4,11 @@
 #########################################################################
 #########################################################################
 
-geneSigSurvCont <- function(dat.icb, geneSig, time.censor, n.cutoff, study, surv.outcome, sig.name){
 
-         if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
-           stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+geneSigSurvCont <- function(dat.icb, clin = NULL, geneSig, time.censor, n.cutoff, study, surv.outcome, sig.name, cancer.type, treatment){
+
+         if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "data.frame", "matrix") ){
+           stop(message("function requires SummarizedExperiment, MultiAssayExperiment, data.frame, or matrix class of data"))
             }
 
         if( class(dat.icb) == "MultiAssayExperiment"){
@@ -21,18 +22,25 @@ geneSigSurvCont <- function(dat.icb, geneSig, time.censor, n.cutoff, study, surv
          dat_clin <- colData(dat.icb)
         }
 
-        cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
+       if( sum(nrow(clin)) > 0  ){
 
-        message(paste(study, cancer_type, sep="/"))
+        dat_expr <- dat.icb
+        dat_clin <- clin
+
+       }
+
+        #cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
+
+        #message(paste(study, cancer_type, sep="/"))
 
         ## association with OS
         if( surv.outcome == "OS"){
 
           if( !( cancer_type %in% "Lymph_node" ) &
-              length( dat_clin$event_occurred_os[ !is.na( dat_clin$event_occurred_os ) & dat_clin$cancer_type %in% cancer_type ] ) >= n.cutoff ){
+              length( dat_clin$event_occurred_os[ !is.na( dat_clin$event_occurred_os ) ] ) >= n.cutoff ){
 
-              cox <- survCont( surv = dat_clin$event_occurred_os[ dat_clin$cancer_type %in% cancer_type ] ,
-                               time = dat_clin$survival_time_os[ dat_clin$cancer_type %in% cancer_type ] ,
+              cox <- survCont( surv = dat_clin$event_occurred_os ,
+                               time = dat_clin$survival_time_os ,
                                time.censor = time.censor ,
                                var = geneSig )
 
@@ -43,8 +51,8 @@ geneSigSurvCont <- function(dat.icb, geneSig, time.censor, n.cutoff, study, surv
                           SE = cox["SE"],
                           N = cox["N"],
                           Pval = cox["Pval"],
-                          Cancer_type = unique(dat_clin$cancer_type),
-                          Treatment = unique(dat_clin$treatment))
+                          Cancer_type = cancer.type,
+                          Treatment = treatment)
 
           }else{  res <- data.frame( Outcome = "OS",
                                      Gene = sig.name,
@@ -66,10 +74,10 @@ geneSigSurvCont <- function(dat.icb, geneSig, time.censor, n.cutoff, study, surv
         if( surv.outcome == "PFS"){
 
           if( !( cancer_type %in% "Lymph_node" ) &
-              length( dat_clin$event_occurred_pfs[ !is.na( dat_clin$event_occurred_pfs ) & dat_clin$cancer_type %in% cancer_type ] ) >= n.cutoff ){
+              length( dat_clin$event_occurred_pfs[ !is.na( dat_clin$event_occurred_pfs ) ] ) >= n.cutoff ){
 
-            cox <- survCont( surv = dat_clin$event_occurred_pfs[ dat_clin$cancer_type %in% cancer_type ] ,
-                             time = dat_clin$survival_time_pfs[ dat_clin$cancer_type %in% cancer_type ] ,
+            cox <- survCont( surv = dat_clin$event_occurred_pfs ,
+                             time = dat_clin$survival_time_pfs ,
                              time.censor = time.censor ,
                              var = geneSig )
 
@@ -80,8 +88,8 @@ geneSigSurvCont <- function(dat.icb, geneSig, time.censor, n.cutoff, study, surv
                                SE = cox["SE"],
                                N = cox["N"],
                                Pval = cox["Pval"],
-                               Cancer_type = unique(dat_clin$cancer_type),
-                               Treatment = unique(dat_clin$treatment))
+                               Cancer_type = cancer.type,
+                               Treatment = treatment)
 
           }else{  res <- data.frame( Outcome = "PFS",
                                      Gene = sig.name,
@@ -113,10 +121,11 @@ geneSigSurvCont <- function(dat.icb, geneSig, time.censor, n.cutoff, study, surv
 #########################################################################
 #########################################################################
 
-geneSigSurvDicho <- function(dat.icb, geneSig, time.censor, n.cutoff, n0.cutoff, n1.cutoff, study, surv.outcome, sig.name, method = "median", var.type){
+geneSigSurvDicho <- function(dat.icb, clin = NULL, geneSig, time.censor, n.cutoff, n0.cutoff, n1.cutoff, study, surv.outcome, sig.name,
+                             method = "median", var.type, cancer.type, treatment){
 
-  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
-    stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
+  if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "data.frame", "matrix") ){
+    stop(message("function requires SummarizedExperiment, MultiAssayExperiment, data.frame, or matrix class of data"))
   }
 
   if( class(dat.icb) == "MultiAssayExperiment"){
@@ -130,18 +139,25 @@ geneSigSurvDicho <- function(dat.icb, geneSig, time.censor, n.cutoff, n0.cutoff,
     dat_clin <- colData(dat.icb)
   }
 
-  cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
+  if( sum(nrow(clin)) > 0  ){
 
-  message(paste(study, cancer_type, sep="/"))
+    dat_expr <- dat.icb
+    dat_clin <- clin
+
+  }
+
+  #cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
+
+  #message(paste(study, cancer_type, sep="/"))
 
   ## association with OS
   if( surv.outcome == "OS"){
 
     if( !( cancer_type %in% "Lymph_node" ) &
-        length( dat_clin$event_occurred_os[ !is.na( dat_clin$event_occurred_os ) & dat_clin$cancer_type %in% cancer_type ] ) >= n.cutoff ){
+        length( dat_clin$event_occurred_os[ !is.na( dat_clin$event_occurred_os ) ] ) >= n.cutoff ){
 
-      cox <- survDicho( surv = dat_clin$event_occurred_os[ dat_clin$cancer_type %in% cancer_type ] ,
-                        time = dat_clin$survival_time_os[ dat_clin$cancer_type %in% cancer_type ] ,
+      cox <- survDicho( surv = dat_clin$event_occurred_os ,
+                        time = dat_clin$survival_time_os ,
                         time.censor = time.censor ,
                         var = geneSig,
                         n0.cutoff = n0.cutoff,
@@ -156,8 +172,8 @@ geneSigSurvDicho <- function(dat.icb, geneSig, time.censor, n.cutoff, n0.cutoff,
                          SE = cox["SE"],
                          N = cox["N"],
                          Pval = cox["Pval"],
-                         Cancer_type = unique(dat_clin$cancer_type),
-                         Treatment = unique(dat_clin$treatment))
+                         Cancer_type = cancer.type,
+                         Treatment = treatment)
 
     }else{  res <- data.frame( Outcome = "OS",
                                Gene = sig.name,
@@ -179,10 +195,10 @@ geneSigSurvDicho <- function(dat.icb, geneSig, time.censor, n.cutoff, n0.cutoff,
   if( surv.outcome == "PFS"){
 
     if( !( cancer_type %in% "Lymph_node" ) &
-        length( dat_clin$event_occurred_pfs[ !is.na( dat_clin$event_occurred_pfs ) & dat_clin$cancer_type %in% cancer_type ] ) >= n.cutoff ){
+        length( dat_clin$event_occurred_pfs[ !is.na( dat_clin$event_occurred_pfs ) ] ) >= n.cutoff ){
 
-      cox <- survDicho( surv = dat_clin$event_occurred_pfs[ dat_clin$cancer_type %in% cancer_type ] ,
-                        time = dat_clin$survival_time_pfs[ dat_clin$cancer_type %in% cancer_type ] ,
+      cox <- survDicho( surv = dat_clin$event_occurred_pfs ,
+                        time = dat_clin$survival_time_pfs ,
                         time.censor = time.censor ,
                         var = geneSig,
                         n0.cutoff = n0.cutoff,
@@ -197,8 +213,8 @@ geneSigSurvDicho <- function(dat.icb, geneSig, time.censor, n.cutoff, n0.cutoff,
                          SE = cox["SE"],
                          N = cox["N"],
                          Pval = cox["Pval"],
-                         Cancer_type = unique(dat_clin$cancer_type),
-                         Treatment = unique(dat_clin$treatment))
+                         Cancer_type = cancer.type,
+                         Treatment = treatment)
 
     }else{  res <- data.frame( Outcome = "PFS",
                                Gene = sig.name,
@@ -227,11 +243,11 @@ geneSigSurvDicho <- function(dat.icb, geneSig, time.censor, n.cutoff, n0.cutoff,
 # n1.cutoff: cutoff for NR (== 1) samples
 # n0.cutoff: cutoff for R (== 0) samples
 
-geneSigLogReg <- function(dat.icb, geneSig, n.cutoff, study, sig.name, n0.cutoff, n1.cutoff){
+geneSigLogReg <- function(dat.icb, clin = NULL, geneSig, n.cutoff, study, sig.name, n0.cutoff, n1.cutoff, cancer.type, treatment){
 
-       if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment") ){
-          stop(message("function requires SummarizedExperiment or MultiAssayExperiment class of data"))
-         }
+      if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "data.frame", "matrix") ){
+          stop(message("function requires SummarizedExperiment, MultiAssayExperiment, data.frame, or matrix class of data"))
+        }
 
        if( class(dat.icb) == "MultiAssayExperiment"){
          dat <- createSE(dat.icb)
@@ -244,19 +260,26 @@ geneSigLogReg <- function(dat.icb, geneSig, n.cutoff, study, sig.name, n0.cutoff
         dat_clin <- colData(dat.icb)
        }
 
-    cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
+     if( sum(nrow(clin)) > 0  ){
 
-    message(paste(study, cancer_type, sep="/"))
+       dat_expr <- dat.icb
+       dat_clin <- clin
+
+     }
+
+    #cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
+
+    #message(paste(study, cancer_type, sep="/"))
 
     dat_clin <- dat_clin[!is.na(dat_clin$response), ]
-    geneSig <- geneSig[names(geneSig) %in% rownames(dat_clin)] #dat_clin$patientid
+    geneSig <- geneSig[names(geneSig) %in% rownames(dat_clin)]
 
     if( length(dat_clin$response) >= n.cutoff &
         sum(dat_clin$response == "NR", na.rm = TRUE) >= n1.cutoff &
         sum(dat_clin$response == "R", na.rm = TRUE) >= n0.cutoff ){
 
-        x <- ifelse( dat_clin$response[ dat_clin$cancer_type %in% cancer_type ] %in% "R" , 0 ,
-                     ifelse( dat_clin$response[ dat_clin$cancer_type %in% cancer_type ] %in% "NR" , 1 , NA ) )
+        x <- ifelse( dat_clin$response %in% "R" , 0 ,
+                     ifelse( dat_clin$response %in% "NR" , 1 , NA ) )
 
           fit <- glm( x ~ geneSig , family=binomial( link="logit" ) )
 
@@ -267,8 +290,8 @@ geneSigLogReg <- function(dat.icb, geneSig, n.cutoff, study, sig.name, n0.cutoff
                              SE = round( summary(fit)$coefficients[ "geneSig" , "Std. Error" ] , 3 ),
                              N = length(x[!is.na(x)]),
                              Pval = summary(fit)$coefficients[ "geneSig" , "Pr(>|z|)" ],
-                             Cancer_type = unique(dat_clin$cancer_type),
-                             Treatment = unique(dat_clin$treatment))
+                             Cancer_type = cancer.type,
+                             Treatment = treatment)
 
 
     }else{  res <- data.frame( Outcome = "R vs NR",
