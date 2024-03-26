@@ -46,8 +46,7 @@ geneSurvCont <- function(dat.icb, clin = NULL, time.censor, missing.perc, const.
         ## association with OS
         if( surv.outcome == "OS" ){
 
-          if( nrow(data) & !( cancer_type %in% "Lymph_node" ) &
-              length( dat_clin$event_occurred_os[ !is.na( dat_clin$event_occurred_os ) ] ) >= n.cutoff ){
+          if( nrow(data) & length( dat_clin$event_occurred_os[ !is.na( dat_clin$event_occurred_os ) ] ) >= n.cutoff ){
 
             res <- lapply(1:nrow(data), function(k){
 
@@ -95,8 +94,7 @@ geneSurvCont <- function(dat.icb, clin = NULL, time.censor, missing.perc, const.
         if( surv.outcome == "PFS"){
 
 
-          if( nrow(data) & !( cancer_type %in% "Lymph_node" ) &
-              length( dat_clin$event_occurred_pfs[ !is.na( dat_clin$event_occurred_pfs ) ] ) >= n.cutoff ){
+          if( nrow(data) & length( dat_clin$event_occurred_pfs[ !is.na( dat_clin$event_occurred_pfs ) ] ) >= n.cutoff ){
 
             res <- lapply(1:nrow(data), function(k){
 
@@ -199,8 +197,7 @@ geneSurvDicho <- function(dat.icb, clin = NULL, time.censor, missing.perc, const
   ## association with OS
   if( surv.outcome == "OS"){
 
-    if( nrow(data) & !( cancer_type %in% "Lymph_node" ) &
-        length( dat_clin$event_occurred_os[ !is.na( dat_clin$event_occurred_os ) ] ) >= n.cutoff ){
+    if( nrow(data) &  length( dat_clin$event_occurred_os[ !is.na( dat_clin$event_occurred_os ) ] ) >= n.cutoff ){
 
       res <- lapply(1:nrow(data), function(k){
 
@@ -252,8 +249,7 @@ geneSurvDicho <- function(dat.icb, clin = NULL, time.censor, missing.perc, const
   if( surv.outcome == "PFS"){
 
 
-    if( nrow(data) & !( cancer_type %in% "Lymph_node" ) &
-        length( dat_clin$event_occurred_pfs[ !is.na( dat_clin$event_occurred_pfs ) ) >= n.cutoff ){
+    if( nrow(data) & length( dat_clin$event_occurred_pfs[ !is.na( dat_clin$event_occurred_pfs  ) ] ) >= n.cutoff ){
 
       res <- lapply(1:nrow(data), function(k){
 
