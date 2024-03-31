@@ -13,9 +13,9 @@ createSE <- function(dat.icb){
   dat_type <- c("expr", "expr_gene_tpm")
 
   dat_type_ix <- which(dat_type %in% names(dat.icb))
-  expr <- assay(dat_icb[[dat_type[dat_type_ix]]])
-  clin <- as.data.frame(colData(dat_icb[[dat_type[dat_type_ix]]]))
-  annot <- as.data.frame(rowData(dat_icb[[dat_type[dat_type_ix]]]))
+  expr <- assay(dat.icb[[dat_type[dat_type_ix]]])
+  clin <- as.data.frame(colData(dat.icb[[dat_type[dat_type_ix]]]))
+  annot <- as.data.frame(rowData(dat.icb[[dat_type[dat_type_ix]]]))
 
   ## limit to protein-coding genes
   annot <- annot[annot$gene_type == "protein_coding", , drop=FALSE]
