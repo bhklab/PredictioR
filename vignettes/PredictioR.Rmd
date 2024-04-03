@@ -239,8 +239,8 @@ dat_expr <- as.matrix(assay(expr[["Padron__Pancreas__PD-(L)1"]]))
 dat_clin <- colData(expr[["Padron__Pancreas__PD-(L)1"]]) %>% as.data.frame()
 cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= 15 ] )
        
-survDicho( surv = dat_clin$event_occurred_pfs[ dat_clin$cancer_type %in% cancer_type ] ,
-           time = dat_clin$survival_time_pfs[ dat_clin$cancer_type %in% cancer_type ] ,
+survDicho( surv = dat_clin$event_occurred_pfs ,
+           time = dat_clin$survival_time_pfs,
            time.censor= 24,
            var = as.numeric( scale( dat_expr["CXCL9" , ] )),
            n0.cutoff = 5,
@@ -256,8 +256,8 @@ The log-rank test is the most widely non-parametric used method of comparing two
 
 ```{r Fig1, message=FALSE, fig.width=5, fig.height=5, fig.cap = "CXCL9 association with immunotherapy PFS", fig.align="center"}
   
-KMPlot(surv = dat_clin$event_occurred_pfs[ dat_clin$cancer_type %in% cancer_type ],
-       time = dat_clin$survival_time_pfs[ dat_clin$cancer_type %in% cancer_type ],
+KMPlot(surv = dat_clin$event_occurred_pfs,
+       time = dat_clin$survival_time_pfs,
        time.censor = 24,
        var =  as.numeric(scale(dat_expr["CXCL9", ])), 
        title = "CXCL9 and PFS Association",

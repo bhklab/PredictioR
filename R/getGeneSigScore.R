@@ -692,7 +692,7 @@ geneSigIPS <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const.
 
 
     geneSig = NULL
-    if( ncol(data) & nrow(data) > 10000 ){ # Question: no need to consider the 80% of genes in data?
+    if( ncol(data) & nrow(data) > 10000 ){
 
         #print( paste( signature_name , "|" , "Specific" , sep=" " ) )
 
