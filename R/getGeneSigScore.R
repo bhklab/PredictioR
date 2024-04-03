@@ -70,7 +70,7 @@ geneSigGSVA <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const
       gsvaPar <- gsvaParam(scale.fun( x=data ) , list(sig$gene_name))
       geneSig <- gsva(gsvaPar, verbose=FALSE)
       #geneSig <- as.numeric(gsva( scale.fun( x=data ) , list(sig$gene_name) , verbose=FALSE ) )
-      names( geneSig ) <- colnames(data)
+      #names( geneSig ) <- colnames(data)
 
     }else{
 
