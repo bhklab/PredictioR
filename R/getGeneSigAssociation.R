@@ -36,13 +36,12 @@ geneSigSurvCont <- function(dat.icb, clin = NULL, geneSig, time.censor, n.cutoff
         ## association with OS
         if( surv.outcome == "OS"){
 
-          if( !( cancer_type %in% "Lymph_node" ) &
-              length( dat_clin$event_occurred_os[ !is.na( dat_clin$event_occurred_os ) ] ) >= n.cutoff ){
+          if( length( dat_clin$event_occurred_os[ !is.na( dat_clin$event_occurred_os ) ] ) >= n.cutoff ){
 
               cox <- survCont( surv = dat_clin$event_occurred_os ,
                                time = dat_clin$survival_time_os ,
                                time.censor = time.censor ,
-                               var = geneSig )
+                               var = geneSig)
 
               res <- data.frame( Outcome = "OS",
                           Gene = sig.name,
@@ -73,8 +72,7 @@ geneSigSurvCont <- function(dat.icb, clin = NULL, geneSig, time.censor, n.cutoff
         ## association with PFS
         if( surv.outcome == "PFS"){
 
-          if( !( cancer_type %in% "Lymph_node" ) &
-              length( dat_clin$event_occurred_pfs[ !is.na( dat_clin$event_occurred_pfs ) ] ) >= n.cutoff ){
+          if( length( dat_clin$event_occurred_pfs[ !is.na( dat_clin$event_occurred_pfs ) ] ) >= n.cutoff ){
 
             cox <- survCont( surv = dat_clin$event_occurred_pfs ,
                              time = dat_clin$survival_time_pfs ,
@@ -153,8 +151,7 @@ geneSigSurvDicho <- function(dat.icb, clin = NULL, geneSig, time.censor, n.cutof
   ## association with OS
   if( surv.outcome == "OS"){
 
-    if( !( cancer_type %in% "Lymph_node" ) &
-        length( dat_clin$event_occurred_os[ !is.na( dat_clin$event_occurred_os ) ] ) >= n.cutoff ){
+    if( length( dat_clin$event_occurred_os[ !is.na( dat_clin$event_occurred_os ) ] ) >= n.cutoff ){
 
       cox <- survDicho( surv = dat_clin$event_occurred_os ,
                         time = dat_clin$survival_time_os ,
@@ -194,8 +191,7 @@ geneSigSurvDicho <- function(dat.icb, clin = NULL, geneSig, time.censor, n.cutof
   ## association with PFS
   if( surv.outcome == "PFS"){
 
-    if( !( cancer_type %in% "Lymph_node" ) &
-        length( dat_clin$event_occurred_pfs[ !is.na( dat_clin$event_occurred_pfs ) ] ) >= n.cutoff ){
+    if( length( dat_clin$event_occurred_pfs[ !is.na( dat_clin$event_occurred_pfs ) ] ) >= n.cutoff ){
 
       cox <- survDicho( surv = dat_clin$event_occurred_pfs ,
                         time = dat_clin$survival_time_pfs ,
@@ -268,11 +264,7 @@ geneSigLogReg <- function(dat.icb, clin = NULL, geneSig, n.cutoff, study, sig.na
      }
 
     #cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
-
     #message(paste(study, cancer_type, sep="/"))
-
-    dat_clin <- dat_clin[!is.na(dat_clin$response), ]
-    geneSig <- geneSig[names(geneSig) %in% rownames(dat_clin)]
 
     if( length(dat_clin$response) >= n.cutoff &
         sum(dat_clin$response == "NR", na.rm = TRUE) >= n1.cutoff &
