@@ -148,7 +148,7 @@ metaPerCan.fun <- function(coef, se, study, pval, n, cancer.type, treatment, can
 
     group <- names(table(data$Cancer_type)[table(data$Cancer_type) >= 3])
 
-    if( length(group) > 0){
+    if( length(group) > 0 ){
 
       res <- lapply(1:length(group), function(i){
 
@@ -182,14 +182,14 @@ metaPerCan.fun <- function(coef, se, study, pval, n, cancer.type, treatment, can
 
     }else{
 
-      print("not enough studies to do cancer-specific meta-analysis")
+      message("not enough studies to do cancer-specific meta-analysis")
       res <- NA
 
     }
 
   }else{
 
-    print("not enough studies to do cancer-specific meta-analysis")
+    message("not enough studies to do cancer-specific meta-analysis")
     res <- NA
 
   }
@@ -259,14 +259,14 @@ metaPerTreatment.fun <- function(coef, se, study, pval, n, cancer.type, treatmen
 
     }else{
 
-      print("not enough studies to do cancer-specific meta-analysis")
+      message("not enough studies to do cancer-specific meta-analysis")
       res <- NA
 
     }
 
   }else{
 
-    print("not enough studies to do cancer-specific meta-analysis")
+    message("not enough studies to do cancer-specific meta-analysis")
     res <- NA
 
   }

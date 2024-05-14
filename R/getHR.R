@@ -202,7 +202,7 @@ volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab
     data$diffexpressed[data$coef > 0 & data$pval < cutoff] <- paste(paste("Pval < ", cutoff, sep=""), "Coef > 0", sep=", ")
     data$diffexpressed[data$coef < 0 & data$pval < cutoff] <- paste(paste("Pval < ", cutoff, sep=""), "Coef < 0", sep=", ")
 
-    mycolors <- c( "#984ea3","#386cb0", "#999999")
+    mycolors <- c( "#de2d26","#43a2ca", "#cccccc")
     names(mycolors) <- c(paste(paste("Pval < ", cutoff, sep=""), "Coef > 0", sep=", "),
                          paste(paste("Pval < ", cutoff, sep=""), "Coef < 0", sep=", "),
                          "NO")
@@ -224,7 +224,7 @@ volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab
     data$diffexpressed[data$coef > 0 & data$FDR < cutoff] <- paste(paste("FDR < ", cutoff, sep=""), "Coef > 0", sep=", ")
     data$diffexpressed[data$coef < 0 & data$FDR < cutoff] <- paste(paste("FDR < ", cutoff, sep=""), "Coef < 0", sep=", ")
 
-    mycolors <- c( "#984ea3","#386cb0", "#999999")
+    mycolors <- c("#de2d26","#43a2ca", "#cccccc")
     names(mycolors) <- c(paste(paste("FDR < ", cutoff, sep=""), "Coef > 0", sep=", "),
                          paste(paste("FDR < ", cutoff, sep=""), "Coef < 0", sep=", "),
                          "NO")
@@ -243,29 +243,28 @@ volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab
   }
 
   ggplot(data=data, aes(x=coef, y=-log10(pval), col= diffexpressed)) +
-    geom_point(size = 3) + theme_minimal() +
+    geom_point(size = 2.5) + theme_minimal() +
     ylab("-log10 P value") +
     xlab(x.lab) +
     scale_colour_manual(values = mycolors) +
     theme(
-      axis.text.x=element_text(size=12,  face="bold"),
-      axis.title=element_text(size=12,face="bold"),
-      axis.text.y=element_text(size=12, face = "bold"),
+      axis.text.x=element_text(size=10,  face="bold"),
+      axis.title=element_text(size=10,face="bold"),
+      axis.text.y=element_text(size=10, face = "bold"),
       panel.grid.major = element_blank(),
       panel.grid.minor = element_blank(),
       panel.background = element_blank(),
       plot.background = element_blank(),
       axis.line = element_line(colour = "black"),
       legend.position="bottom",
-      legend.text = element_text(size = 9, face="bold"),
+      legend.text = element_text(size = 7, face="bold"),
       legend.title = element_blank()) +
-      geom_text_repel(aes(label= delabel),
-                    size = 2.7,
+    geom_text_repel(aes(label= delabel),
+                    size = 2.4,
                     color = "black",
                     min.segment.length = 0,
                     na.rm = TRUE, direction = "both",
                     seed = 2356,
                     fontface= "bold",
                     max.overlaps = 50)
-  }
-
+}
