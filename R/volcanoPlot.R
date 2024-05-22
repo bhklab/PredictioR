@@ -1,0 +1,99 @@
+##########################################################################################
+## volcano plot for signatures or genes association with immunotherapy responses results
+##########################################################################################
+
+#' Title
+#'
+#' @param feature aaaaa
+#' @param coef bbbbbb
+#' @param pval ccccc
+#' @param padj ddddd
+#' @param pos.cutoff eeeee
+#' @param neg.cutoff fffff
+#' @param x.lab gggg
+#' @param padj.label hhhh
+#' @param cutoff iiiii
+#'
+#' @return jjjj
+#' @export
+#'
+#' @examples
+volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab, padj.label, cutoff){
+  
+  data <- data.frame(feature = feature,
+                     coef = coef,
+                     pval = pval,
+                     FDR = padj)
+  
+  if( padj.label == FALSE){
+    
+    data$diffexpressed <- "NO"
+    data$diffexpressed[data$coef > 0 & data$pval < cutoff] <- paste(paste("Pval < ", cutoff, sep=""), "Coef > 0", sep=", ")
+    data$diffexpressed[data$coef < 0 & data$pval < cutoff] <- paste(paste("Pval < ", cutoff, sep=""), "Coef < 0", sep=", ")
+    
+    mycolors <- c( "#de2d26","#43a2ca", "#cccccc")
+    names(mycolors) <- c(paste(paste("Pval < ", cutoff, sep=""), "Coef > 0", sep=", "),
+                         paste(paste("Pval < ", cutoff, sep=""), "Coef < 0", sep=", "),
+                         "NO")
+    
+    data$delabel <- NA
+    data <- data[order(data$pval, decreasing = FALSE), ]
+    id_pos <- data[data$coef > 0 , "feature"][1:pos.cutoff]
+    id_neg <- data[data$coef < 0 , "feature"][1:neg.cutoff]
+    id <- c(id_pos, id_neg)
+    
+    for(j in 1:length(id)){
+      k <- which(data$feature == id[j])
+      data$delabel[k] <- data[k, ]$feature
+    }
+    
+  }else{
+    
+    data$diffexpressed <- "NO"
+    data$diffexpressed[data$coef > 0 & data$FDR < cutoff] <- paste(paste("FDR < ", cutoff, sep=""), "Coef > 0", sep=", ")
+    data$diffexpressed[data$coef < 0 & data$FDR < cutoff] <- paste(paste("FDR < ", cutoff, sep=""), "Coef < 0", sep=", ")
+    
+    mycolors <- c("#de2d26","#43a2ca", "#cccccc")
+    names(mycolors) <- c(paste(paste("FDR < ", cutoff, sep=""), "Coef > 0", sep=", "),
+                         paste(paste("FDR < ", cutoff, sep=""), "Coef < 0", sep=", "),
+                         "NO")
+    
+    data$delabel <- NA
+    data <- data[order(data$FDR, decreasing = FALSE), ]
+    id_pos <- data[data$coef > 0 , "feature"][1:pos.cutoff]
+    id_neg <- data[data$coef < 0 , "feature"][1:neg.cutoff]
+    id <- c(id_pos, id_neg)
+    
+    for(j in 1:length(id)){
+      k <- which(data$feature == id[j])
+      data$delabel[k] <- data[k, ]$feature
+    }
+    
+  }
+  
+  ggplot(data=data, aes(x=coef, y=-log10(pval), col= diffexpressed)) +
+    geom_point(size = 2.5) + theme_minimal() +
+    ylab("-log10 P value") +
+    xlab(x.lab) +
+    scale_colour_manual(values = mycolors) +
+    theme(
+      axis.text.x=element_text(size=10,  face="bold"),
+      axis.title=element_text(size=10,face="bold"),
+      axis.text.y=element_text(size=10, face = "bold"),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      panel.background = element_blank(),
+      plot.background = element_blank(),
+      axis.line = element_line(colour = "black"),
+      legend.position="bottom",
+      legend.text = element_text(size = 7, face="bold"),
+      legend.title = element_blank()) +
+    geom_text_repel(aes(label= delabel),
+                    size = 2.4,
+                    color = "black",
+                    min.segment.length = 0,
+                    na.rm = TRUE, direction = "both",
+                    seed = 2356,
+                    fontface= "bold",
+                    max.overlaps = 50)
+}

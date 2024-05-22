@@ -1,12 +1,9 @@
 Package: PredictioR
-Title: What the Package Does (One Line, Title Case)
+Title: Biomarker Discovery in Immunotherapy Response
 Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+Authors@R: Farnoosh Babazadeh <farnoosh.abbasaghababazadeh@uhn.ca>
+Description: The PredictioR package provides relevant functions for biomarker discovery in immunotherapy response through pan-cancer and cancer-specific analyses. This package includes a number of algorithms for predicting immunotherapy response. The package also includes implementations of immunotherapy signature score computation. 
+License: GPL-3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
