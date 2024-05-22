@@ -16,11 +16,8 @@ First, we load the necessary libraries and functions into the workspace.
 
 library(stringr)
 app_dir <- str_split(rstudioapi::getActiveDocumentContext()$path,'PredictioR')[[1]][1]
-## load function from github repo: bhklab/Predictio
-source(file.path(app_dir, 'PredictioR', "R/getHR.R"))
-
 dir <- file.path(app_dir, 'PredictioR', "result/FL") 
-#dir <- "C:/PredictioR/result/FL/integrateAI_04122024"
+
 library(gridExtra)
 library(meta)
 library(grid)
@@ -29,7 +26,7 @@ library(ggplot2)
 library(ggrepel)
 library(pheatmap)
 library(RColorBrewer)
-
+library(PredictioR)
 ## meta-analysis using fixed-effect model
 metafun <- function(coef, se, study, pval, n, cancer.type, treatment, cancer.spec = FALSE, treatment.spec = FALSE, feature){
 
