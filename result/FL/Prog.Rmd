@@ -19,7 +19,7 @@ app_dir <- str_split(rstudioapi::getActiveDocumentContext()$path,'PredictioR')[[
 ## load function from github repo: bhklab/Predictio
 source(file.path(app_dir, 'PredictioR', "R/getHR.R"))
 
-dir <- file.path(app_dir, 'PredictioR', "result/FL/integrateAI_04122024") 
+dir <- file.path(app_dir, 'PredictioR', "result/FL") 
 #dir <- "C:/PredictioR/result/FL/integrateAI_04122024"
 library(gridExtra)
 library(meta)
