@@ -1,0 +1,227 @@
+---
+title: "Visualizing Insights: DHDP Federated Learning in the Identification of New Biomarkers for Immunotherapy Response"
+output:
+  BiocStyle::html_document
+---
+
+# Introduction
+
+In the rapidly evolving field of immuno-oncology, the discovery of effective biomarkers is crucial for advancing personalized treatment strategies. This section explores how Federated Learning (FL) facilitates the identification of new biomarkers for immunotherapy responses. We focus on visualizing FL data to uncover patterns and insights that traditional analyses might miss. Through detailed visual representations, researchers and clinicians can better understand the effectiveness of different biomarkers and optimize therapeutic approaches accordingly. Here, we demonstrate how visualization techniques applied to FL data can highlight pivotal trends and interactions, driving forward the development of targeted immunotherapy treatments.
+
+# Loading Functions
+
+First, we load the necessary libraries and functions into the workspace.
+
+```{r load, echo=FALSE, message=FALSE, warning=FALSE}
+
+library(stringr)
+app_dir <- str_split(rstudioapi::getActiveDocumentContext()$path,'PredictioR')[[1]][1]
+## load function from github repo: bhklab/Predictio
+source(file.path(app_dir, 'PredictioR', "R/getHR.R"))
+
+dir <- file.path(app_dir, 'PredictioR', "result/FL/integrateAI_04122024") 
+#dir <- "C:/PredictioR/result/FL/integrateAI_04122024"
+library(gridExtra)
+library(meta)
+library(grid)
+library(dplyr)
+library(ggplot2)
+library(ggrepel)
+library(pheatmap)
+library(RColorBrewer)
+
+## meta-analysis using fixed-effect model
+metafun <- function(coef, se, study, pval, n, cancer.type, treatment, cancer.spec = FALSE, treatment.spec = FALSE, feature){
+
+  data <- data.frame( Gene = feature,
+                      Study = as.character( study ),
+                      N = n,
+                      Coef = as.numeric(as.character( coef )),
+                      SE = as.numeric(as.character( se )),
+                      Pval = as.numeric(as.character( pval )),
+                      Cancer_type = as.character( cancer.type ),
+                      Treatment = as.character(treatment))
+
+  data <- data[ order( data$Coef ) , ]
+
+  ## at least 3 studies needed to do the random effect meta-analyses
+  if(nrow(data) >= 3){
+
+    if( cancer.spec == TRUE ){
+
+      cancer <- cancerfun( data )
+      data <- cancer[ order( cancer$Coef ) , ]
+
+    }
+
+    if( treatment.spec == TRUE ){
+
+      treatment <- treatmentfun( data )
+      data <- treatment[ order( treatment$Coef ) , ]
+
+    }
+
+    meta <- metagen( TE = Coef,
+                     seTE = SE ,
+                     data = data ,
+                     studlab = Study ,
+                     fixed = TRUE ,
+                     random = FALSE ,
+                     control = list( maxiter = 10000 , stepadj=0.5 ) )
+
+    meta_res <- data.frame(Gene = feature,
+                           Coef = meta$TE.fixed ,
+                           SE = meta$seTE.fixed ,
+                           CI_lower = meta$lower.fixed ,
+                           CI_upper = meta$upper.fixed ,
+                           Pval = meta$pval.fixed ,
+                           I2 = meta$I2 ,
+                           Q_Pval = meta$pval.Q )
+  }else{
+
+    print("not enough studies to do meta-analysis")
+    meta <- NA
+    meta_res <- data.frame(Gene = feature,
+                           Coef = NA,
+                           SE =  NA,
+                           CI_lower = NA,
+                           CI_upper = NA,
+                           Pval = NA,
+                           I2= NA,
+                           Q_Pval = NA)
+         }
+
+  return(list(input_data = data,
+              meta_output = meta,
+              meta_summery = meta_res))
+  }
+
+## forestplot 
+forestPlot <- function(coef, se, study, pval, n , cancer.type, treatment, xlab , label, feature){
+
+  study <- paste( study , ", n = " , n , sep= "" )
+  res <- metafun(coef, se, study, pval, n, cancer.type, treatment, cancer.spec = FALSE, treatment.spec = FALSE, feature)
+  data <- res$input_data
+  meta <- res$meta_output
+
+  m <- c( min( c( 0 , data$Coef ) , na.rm=TRUE) - .5 , ( max( c( 0 , abs(data$Coef) ) , na.rm=TRUE) ) + .5 )
+
+  forest( meta ,
+          leftcols = c("studlab", "effect.ci" , "Pval" ),
+          leftlabs= c( "Study" , paste(label, "[95%CI]", sep = " ") , "P-value" ) ,
+          xlab = xlab,
+          digits.se = 2 ,
+          colgap.forest=unit(10, "mm") ,
+          plotwidth = unit( 30 , "mm") ,
+          pooled.totals = FALSE,
+          smlab = " ",
+          comb.random =FALSE,
+          comb.fixed = TRUE,
+          text.fixed.w = TRUE,
+          layout = "JAMA",
+          print.I2.ci = TRUE,
+          print.Q = FALSE,
+          print.pval.Q = TRUE,
+          print.I2 = TRUE,
+          print.tau2 = FALSE,
+          resid.hetstat = FALSE,
+          test.overall.random = FALSE,
+          test.overall.fixed = TRUE,
+          xlim = m ,
+          col.square= "#4d4d4d" ,
+          col.study= "#4d4d4d" ,
+          col.square.lines = "#4d4d4d" ,
+          col.diamond.random  = "#2166ac"  ,
+          col.diamond.lines.random  ="#2166ac" ,
+          col.by = "#2166ac",
+          addrow.subgroups=TRUE )
+
+  }
+
+
+```
+
+# Load federated learning data
+
+We load the FL data shared by the DHDP FL team. This process involves retrieving datasets that are distributed across various institutions without compromising data privacy. We have loaded results for per-cancer melanoma immunotherapy associations.
+
+```{r load data}
+
+# load per-cancer melanoma
+res.percan <- read.csv(file.path(dir, "per_cancer_melanoma_result.csv"))
+
+```
+
+
+# Volcano Plots of Immunotherapy TIGIT Biomarker Associations 
+
+```{r volcano, include = FALSE}
+
+# prepare per-cancer Melanoma data
+df.percan.melanoma <- res.percan[res.percan$Cancer_type =="Melanoma", ]
+df.percan.melanoma$FDR.FL <- p.adjust(df.percan.melanoma$Pval.FL, method = "BH")
+
+```
+
+We utilize volcano plots to visually represent the results of our analysis on immunotherapy biomarker associations. By plotting the negative log of the p-value against the effect size (i.e., logOR), these plots help us quickly identify biomarkers that show potentially significant differences in response to immunotherapy. 
+
+
+```{r volcano1, fig.align="center", fig.cap="Immunotherapy biomarker associations", fig.height=5, fig.width=5, message=FALSE}
+
+volcanoPlot(feature = df.percan.melanoma$Gene,
+              coef = df.percan.melanoma$coef.FL,
+              pval = df.percan.melanoma$Pval.FL,
+              padj = df.percan.melanoma$FDR.FL,
+              neg.cutoff = 24,
+              pos.cutoff = 1,
+              x.lab = "logOR estimate (melanoma)",
+              padj.label = TRUE,
+              cutoff = 0.05)
+
+```
+
+
+# Forestplot plots of Immunotherapy TIGIT Biomarker Associations
+
+We present forest plots to summarize the associations between the TIGIT biomarker and its impact on immunotherapy responses across per-cancer melanoma. We aim to facilitate a better understanding of how TIGIT correlations vary with patient responses to treatment across different immunotherapy studies.
+
+```{r association, include = FALSE}
+
+## association results per studies
+dir0 <- "C:/PredictioR/result/FL/DHDP_03272024/result/association"
+files <- list.files(dir0)
+
+res.assoc <- lapply(1:length(files), function(k){
+
+  read.csv(file.path(dir0, files[k]))
+
+})
+
+res.assoc <- do.call(rbind, res.assoc)
+
+```
+
+## per-cancer: melanoma
+
+In the per-cancer melanoma analysis, TIGIT is negatively associated with immunotherapy response (logOR = -0.54, p = 0.03), with no significant heterogeneity observed across studies.
+
+```{r forestplot2, message=FALSE, warning=FALSE, fig.width=8, fig.height=3, fig.cap = "TIGIT association with immunotherpay response: per-cancer melanoma", fig.align="center"}
+
+df <- res.assoc[res.assoc$Gene == "TIGIT", ]
+df.melanoma <- df[df$Cancer_type == "Melanoma", ]
+
+forestPlot(coef = df.melanoma$Coef,
+           se = df.melanoma$SE,
+           study  = df.melanoma$Study,
+           pval = df.melanoma$Pval,
+           n = df.melanoma$N,
+           cancer.type = do.call(rbind, strsplit(df.melanoma$Study, split='__', fixed=TRUE))[, 2],
+           treatment = df.melanoma$Treatment,
+           feature = unique(df.melanoma$Gene),
+           xlab = "logOR estimate",
+           label = "logOR")
+
+
+```
+
+
