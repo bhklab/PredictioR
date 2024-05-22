@@ -1,7 +1,7 @@
 Package: PredictioR
 Title: Biomarker Discovery in Immunotherapy Response
 Version: 0.0.0.9000
-Authors@R: Farnoosh Babazadeh <farnoosh.abbasaghababazadeh@uhn.ca>
+Authors@R: Farnoosh Babazadeh <farnooshbabazadeh@gmail.com>
 Description: The PredictioR package provides relevant functions for biomarker discovery in immunotherapy response through pan-cancer and cancer-specific analyses. This package includes a number of algorithms for predicting immunotherapy response. The package also includes implementations of immunotherapy signature score computation. 
 License: GPL-3
 Encoding: UTF-8
