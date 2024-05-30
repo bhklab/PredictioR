@@ -1,11 +1,11 @@
-#' Title
+#' Convert MultiAssayExperiment Object into SummarizedExperiment Object limited to protein-coding genes  
 #'
-#' @param dat.icb A MAE object including genomic, clinical and annotation data. 
+#' @param dat.icb The MAE object including RNA, DNA, clinical and annotation data.
 #'
-#' @return A SE object.
+#' @return A SummarizedExperiment object.
 #' @export
 #'
-#' @examples
+#' @examples 
 createSE <- function(dat.icb){
   
   ## slot names for expression data

@@ -2,20 +2,20 @@
 % Please edit documentation in R/rem.R
 \name{rem}
 \alias{rem}
-\title{Title}
+\title{Exclude genes with zero or low expression}
 \usage{
 rem(x, missing.perc, const.int)
 }
 \arguments{
-\item{x}{An expression data matrix.}
+\item{x}{The expression matrix or data frame with genes as rows and samples as columns.}
 
-\item{missing.perc}{A cutoff for percentage of missing variables across samples.}
+\item{missing.perc}{A cutoff to remove genes with zero expression across samples.}
 
-\item{const.int}{A constant value to do log-transformed using TPM data.}
+\item{const.int}{A pseudocount is added to the TPM (Transcripts Per Million) values before performing a log transformation.}
 }
 \value{
-An expression data after removing low-expressed genes.
+Processed expression data after removing low-expressed genes.
 }
 \description{
-Title
+Exclude genes with zero or low expression
 }

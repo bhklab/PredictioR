@@ -2,16 +2,16 @@
 % Please edit documentation in R/createSE.R
 \name{createSE}
 \alias{createSE}
-\title{Title}
+\title{Convert MultiAssayExperiment Object into SummarizedExperiment Object limited to protein-coding genes}
 \usage{
 createSE(dat.icb)
 }
 \arguments{
-\item{dat.icb}{A MAE object including genomic, clinical and annotation data.}
+\item{dat.icb}{The MAE object including RNA, DNA, clinical and annotation data.}
 }
 \value{
-A SE object.
+A SummarizedExperiment object.
 }
 \description{
-Title
+Convert MultiAssayExperiment Object into SummarizedExperiment Object limited to protein-coding genes
 }
