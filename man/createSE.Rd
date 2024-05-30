@@ -2,7 +2,7 @@
 % Please edit documentation in R/createSE.R
 \name{createSE}
 \alias{createSE}
-\title{Convert MultiAssayExperiment Object into SummarizedExperiment Object limited to protein-coding genes}
+\title{Convert MultiAssayExperiment Object into SummarizedExperiment Object}
 \usage{
 createSE(dat.icb)
 }
@@ -13,5 +13,5 @@ createSE(dat.icb)
 A SummarizedExperiment object.
 }
 \description{
-Convert MultiAssayExperiment Object into SummarizedExperiment Object limited to protein-coding genes
+Convert MultiAssayExperiment (MAE) bbject into SummarizedExperiment (SE) object which is limited to protein-coding genes.
 }

@@ -1,4 +1,8 @@
-#' Convert MultiAssayExperiment Object into SummarizedExperiment Object limited to protein-coding genes  
+#' Convert MultiAssayExperiment Object into SummarizedExperiment Object 
+#' @description
+#' Convert MultiAssayExperiment (MAE) bbject into SummarizedExperiment (SE) object which is limited to protein-coding genes. 
+#'  
+#'  
 #'
 #' @param dat.icb The MAE object including RNA, DNA, clinical and annotation data.
 #'

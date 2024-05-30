@@ -2,7 +2,7 @@
 % Please edit documentation in R/rem.R
 \name{rem}
 \alias{rem}
-\title{Exclude genes with zero or low expression}
+\title{Exclude Genes with Low Expression}
 \usage{
 rem(x, missing.perc, const.int)
 }
@@ -17,5 +17,5 @@ rem(x, missing.perc, const.int)
 Processed expression data after removing low-expressed genes.
 }
 \description{
-Exclude genes with zero or low expression
+Exclude genes with low or zero expression.
 }

@@ -2,22 +2,22 @@
 % Please edit documentation in R/survCont.R
 \name{survCont}
 \alias{survCont}
-\title{Title}
+\title{Fit Proportional Hazards Regression Model: Continuous Expression Variable}
 \usage{
-survCont(surv, time, time.censor, var)
+survCont(status, time, time.censor, var)
 }
 \arguments{
-\item{surv}{aaaa}
+\item{status}{A vector of 0 and 1, where 0 indicates 'sample was censored at time t' and 1 indicates 'sample had an event at time t'.}
 
-\item{time}{bbbb}
+\item{time}{A vector of time, in months, until endpoint or last follow-up.}
 
-\item{time.censor}{cccc}
+\item{time.censor}{Possible censoring in months.}
 
-\item{var}{dddd}
+\item{var}{A vector of continuous expression data.}
 }
 \value{
-hhhh
+A subset of results using an object of class 'coxph' representing the fit.
 }
 \description{
-Title
+Fits a Cox proportional hazards regression model with continuous expression data using the counting process formulation of Andersen and Gill.
 }

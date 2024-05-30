@@ -1,20 +1,22 @@
 ##################################################################################################
 ## Cox model: OS/PFS analyses and continuous expression, signature score, clinical data (var)
 ##################################################################################################
-#' Title
+#' Fit Proportional Hazards Regression Model: Continuous Expression Variable
+#' @description
+#' Fits a Cox proportional hazards regression model with continuous expression data using the counting process formulation of Andersen and Gill.
+#'     
+#' @param status A vector of 0 and 1, where 0 indicates 'sample was censored at time t' and 1 indicates 'sample had an event at time t'.
+#' @param time A vector of time, in months, until endpoint or last follow-up.
+#' @param time.censor Possible censoring in months.
+#' @param var A vector of continuous expression data. 
 #'
-#' @param surv aaaa
-#' @param time bbbb
-#' @param time.censor cccc
-#' @param var dddd
-#'
-#' @return hhhh
-#' @export
+#' @return A subset of results using an object of class 'coxph' representing the fit.
+#' @export 
 #'
 #' @examples
-survCont <- function( surv , time , time.censor , var){
+survCont <- function( status , time , time.censor , var){
   
-  data <- data.frame( surv=surv , time=time , variable=var )
+  data <- data.frame( status=status , time=time , variable=var )
   data <- data[!is.na(data$variable), ]
   data$time <- as.numeric(as.character(data$time))
   data$variable <- as.numeric( as.character(data$variable) )
@@ -24,12 +26,12 @@ survCont <- function( surv , time , time.censor , var){
     if( !is.na(as.numeric(as.character(data[ i , "time" ]))) && as.numeric(as.character(data[ i , "time" ])) > time.censor ){
       
       data[ i , "time" ] <- time.censor
-      data[ i , "surv" ] <- 0
+      data[ i , "status" ] <- 0
       
     }
   }
   
-  cox <- coxph( Surv( time , surv ) ~ variable, data=data )
+  cox <- coxph( Surv( time , status ) ~ variable, data=data )
   
   hr <- summary(cox)$coefficients[, "coef"]
   se <- summary(cox)$coefficients[, "se(coef)"]
