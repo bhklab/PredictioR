@@ -1,12 +1,9 @@
-##########################################################
-##########################################################
-# scale data
-##########################################################
-##########################################################
-
-#' Title
-#'
-#' @param x 
+#' Scaling and Centering the Matrix of Expression Data
+#' 
+#' @description
+#' A generic function whose default method centers and scales the rows (or features) of a numeric expression matrix.
+#' 
+#' @param x A numeric matrix of expression data.
 #'
 #' @return
 #' @export

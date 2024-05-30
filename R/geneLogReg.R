@@ -6,19 +6,22 @@
 # n1.cutoff: cutoff for NR (== 1) samples
 # n0.cutoff: cutoff for R (== 0) samples
 
-#' Title
-#'
-#' @param dat.icb aaaaa
-#' @param clin bbbbbb
-#' @param missing.perc ccccc
-#' @param const.int ddddd
-#' @param n.cutoff eeee
-#' @param feature fffff
-#' @param study gggg
-#' @param n0.cutoff hhhhh
-#' @param n1.cutoff iiii
-#' @param cancer.type jjjj
-#' @param treatment kkkkk
+#' Fit Logistic Regression Model for Genes: Continuous Expression Variable
+#' @description
+#' Fits a logistic regression model with continuous expression data for each gene.
+#' 
+#' @param dat.icb A MultiAssayExperiment (MAE) object, SummarizedExperiment (SE) object, or a data frame or matrix of gene expression data.
+#' @param clin If dat.icb is a data frame or matrix, then it contains clinical data (as data frame or matrix). By default, it is NULL.
+#' @param time.censor Possible censoring in months.
+#' @param missing.perc A cutoff to remove genes with zero expression across samples.
+#' @param const.int A pseudocount is added to the TPM (Transcripts Per Million) values before performing a log transformation.
+#' @param n.cutoff Minimum number of samples included in the association analysis.
+#' @param feature A vector of character strings for selected features.
+#' @param study Name of study.
+#' @param n0.cutoff Minimum number of non-responders in the analysis.
+#' @param n1.cutoff Minimum number of responders in the analysis.
+#' @param cancer.type Name of the cancer type for the given study.
+#' @param treatment Name of the treatment for the given study. 
 #'
 #' @return lllll
 #' @export

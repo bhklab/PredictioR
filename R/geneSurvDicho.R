@@ -78,7 +78,7 @@ geneSurvDicho <- function(dat.icb, clin = NULL, time.censor, missing.perc, const
         g <- as.numeric( scale( data[k , ] ) )
         names( g ) <- colnames( data )
         
-        cox <- survDicho( surv = dat_clin$event_occurred_os ,
+        cox <- survDicho( status = dat_clin$event_occurred_os ,
                           time = dat_clin$survival_time_os ,
                           time.censor = time.censor ,
                           var = g,
@@ -130,7 +130,7 @@ geneSurvDicho <- function(dat.icb, clin = NULL, time.censor, missing.perc, const
         g <- as.numeric( scale( data[k , ] ) )
         names( g ) <- colnames( data )
         
-        cox <- survDicho( surv = dat_clin$event_occurred_pfs ,
+        cox <- survDicho( status = dat_clin$event_occurred_pfs ,
                           time = dat_clin$survival_time_pfs ,
                           time.censor= time.censor ,
                           var = g,
