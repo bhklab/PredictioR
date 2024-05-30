@@ -1,26 +1,22 @@
-##########################################################################
-##########################################################################
-## Get gene association (as continuous) with survival outcome (OS/PFS)
-##########################################################################
-##########################################################################
-
-#' Title
+#' Fit Proportional Hazards Regression Model for Genes: Dichotomous Expression Variable
+#' @description
+#' Fits a Cox proportional hazards regression model with dichotomous expression data for each gene using the counting process formulation of Andersen and Gill.
 #'
-#' @param dat.icb aaaaa
-#' @param clin bbbbb
-#' @param time.censor ccccc
-#' @param missing.perc ddddd
-#' @param const.int eeeee
-#' @param n.cutoff ffff
-#' @param feature ggggg
-#' @param study hhhh
-#' @param surv.outcome iiii
-#' @param n0.cutoff jjjj
-#' @param n1.cutoff kkkk
-#' @param method llll
-#' @param var.type mmm
-#' @param cancer.type nnnn
-#' @param treatment oooo
+#' @param dat.icb A MultiAssayExperiment (MAE) object, SummarizedExperiment (SE) object, or a data frame or matrix of gene expression data.
+#' @param clin If dat.icb is a data frame or matrix, then it contains clinical data (as data frame or matrix). By default, it is NULL.
+#' @param time.censor Possible censoring in months.
+#' @param missing.perc A cutoff to remove genes with zero expression across samples.
+#' @param const.int A pseudocount is added to the TPM (Transcripts Per Million) values before performing a log transformation.
+#' @param n.cutoff Minimum number of samples included in the association analysis.
+#' @param feature A vector of character strings for selected features.
+#' @param study Name of study.
+#' @param surv.outcome Overall survival (OS) or progression-free survival (PFS). 
+#' @param n0.cutoff Minimum number of samples with status 0.
+#' @param n1.cutoff Minimum number of samples with status 1.
+#' @param method The default method to convert a continuous variable into a dichotomous variable is the 'median' method. The first quartile (Q1) and third quartile (Q3) can also be applied. 
+#' @param var.type If the variable is dichotomous (by default), then var.type is TRUE.
+#' @param cancer.type Name of the cancer type for the given study.
+#' @param treatment Name of the treatment for the given study. 
 #'
 #' @return pppp
 #' @export

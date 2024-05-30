@@ -1,32 +1,30 @@
-##################################################################################################
-## Kaplan-Meier (KM) plot: OS/PFS analyses and binary expression or signature score (low vs high)
-##################################################################################################
-# n0.cutoff: minimum number of samples less than cutoff
-# n1.cutoff: minimum number of samples greater than cutoff
-# var.type: if variable (var) is dicho (by default), then var.type is TRUE
-
-#' Title
+#' Function to Plot Kaplan-Meier Survival Curves
+#' @description
+#' Function to plot several Kaplan-Meier survival curves with number of individuals at risk at some time points.
+#' 
 #'
-#' @param surv aaaa
-#' @param time bbbbb
-#' @param time.censor ccccc
-#' @param var dddd
-#' @param title eeee
-#' @param xlab fffff
-#' @param ylab gggg
-#' @param method hhhh
-#' @param n0.cutoff iiii
-#' @param n1.cutoff jjjjj
-#' @param var.type kkkkk
+#' @param status A vector of 0 and 1, where 0 indicates 'sample was censored at time t' and 1 indicates 'sample had an event at time t'.
+#' @param time A vector of time, in months, until endpoint or last follow-up. It is the follow up time (used with right censored data).
+#' @param time.censor Possible censoring in months.
+#' @param var A vector of dichotomous or continuous expression data.
+#' @param title Label for title of the Kaplan Meier's plot.
+#' @param xlab Label for x-axis of the Kaplan Meier's plot.
+#' @param ylab Label for y-axis of the Kaplan Meier's plot.
+#' @param method The default method to convert a continuous variable into a dichotomous variable is the 'median' method. The first quartile (Q1) and third quartile (Q3) can also be applied. 
+#' @param n0.cutoff Minimum number of samples with status 0.
+#' @param n1.cutoff Minimum number of samples with status 1.
+#' @param var.type If the variable is dichotomous (by default), then var.type is TRUE.
 #'
-#' @return llll
+#' @details
+#' The original version of this function was kindly provided by Dr Christos Hatzis (January, 17th 2006).
+#' 
 #' @export
 #'
 #' @examples
-KMPlot <- function( surv , time , time.censor , var , title , xlab, ylab,
+KMPlot <- function( status , time , time.censor , var , title , xlab, ylab,
                     method = "median", n0.cutoff, n1.cutoff, var.type = TRUE){
   
-  data <- data.frame( surv=surv , time=time , variable=var )
+  data <- data.frame( status=status , time=time , variable=var )
   data <- data[!is.na(data$variable), ]
   data$time <- as.numeric(as.character(data$time))
   
@@ -53,14 +51,14 @@ KMPlot <- function( surv , time , time.censor , var , title , xlab, ylab,
     
     if( !is.na(as.numeric(as.character(data[ i , "time" ]))) && as.numeric(as.character(data[ i , "time" ])) > time.censor ){
       data[ i , "time" ] = time.censor
-      data[ i , "surv" ] = 0
+      data[ i , "status" ] = 0
       
     }
   }
   
   if( length( data$variable[ data$variable == 1 ] )>= n1.cutoff & length( data$variable[ data$variable == 0 ] ) >= n0.cutoff ){
     
-    km.coxph.plot( Surv( time, surv ) ~ variable , data.s = data, x.label = xlab, y.label = ylab,
+    km.coxph.plot( Surv( time, status ) ~ variable , data.s = data, x.label = xlab, y.label = ylab,
                    main.title = paste( title , "\n(cutoff=" , round( bin.cutoff , 2 ) , ")" , sep="" ) ,
                    sub.title = "",
                    leg.text = c( "Low" , "High"),

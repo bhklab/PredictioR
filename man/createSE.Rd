@@ -13,5 +13,5 @@ createSE(dat.icb)
 A SummarizedExperiment object.
 }
 \description{
-Convert MultiAssayExperiment (MAE) bbject into SummarizedExperiment (SE) object which is limited to protein-coding genes.
+Convert MultiAssayExperiment (MAE) object into SummarizedExperiment (SE) object which is limited to protein-coding genes.
 }

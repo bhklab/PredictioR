@@ -2,7 +2,7 @@
 % Please edit documentation in R/geneSurvCont.R
 \name{geneSurvCont}
 \alias{geneSurvCont}
-\title{Title}
+\title{Fit Proportional Hazards Regression Model for Genes: Continuous Expression Variable}
 \usage{
 geneSurvCont(
   dat.icb,
@@ -19,31 +19,31 @@ geneSurvCont(
 )
 }
 \arguments{
-\item{dat.icb}{aaaa}
+\item{dat.icb}{A MultiAssayExperiment (MAE) object, SummarizedExperiment (SE) object, or a data frame or matrix of gene expression data.}
 
-\item{clin}{bbbb}
+\item{clin}{If dat.icb is a data frame or matrix, then it contains clinical data (as data frame or matrix). By default, it is NULL.}
 
-\item{time.censor}{cccc}
+\item{time.censor}{Possible censoring in months.}
 
-\item{missing.perc}{ddddd}
+\item{missing.perc}{A cutoff to remove genes with zero expression across samples.}
 
-\item{const.int}{eeee}
+\item{const.int}{A pseudocount is added to the TPM (Transcripts Per Million) values before performing a log transformation.}
 
-\item{n.cutoff}{fffff}
+\item{n.cutoff}{Minimum number of samples included in the association analysis.}
 
-\item{feature}{ggggg}
+\item{feature}{A vector of character strings for selected features.}
 
-\item{study}{hhhhh}
+\item{study}{Name of study.}
 
-\item{surv.outcome}{iiii}
+\item{surv.outcome}{Overall survival (OS) or progression-free survival (PFS).}
 
-\item{cancer.type}{jjjjj}
+\item{cancer.type}{Name of the cancer type for the given study.}
 
-\item{treatment}{kkkkk}
+\item{treatment}{Name of the treatment for the given study.}
 }
 \value{
 lllll
 }
 \description{
-Title
+Fits a Cox proportional hazards regression model with continuous expression data for each gene using the counting process formulation of Andersen and Gill.
 }
