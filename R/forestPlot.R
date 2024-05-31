@@ -1,21 +1,17 @@
-##############################################################
-##############################################################
-## create forestplot function: Pan cancer analysis
-##############################################################
-##############################################################
-
-#' Title
-#'
-#' @param coef 
-#' @param se 
-#' @param study 
-#' @param pval 
-#' @param n 
-#' @param cancer.type 
-#' @param treatment 
-#' @param xlab 
-#' @param label 
-#' @param feature 
+#' Forest Plot
+#' @description
+#' Draws a forest plot in the active graphics window (using grid graphics system).
+#' 
+#' @param coef A numeric vector of estimates of treatment effect, e.g., log hazard ratio or log odds ratio.
+#' @param se A numeric vector of standard errors of treatment estimate.
+#' @param study A vector of characters showing the studies' names. 
+#' @param pval A numeric vector of estimated p-values.
+#' @param n A numeric vector of number of samples.
+#' @param cancer.type A vector of characters showing the cancer types.
+#' @param treatment A vector of characters showing the treatment types.
+#' @param xlab A label for x-axis.
+#' @param label A label for estimates of treatment effect, e.g., log hazard ratio (logHR).
+#' @param feature Name of feature.
 #'
 #' @return
 #' @export

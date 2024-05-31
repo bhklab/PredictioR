@@ -2,7 +2,7 @@
 % Please edit documentation in R/forestPlot.R
 \name{forestPlot}
 \alias{forestPlot}
-\title{Title}
+\title{Forest Plot}
 \usage{
 forestPlot(
   coef,
@@ -18,26 +18,26 @@ forestPlot(
 )
 }
 \arguments{
-\item{coef}{}
+\item{coef}{A numeric vector of estimates of treatment effect, e.g., log hazard ratio or log odds ratio.}
 
-\item{se}{}
+\item{se}{A numeric vector of standard errors of treatment estimate.}
 
-\item{study}{}
+\item{study}{A vector of characters showing the studies' names.}
 
-\item{pval}{}
+\item{pval}{A numeric vector of estimated p-values.}
 
-\item{n}{}
+\item{n}{A numeric vector of number of samples.}
 
-\item{cancer.type}{}
+\item{cancer.type}{A vector of characters showing the cancer types.}
 
-\item{treatment}{}
+\item{treatment}{A vector of characters showing the treatment types.}
 
-\item{xlab}{}
+\item{xlab}{A label for x-axis.}
 
-\item{label}{}
+\item{label}{A label for estimates of treatment effect, e.g., log hazard ratio (logHR).}
 
-\item{feature}{}
+\item{feature}{Name of feature.}
 }
 \description{
-Title
+Draws a forest plot in the active graphics window (using grid graphics system).
 }

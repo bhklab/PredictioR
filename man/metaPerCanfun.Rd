@@ -2,7 +2,7 @@
 % Please edit documentation in R/metaPerCanfun.R
 \name{metaPerCanfun}
 \alias{metaPerCanfun}
-\title{Title}
+\title{Meta-analysis via Generic Inverse Variance Method: Cancer-specific Study}
 \usage{
 metaPerCanfun(
   coef,
@@ -17,24 +17,26 @@ metaPerCanfun(
 )
 }
 \arguments{
-\item{coef}{}
+\item{coef}{A numeric vector of estimates of treatment effect, e.g., log hazard ratio or log odds ratio.}
 
-\item{se}{}
+\item{se}{A numeric vector of standard errors of treatment estimate.}
 
-\item{study}{}
+\item{study}{A vector of characters showing the studies' names.}
 
-\item{pval}{}
+\item{pval}{A numeric vector of estimated p-values.}
 
-\item{n}{}
+\item{n}{A numeric vector of number of samples.}
 
-\item{cancer.type}{}
+\item{cancer.type}{A vector of characters showing the cancer types.}
 
-\item{treatment}{}
+\item{treatment}{A vector of characters showing the treatment types.}
 
-\item{cancer.spec}{}
+\item{cancer.spec}{By default, it is TRUE.}
 
-\item{feature}{}
+\item{feature}{Name of feature.}
+
+\item{treatment.spec}{By default, it is FALSE.}
 }
 \description{
-Title
+Random effect meta-analysis based on estimates (e.g. log hazard ratios) and their standard errors. The inverse variance method is used for pooling.
 }
