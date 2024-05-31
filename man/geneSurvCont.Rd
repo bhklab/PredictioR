@@ -41,9 +41,6 @@ geneSurvCont(
 
 \item{treatment}{Name of the treatment for the given study.}
 }
-\value{
-lllll
-}
 \description{
 Fits a Cox proportional hazards regression model with continuous expression data for each gene using the counting process formulation of Andersen and Gill.
 }

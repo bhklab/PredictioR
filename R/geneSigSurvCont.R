@@ -1,24 +1,19 @@
-#########################################################################
-#########################################################################
-## Get gene association (as continuous) with survival outcome (OS/PFS)
-#########################################################################
-#########################################################################
-
-
-#' Title
+#' Fit Proportional Hazards Regression Model for Gene Signature: Continuous Variable
+#' @description
+#' Fits a Cox proportional hazards regression model with continuous signature data using the counting process formulation of Andersen and Gill.
+#' 
+#' @param dat.icb A MultiAssayExperiment (MAE) object, SummarizedExperiment (SE) object, or a data frame or matrix of gene expression data.
+#' @param clin If dat.icb is a data frame or matrix, then it contains clinical data (as data frame or matrix). By default, it is NULL.
+#' @param geneSig A numeric vector of computed signature score.
+#' @param time.censor Possible censoring in months.
+#' @param n.cutoff Minimum number of samples included in the association analysis.
+#' @param study Name of study.
+#' @param surv.outcome Overall survival (OS) or progression-free survival (PFS). 
+#' @param sig.name Name of signature.
+#' @param cancer.type Name of the cancer type for the given study.
+#' @param treatment Name of the treatment for the given study. 
 #'
-#' @param dat.icb aaaaa
-#' @param clin bbbbb
-#' @param geneSig cccccc
-#' @param time.censor dddddd
-#' @param n.cutoff eeeee
-#' @param study fffff
-#' @param surv.outcome ggggg 
-#' @param sig.name hhhhh
-#' @param cancer.type iiiii
-#' @param treatment jjjjj
-#'
-#' @return kkkkk
+#' @return 
 #' @export
 #'
 #' @examples
@@ -55,7 +50,7 @@ geneSigSurvCont <- function(dat.icb, clin = NULL, geneSig, time.censor, n.cutoff
     
     if( length( dat_clin$event_occurred_os[ !is.na( dat_clin$event_occurred_os ) ] ) >= n.cutoff ){
       
-      cox <- survCont( surv = dat_clin$event_occurred_os ,
+      cox <- survCont( status = dat_clin$event_occurred_os ,
                        time = dat_clin$survival_time_os ,
                        time.censor = time.censor ,
                        var = geneSig)
@@ -91,7 +86,7 @@ geneSigSurvCont <- function(dat.icb, clin = NULL, geneSig, time.censor, n.cutoff
     
     if( length( dat_clin$event_occurred_pfs[ !is.na( dat_clin$event_occurred_pfs ) ] ) >= n.cutoff ){
       
-      cox <- survCont( surv = dat_clin$event_occurred_pfs ,
+      cox <- survCont( status = dat_clin$event_occurred_pfs ,
                        time = dat_clin$survival_time_pfs ,
                        time.censor = time.censor ,
                        var = geneSig )

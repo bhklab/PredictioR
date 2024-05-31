@@ -2,7 +2,7 @@
 % Please edit documentation in R/geneSigSurvDicho.R
 \name{geneSigSurvDicho}
 \alias{geneSigSurvDicho}
-\title{Title}
+\title{Fit Proportional Hazards Regression Model for Gene Signature: Dichotomous Variable}
 \usage{
 geneSigSurvDicho(
   dat.icb,
@@ -22,37 +22,34 @@ geneSigSurvDicho(
 )
 }
 \arguments{
-\item{dat.icb}{aaaaa}
+\item{dat.icb}{A MultiAssayExperiment (MAE) object, SummarizedExperiment (SE) object, or a data frame or matrix of gene expression data.}
 
-\item{clin}{bbbbb}
+\item{clin}{If dat.icb is a data frame or matrix, then it contains clinical data (as data frame or matrix). By default, it is NULL.}
 
-\item{geneSig}{ccccc}
+\item{geneSig}{A numeric vector of computed signature score.}
 
-\item{time.censor}{ddddd}
+\item{time.censor}{Possible censoring in months.}
 
-\item{n.cutoff}{eeeee}
+\item{n.cutoff}{Minimum number of samples included in the association analysis.}
 
-\item{n0.cutoff}{fffff}
+\item{n0.cutoff}{Minimum number of samples with status 0.}
 
-\item{n1.cutoff}{ggggg}
+\item{n1.cutoff}{Minimum number of samples with status 1.}
 
-\item{study}{hhhhh}
+\item{study}{Name of study.}
 
-\item{surv.outcome}{iiii}
+\item{surv.outcome}{Overall survival (OS) or progression-free survival (PFS).}
 
-\item{sig.name}{jjjjj}
+\item{sig.name}{Name of signature.}
 
-\item{method}{kkkkk}
+\item{method}{The default method to convert a continuous variable into a dichotomous variable is the 'median' method. The first quartile (Q1) and third quartile (Q3) can also be applied.}
 
-\item{var.type}{lllll}
+\item{var.type}{If the variable is dichotomous (by default), then var.type is TRUE.}
 
-\item{cancer.type}{mmmm}
+\item{cancer.type}{Name of the cancer type for the given study.}
 
-\item{treatment}{nnnnn}
-}
-\value{
-ooooo
+\item{treatment}{Name of the treatment for the given study.}
 }
 \description{
-Title
+Fits a Cox proportional hazards regression model with dichotomous signature data using the counting process formulation of Andersen and Gill.
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/geneSigSurvCont.R
 \name{geneSigSurvCont}
 \alias{geneSigSurvCont}
-\title{Title}
+\title{Fit Proportional Hazards Regression Model for Gene Signature: Continuous Variable}
 \usage{
 geneSigSurvCont(
   dat.icb,
@@ -18,29 +18,26 @@ geneSigSurvCont(
 )
 }
 \arguments{
-\item{dat.icb}{aaaaa}
+\item{dat.icb}{A MultiAssayExperiment (MAE) object, SummarizedExperiment (SE) object, or a data frame or matrix of gene expression data.}
 
-\item{clin}{bbbbb}
+\item{clin}{If dat.icb is a data frame or matrix, then it contains clinical data (as data frame or matrix). By default, it is NULL.}
 
-\item{geneSig}{cccccc}
+\item{geneSig}{A numeric vector of computed signature score.}
 
-\item{time.censor}{dddddd}
+\item{time.censor}{Possible censoring in months.}
 
-\item{n.cutoff}{eeeee}
+\item{n.cutoff}{Minimum number of samples included in the association analysis.}
 
-\item{study}{fffff}
+\item{study}{Name of study.}
 
-\item{surv.outcome}{ggggg}
+\item{surv.outcome}{Overall survival (OS) or progression-free survival (PFS).}
 
-\item{sig.name}{hhhhh}
+\item{sig.name}{Name of signature.}
 
-\item{cancer.type}{iiiii}
+\item{cancer.type}{Name of the cancer type for the given study.}
 
-\item{treatment}{jjjjj}
-}
-\value{
-kkkkk
+\item{treatment}{Name of the treatment for the given study.}
 }
 \description{
-Title
+Fits a Cox proportional hazards regression model with continuous signature data using the counting process formulation of Andersen and Gill.
 }

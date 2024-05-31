@@ -14,7 +14,7 @@
 #' @param cancer.type Name of the cancer type for the given study.
 #' @param treatment Name of the treatment for the given study. 
 #'
-#' @return lllll
+#' @return 
 #' @export
 #'
 #' @examples
