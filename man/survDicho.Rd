@@ -18,7 +18,7 @@ survDicho(
 \arguments{
 \item{status}{A vector of 0 and 1, where 0 indicates 'sample was censored at time t' and 1 indicates 'sample had an event at time t'.}
 
-\item{time}{A vector of time, in months, until endpoint or last follow-up.}
+\item{time}{A vector of time, in months, until endpoint or last follow-up. It is the follow up time (used with right censored data).}
 
 \item{time.censor}{Possible censoring in months.}
 

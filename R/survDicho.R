@@ -1,17 +1,10 @@
-########################################################################################
-## Cox model: OS/PFS analyses and binary expression or signature score (low vs high)
-########################################################################################
-# n0.cutoff: minimum number of samples less than cutoff
-# n1.cutoff: minimum number of samples greater than cutoff
-# var.type: if variable (var) is dicho (by default), then var.type is TRUE
-
 #' Fit Proportional Hazards Regression Model: Dichotomous Expression Variable
 #' @description
 #' Fits a Cox proportional hazards regression model with dichotomous expression data using the counting process formulation of Andersen and Gill.
 #'
 #'
 #' @param status A vector of 0 and 1, where 0 indicates 'sample was censored at time t' and 1 indicates 'sample had an event at time t'.
-#' @param time A vector of time, in months, until endpoint or last follow-up.
+#' @param time A vector of time, in months, until endpoint or last follow-up. It is the follow up time (used with right censored data).
 #' @param time.censor Possible censoring in months.
 #' @param var A vector of dichotomous or continuous expression data.
 #' @param n0.cutoff Minimum number of samples with status 0.

@@ -1,20 +1,18 @@
-##########################################################################################
-## volcano plot for signatures or genes association with immunotherapy responses results
-##########################################################################################
-
-#' Title
+#' Volcano Plot
+#' @description
+#' Creates a volcano plot of log-odds or log-hazard ratios of changes versus the log p-values from association analysis.
+#' 
+#' @param feature A vector of characters showing the features' names.
+#' @param coef A numeric vector of log-odds or log-hazard ratio estimates.
+#' @param pval A numeric vector of estimated p-values.
+#' @param padj A numeric vector of adjusted p-values to correct for multiple tests using the false discovery rate (FDR).
+#' @param pos.cutoff Number of selected top features with positive log-odds or log-hazard ratio estimates.
+#' @param neg.cutoff Number of selected top features with negative log-odds or log-hazard ratio estimates.
+#' @param x.lab Label of x-axis.
+#' @param padj.label If the adjusted p-values (FDR) are used to select significantly associated features, then it is TRUE.
+#' @param cutoff Cut-off for adjusted p-values (FDR) or p-values.
 #'
-#' @param feature aaaaa
-#' @param coef bbbbbb
-#' @param pval ccccc
-#' @param padj ddddd
-#' @param pos.cutoff eeeee
-#' @param neg.cutoff fffff
-#' @param x.lab gggg
-#' @param padj.label hhhh
-#' @param cutoff iiiii
-#'
-#' @return jjjj
+#' @return 
 #' @export
 #'
 #' @examples

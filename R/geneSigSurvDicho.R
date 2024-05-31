@@ -1,27 +1,23 @@
-#########################################################################
-#########################################################################
-## Get gene association (as binary) with survival outcome (OS/PFS)
-#########################################################################
-#########################################################################
-
-#' Title
+#' Fit Proportional Hazards Regression Model for Gene Signature: Dichotomous Variable
+#' @description
+#' Fits a Cox proportional hazards regression model with dichotomous signature data using the counting process formulation of Andersen and Gill.
+#' 
+#' @param dat.icb A MultiAssayExperiment (MAE) object, SummarizedExperiment (SE) object, or a data frame or matrix of gene expression data.
+#' @param clin If dat.icb is a data frame or matrix, then it contains clinical data (as data frame or matrix). By default, it is NULL.
+#' @param geneSig A numeric vector of computed signature score.
+#' @param time.censor Possible censoring in months.
+#' @param n.cutoff Minimum number of samples included in the association analysis.
+#' @param n0.cutoff Minimum number of samples with status 0.
+#' @param n1.cutoff Minimum number of samples with status 1.
+#' @param study Name of study.
+#' @param surv.outcome Overall survival (OS) or progression-free survival (PFS). 
+#' @param sig.name Name of signature.
+#' @param method The default method to convert a continuous variable into a dichotomous variable is the 'median' method. The first quartile (Q1) and third quartile (Q3) can also be applied. 
+#' @param var.type If the variable is dichotomous (by default), then var.type is TRUE.
+#' @param cancer.type Name of the cancer type for the given study.
+#' @param treatment Name of the treatment for the given study. 
 #'
-#' @param dat.icb aaaaa
-#' @param clin bbbbb
-#' @param geneSig ccccc
-#' @param time.censor ddddd
-#' @param n.cutoff eeeee
-#' @param n0.cutoff fffff
-#' @param n1.cutoff ggggg
-#' @param study hhhhh
-#' @param surv.outcome iiii
-#' @param sig.name jjjjj
-#' @param method kkkkk
-#' @param var.type lllll
-#' @param cancer.type mmmm
-#' @param treatment nnnnn
-#'
-#' @return ooooo
+#' @return 
 #' @export
 #'
 #' @examples

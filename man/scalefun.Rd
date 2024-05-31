@@ -2,13 +2,13 @@
 % Please edit documentation in R/scalefun.R
 \name{scalefun}
 \alias{scalefun}
-\title{Title}
+\title{Scaling and Centering the Matrix of Expression Data}
 \usage{
 scalefun(x)
 }
 \arguments{
-\item{x}{}
+\item{x}{A numeric matrix of expression data.}
 }
 \description{
-Title
+A generic function whose default method centers and scales the rows (or features) of a numeric expression matrix.
 }

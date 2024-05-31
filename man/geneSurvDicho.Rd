@@ -2,7 +2,7 @@
 % Please edit documentation in R/geneSurvDicho.R
 \name{geneSurvDicho}
 \alias{geneSurvDicho}
-\title{Title}
+\title{Fit Proportional Hazards Regression Model for Genes: Dichotomous Expression Variable}
 \usage{
 geneSurvDicho(
   dat.icb,
@@ -23,39 +23,39 @@ geneSurvDicho(
 )
 }
 \arguments{
-\item{dat.icb}{aaaaa}
+\item{dat.icb}{A MultiAssayExperiment (MAE) object, SummarizedExperiment (SE) object, or a data frame or matrix of gene expression data.}
 
-\item{clin}{bbbbb}
+\item{clin}{If dat.icb is a data frame or matrix, then it contains clinical data (as data frame or matrix). By default, it is NULL.}
 
-\item{time.censor}{ccccc}
+\item{time.censor}{Possible censoring in months.}
 
-\item{missing.perc}{ddddd}
+\item{missing.perc}{A cutoff to remove genes with zero expression across samples.}
 
-\item{const.int}{eeeee}
+\item{const.int}{A pseudocount is added to the TPM (Transcripts Per Million) values before performing a log transformation.}
 
-\item{n.cutoff}{ffff}
+\item{n.cutoff}{Minimum number of samples included in the association analysis.}
 
-\item{feature}{ggggg}
+\item{feature}{A vector of character strings for selected features.}
 
-\item{study}{hhhh}
+\item{study}{Name of study.}
 
-\item{surv.outcome}{iiii}
+\item{surv.outcome}{Overall survival (OS) or progression-free survival (PFS).}
 
-\item{n0.cutoff}{jjjj}
+\item{n0.cutoff}{Minimum number of samples with status 0.}
 
-\item{n1.cutoff}{kkkk}
+\item{n1.cutoff}{Minimum number of samples with status 1.}
 
-\item{method}{llll}
+\item{method}{The default method to convert a continuous variable into a dichotomous variable is the 'median' method. The first quartile (Q1) and third quartile (Q3) can also be applied.}
 
-\item{var.type}{mmm}
+\item{var.type}{If the variable is dichotomous (by default), then var.type is TRUE.}
 
-\item{cancer.type}{nnnn}
+\item{cancer.type}{Name of the cancer type for the given study.}
 
-\item{treatment}{oooo}
+\item{treatment}{Name of the treatment for the given study.}
 }
 \value{
 pppp
 }
 \description{
-Title
+Fits a Cox proportional hazards regression model with dichotomous expression data for each gene using the counting process formulation of Andersen and Gill.
 }

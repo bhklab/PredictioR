@@ -2,7 +2,7 @@
 % Please edit documentation in R/volcanoPlot.R
 \name{volcanoPlot}
 \alias{volcanoPlot}
-\title{Title}
+\title{Volcano Plot}
 \usage{
 volcanoPlot(
   feature,
@@ -17,27 +17,24 @@ volcanoPlot(
 )
 }
 \arguments{
-\item{feature}{aaaaa}
+\item{feature}{A vector of characters showing the features' names.}
 
-\item{coef}{bbbbbb}
+\item{coef}{A numeric vector of log-odds or log-hazard ratio estimates.}
 
-\item{pval}{ccccc}
+\item{pval}{A numeric vector of estimated p-values.}
 
-\item{padj}{ddddd}
+\item{padj}{A numeric vector of adjusted p-values to correct for multiple tests using the false discovery rate (FDR).}
 
-\item{pos.cutoff}{eeeee}
+\item{pos.cutoff}{Number of selected top features with positive log-odds or log-hazard ratio estimates.}
 
-\item{neg.cutoff}{fffff}
+\item{neg.cutoff}{Number of selected top features with negative log-odds or log-hazard ratio estimates.}
 
-\item{x.lab}{gggg}
+\item{x.lab}{Label of x-axis.}
 
-\item{padj.label}{hhhh}
+\item{padj.label}{If the adjusted p-values (FDR) are used to select significantly associated features, then it is TRUE.}
 
-\item{cutoff}{iiiii}
-}
-\value{
-jjjj
+\item{cutoff}{Cut-off for adjusted p-values (FDR) or p-values.}
 }
 \description{
-Title
+Creates a volcano plot of log-odds or log-hazard ratios of changes versus the log p-values from association analysis.
 }

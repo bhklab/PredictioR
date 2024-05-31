@@ -2,10 +2,10 @@
 % Please edit documentation in R/KMPlot.R
 \name{KMPlot}
 \alias{KMPlot}
-\title{Title}
+\title{Function to Plot Kaplan-Meier Survival Curves}
 \usage{
 KMPlot(
-  surv,
+  status,
   time,
   time.censor,
   var,
@@ -19,31 +19,31 @@ KMPlot(
 )
 }
 \arguments{
-\item{surv}{aaaa}
+\item{status}{A vector of 0 and 1, where 0 indicates 'sample was censored at time t' and 1 indicates 'sample had an event at time t'.}
 
-\item{time}{bbbbb}
+\item{time}{A vector of time, in months, until endpoint or last follow-up. It is the follow up time (used with right censored data).}
 
-\item{time.censor}{ccccc}
+\item{time.censor}{Possible censoring in months.}
 
-\item{var}{dddd}
+\item{var}{A vector of dichotomous or continuous expression data.}
 
-\item{title}{eeee}
+\item{title}{Label for title of the Kaplan Meier's plot.}
 
-\item{xlab}{fffff}
+\item{xlab}{Label for x-axis of the Kaplan Meier's plot.}
 
-\item{ylab}{gggg}
+\item{ylab}{Label for y-axis of the Kaplan Meier's plot.}
 
-\item{method}{hhhh}
+\item{method}{The default method to convert a continuous variable into a dichotomous variable is the 'median' method. The first quartile (Q1) and third quartile (Q3) can also be applied.}
 
-\item{n0.cutoff}{iiii}
+\item{n0.cutoff}{Minimum number of samples with status 0.}
 
-\item{n1.cutoff}{jjjjj}
+\item{n1.cutoff}{Minimum number of samples with status 1.}
 
-\item{var.type}{kkkkk}
-}
-\value{
-llll
+\item{var.type}{If the variable is dichotomous (by default), then var.type is TRUE.}
 }
 \description{
-Title
+Function to plot several Kaplan-Meier survival curves with number of individuals at risk at some time points.
+}
+\details{
+The original version of this function was kindly provided by Dr Christos Hatzis (January, 17th 2006).
 }

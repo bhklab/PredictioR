@@ -2,7 +2,7 @@
 % Please edit documentation in R/geneSigMean.R
 \name{geneSigMean}
 \alias{geneSigMean}
-\title{Title}
+\title{Compute Signature Score using Weighted Mean Average}
 \usage{
 geneSigMean(
   dat.icb,
@@ -17,24 +17,27 @@ geneSigMean(
 )
 }
 \arguments{
-\item{dat.icb}{}
+\item{dat.icb}{A MultiAssayExperiment (MAE) object, SummarizedExperiment (SE) object, or a data frame or matrix of gene expression data.}
 
-\item{clin}{}
+\item{clin}{If dat.icb is a data frame or matrix, then it contains clinical data (as data frame or matrix). By default, it is NULL.}
 
-\item{sig}{}
+\item{sig}{A data frame of list of genes' symbol named 'gene_name'.}
 
-\item{sig.name}{}
+\item{sig.name}{Name of signature.}
 
-\item{missing.perc}{}
+\item{missing.perc}{A cutoff to remove genes with zero expression across samples.}
 
-\item{const.int}{}
+\item{const.int}{A pseudocount is added to the TPM (Transcripts Per Million) values before performing a log transformation.}
 
-\item{n.cutoff}{}
+\item{n.cutoff}{Minimum number of samples included in the association analysis.}
 
-\item{sig.perc}{}
+\item{sig.perc}{Minimum percentage of genes in a given expression data.}
 
-\item{study}{}
+\item{study}{Name of study.}
+}
+\value{
+A numeric vector of computed signature score.
 }
 \description{
-Title
+Consider the weighted mean average to compute signature score.
 }

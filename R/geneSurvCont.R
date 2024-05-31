@@ -1,24 +1,20 @@
-##########################################################################
-##########################################################################
-## Get gene association (as continuous) with survival outcome (OS/PFS)
-##########################################################################
-##########################################################################
-
-#' Title
+#' Fit Proportional Hazards Regression Model for Genes: Continuous Expression Variable
+#' @description
+#' Fits a Cox proportional hazards regression model with continuous expression data for each gene using the counting process formulation of Andersen and Gill.
 #'
-#' @param dat.icb aaaa
-#' @param clin bbbb
-#' @param time.censor cccc
-#' @param missing.perc ddddd
-#' @param const.int eeee
-#' @param n.cutoff fffff
-#' @param feature ggggg
-#' @param study hhhhh
-#' @param surv.outcome iiii
-#' @param cancer.type jjjjj
-#' @param treatment kkkkk
+#' @param dat.icb A MultiAssayExperiment (MAE) object, SummarizedExperiment (SE) object, or a data frame or matrix of gene expression data.
+#' @param clin If dat.icb is a data frame or matrix, then it contains clinical data (as data frame or matrix). By default, it is NULL.
+#' @param time.censor Possible censoring in months.
+#' @param missing.perc A cutoff to remove genes with zero expression across samples.
+#' @param const.int A pseudocount is added to the TPM (Transcripts Per Million) values before performing a log transformation.
+#' @param n.cutoff Minimum number of samples included in the association analysis.
+#' @param feature A vector of character strings for selected features.
+#' @param study Name of study.
+#' @param surv.outcome Overall survival (OS) or progression-free survival (PFS). 
+#' @param cancer.type Name of the cancer type for the given study.
+#' @param treatment Name of the treatment for the given study. 
 #'
-#' @return lllll
+#' @return 
 #' @export
 #'
 #' @examples
@@ -71,7 +67,7 @@ geneSurvCont <- function(dat.icb, clin = NULL, time.censor, missing.perc, const.
         g <- as.numeric( scale( data[k , ] ) )
         names( g ) <- colnames( data )
         
-        cox <- survCont( surv = dat_clin$event_occurred_os ,
+        cox <- survCont( status = dat_clin$event_occurred_os ,
                          time = dat_clin$survival_time_os ,
                          time.censor = time.censor ,
                          var = g )
