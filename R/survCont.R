@@ -15,18 +15,16 @@
 #' Up: Upper bound of the 95% confidence interval.
 #' Pval: Estimated p-value.
 #' @export 
-#'
-#' @examples
-#' Assess the association between CXCL9 and overall survival (OS) in immunotherapy.
-#' expr <- assay(ICB_Liu)
-#' clin <- colData(ICB_Liu) %>% as.data.frame()
-#' cancer_type <- unique(clin$cancer_type)
-#' survCont( status = clin$event_occurred_os,
-#'           time = clin$survival_time_os,
-#'           time.censor = 36 , 
-#'           var = as.numeric( expr["CXCL9" , ] )
-#'           )
 #' 
+#' @examples
+#' Assess the association between CXCL9 and OS in immunotherapy.
+#' expr <- assay(ICB_Liu);
+#' clin <- colData(ICB_Liu) %>% as.data.frame();
+#' survCont(status = clin$event_occurred_os,
+#'          time = clin$survival_time_os,
+#'          time.censor = 36 , 
+#'          var = as.numeric(expr["CXCL9" , ] )
+#'          )
 survCont <- function( status , time , time.censor , var){
   
   data <- data.frame( status=status , time=time , variable=var )

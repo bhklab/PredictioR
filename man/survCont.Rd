@@ -28,14 +28,12 @@ Pval: Estimated p-value.
 Fits a Cox proportional hazards regression model with continuous expression data using the counting process formulation of Andersen and Gill.
 }
 \examples{
-Assess the association between CXCL9 and overall survival (OS) in immunotherapy.
-expr <- assay(ICB_Liu)
-clin <- colData(ICB_Liu) \%>\% as.data.frame()
-cancer_type <- unique(clin$cancer_type)
-survCont( status = clin$event_occurred_os,
-          time = clin$survival_time_os,
-          time.censor = 36 , 
-          var = as.numeric( expr["CXCL9" , ] )
-          )
-
+Assess the association between CXCL9 and OS in immunotherapy.
+expr <- assay(ICB_Liu);
+clin <- colData(ICB_Liu) \%>\% as.data.frame();
+survCont(status = clin$event_occurred_os,
+         time = clin$survival_time_os,
+         time.censor = 36 , 
+         var = as.numeric(expr["CXCL9" , ] )
+         )
 }
