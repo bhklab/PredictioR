@@ -14,10 +14,33 @@
 #' @param cancer.type Name of the cancer type for the given study.
 #' @param treatment Name of the treatment for the given study. 
 #'
-#' @return 
+#' @return A subset of results using an object of class 'coxph' representing the fit. 
+#' Outcome: Immunotherapy time-to-event outcomes including overall survival (OS) and progression-free survival (PFS).
+#' Gene: Name of selected genes.
+#' Study: Name of study.
+#' Coef: Estimate of treatment effect i.e., log hazard ratio.
+#' SE: Standard error of treatment estimate.
+#' N: Number of samples.
+#' Pval: Estimated p-value.
+#' Cancer_type: A character shows the cancer type.
+#' Treatment: A character shows the treatment type.
 #' @export
 #'
 #' @examples
+#' Assess the association between selected genes and OS in immunotherapy.
+#' geneSurvCont(dat.icb = ICB_Liu,
+#'              time.censor = 36,
+#'              missing.perc = 0.5,
+#'              const.int = 0.001,
+#'              n.cutoff = 15,
+#'              feature = c('CXCL9', 'CXCL10', 'TIGIT', 
+#'                          'CD83', 'STAT1', 'CXCL11',
+#'                          'CXCL13', 'CD8A', 'CTLA4'),
+#'              study = 'ICB_Liu',
+#'              surv.outcome = 'OS',
+#'              cancer.type = 'Melanoma',
+#'              treatment = 'PD-1/PD-L1')
+#'              
 geneSurvCont <- function(dat.icb, clin = NULL, time.censor, missing.perc, const.int=0.001,
                          n.cutoff, feature, study, surv.outcome, cancer.type, treatment){
   

@@ -23,10 +23,33 @@
 #' @param cancer.type Name of the cancer type for the given study.
 #' @param treatment Name of the treatment for the given study. 
 #'
-#' @return lllll
+#' @return A subset of results using an object of class logistic regression representing the fit. 
+#' Outcome: Immunotherapy response outcome i.e., R (responder) and NR (non-responder).
+#' Gene: Name of selected genes.
+#' Study: Name of study.
+#' Coef: Estimate of treatment effect i.e., log odds ratio.
+#' SE: Standard error of treatment estimate.
+#' N: Number of samples.
+#' Pval: Estimated p-value.
+#' Cancer_type: A character shows the cancer type.
+#' Treatment: A character shows the treatment type.
 #' @export
 #'
 #' @examples
+#' Assess the association between selected genes and response (R vs NR) in immunotherapy.
+#' geneLogReg(dat.icb = ICB_Liu,
+#'            missing.perc = 0.5,
+#'            const.int = 0.001,
+#'            n.cutoff = 15,
+#'            feature = c('CXCL9', 'CXCL10', 'TIGIT', 
+#'                          'CD83', 'STAT1', 'CXCL11',
+#'                          'CXCL13', 'CD8A', 'CTLA4'),
+#'            study = 'ICB_Liu', 
+#'            n0.cutoff = 10,
+#'            n1.cutoff = 10,
+#'            cancer.type = 'Melanoma',
+#'            treatment = 'PD-1/PD-L1')
+#' 
 geneLogReg <- function(dat.icb, clin = NULL, missing.perc, const.int=0.001, n.cutoff, feature, study,
                        n0.cutoff, n1.cutoff, cancer.type, treatment){
   

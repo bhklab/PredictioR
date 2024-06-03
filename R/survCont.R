@@ -24,7 +24,7 @@
 #' survCont(status = clin$event_occurred_os,
 #'          time = clin$survival_time_os,
 #'          time.censor = 36, 
-#'          var = as.numeric(expr["CXCL9", ])
+#'          var = as.numeric(expr['CXCL9', ])
 #'          )
 survCont <- function( status , time , time.censor , var){
   
