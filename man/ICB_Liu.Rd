@@ -14,9 +14,6 @@ An object of class \code{SummarizedExperiment} with 16737 rows and 74 columns.
 ICB_Liu
 }
 \description{
-Immune checkpoint blockade (ICB) Liu Melnaoma immunotherapy (PD-1) dataset.
-}
-\details{
-A SE object with 16,737 protein-coding genes and 74 patients were treated immunotherapy targeted PD-1:
+Immune checkpoint blockade (ICB) Liu Melnaoma immunotherapy (PD-1) dataset. A SummarizedExperiment object with 16,737 protein-coding genes and 74 patients was treated with immunotherapy targeting PD-1.
 }
 \keyword{datasets}
