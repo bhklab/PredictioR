@@ -13,9 +13,28 @@
 #' @param var.type If the variable is dichotomous (by default), then var.type is TRUE.
 #'
 #' @return A subset of results using an object of class 'coxph' representing the fit.
+#' HR: Estimate of treatment effect i.e., log hazard ratio.
+#' SE: Standard error of treatment estimate.
+#' N: Number of samples.
+#' Low: Lower bound of the 95% confidence interval.
+#' Up: Upper bound of the 95% confidence interval.
+#' Pval: Estimated p-value.
+#' 
 #' @export
 #'
 #' @examples
+#' Assess the association between CXCL9 (i.e., dichotomous varibale with median cutoff) and OS in immunotherapy.
+#' expr <- assay(ICB_Liu);
+#' clin <- colData(ICB_Liu) %>% as.data.frame();
+#' survDicho( status = clin$event_occurred_os ,
+#'            time = clin$survival_time_os,
+#'            time.censor= 36,
+#'            var = as.numeric(expr["CXCL9", ]),
+#'            n0.cutoff = 5,
+#'            n1.cutoff = 5,
+#'            method = "median",
+#'            var.type = FALSE )
+#' 
 survDicho <- function(status , time , time.censor , var , n0.cutoff, n1.cutoff, method ="median", var.type = TRUE){
   
   data <- data.frame( status=status , time=time , variable=var )

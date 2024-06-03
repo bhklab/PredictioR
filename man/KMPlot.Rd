@@ -47,3 +47,19 @@ Function to plot several Kaplan-Meier survival curves with number of individuals
 \details{
 The original version of this function was kindly provided by Dr Christos Hatzis (January, 17th 2006).
 }
+\examples{
+Assess the association between CXCL9 (i.e., dichotomous varibale with median cutoff) and PFS in immunotherapy.
+expr <- assay(ICB_Liu);
+clin <- colData(ICB_Liu) \%>\% as.data.frame();
+KMPlot(status = clin$event_occurred_pfs,
+       time = clin$survival_time_pfs,
+       time.censor = 36,
+       var =  as.numeric(expr["CXCL9", ]), 
+       title = "CXCL9 and OS Association",
+       xlab = "Time (Months)",
+       ylab = "Progression-free Survival", 
+       method = "median",
+       n0.cutoff = 5, 
+       n1.cutoff = 5,
+       var.type = FALSE)
+}

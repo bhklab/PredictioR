@@ -8,12 +8,12 @@
 #' @param var A vector of continuous expression data. 
 #'
 #' @return A subset of results using an object of class 'coxph' representing the fit. 
-#' \item HR: Estimate of treatment effect i.e., log hazard ratio.
-#' \item SE: Standard error of treatment estimate.
-#' \item N: Number of samples.
-#' \item Low: Lower bound of the 95% confidence interval.
-#' \item Up: Upper bound of the 95% confidence interval.
-#' \item Pval: Estimated p-value.
+#' HR: Estimate of treatment effect i.e., log hazard ratio.
+#' SE: Standard error of treatment estimate.
+#' N: Number of samples.
+#' Low: Lower bound of the 95% confidence interval.
+#' Up: Upper bound of the 95% confidence interval.
+#' Pval: Estimated p-value.
 #' 
 #' @export 
 #' 

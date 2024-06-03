@@ -21,6 +21,21 @@
 #' @export
 #'
 #' @examples
+#' Assess the association between CXCL9 (i.e., dichotomous varibale with median cutoff) and PFS in immunotherapy.
+#' expr <- assay(ICB_Liu);
+#' clin <- colData(ICB_Liu) %>% as.data.frame();
+#' KMPlot(status = clin$event_occurred_pfs,
+#'        time = clin$survival_time_pfs,
+#'        time.censor = 36,
+#'        var =  as.numeric(expr["CXCL9", ]), 
+#'        title = "CXCL9 and OS Association",
+#'        xlab = "Time (Months)",
+#'        ylab = "Progression-free Survival", 
+#'        method = "median",
+#'        n0.cutoff = 5, 
+#'        n1.cutoff = 5,
+#'        var.type = FALSE)
+
 KMPlot <- function( status , time , time.censor , var , title , xlab, ylab,
                     method = "median", n0.cutoff, n1.cutoff, var.type = TRUE){
   

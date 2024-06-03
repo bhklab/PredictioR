@@ -34,7 +34,27 @@ survDicho(
 }
 \value{
 A subset of results using an object of class 'coxph' representing the fit.
+HR: Estimate of treatment effect i.e., log hazard ratio.
+SE: Standard error of treatment estimate.
+N: Number of samples.
+Low: Lower bound of the 95\% confidence interval.
+Up: Upper bound of the 95\% confidence interval.
+Pval: Estimated p-value.
 }
 \description{
 Fits a Cox proportional hazards regression model with dichotomous expression data using the counting process formulation of Andersen and Gill.
+}
+\examples{
+Assess the association between CXCL9 (i.e., dichotomous varibale with median cutoff) and OS in immunotherapy.
+expr <- assay(ICB_Liu);
+clin <- colData(ICB_Liu) \%>\% as.data.frame();
+survDicho( status = clin$event_occurred_os ,
+           time = clin$survival_time_os,
+           time.censor= 36,
+           var = as.numeric(expr["CXCL9", ]),
+           n0.cutoff = 5,
+           n1.cutoff = 5,
+           method = "median",
+           var.type = FALSE )
+
 }
