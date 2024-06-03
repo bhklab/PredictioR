@@ -14,15 +14,21 @@ survCont(status, time, time.censor, var)
 \item{time.censor}{Possible censoring in months.}
 
 \item{var}{A vector of continuous expression data.}
+
+\item{HR}{Estimate of treatment effect i.e., log hazard ratio.}
+
+\item{SE}{Standard error of treatment estimate.}
+
+\item{N}{Number of samples.}
+
+\item{Low}{Lower bound of the 95\% confidence interval.}
+
+\item{Up}{Upper bound of the 95\% confidence interval.}
+
+\item{Pval}{Estimated p-value.}
 }
 \value{
 A subset of results using an object of class 'coxph' representing the fit.
-HR: Estimate of treatment effect i.e., log hazard ratio.
-SE: Standard error of treatment estimate.
-N: Number of samples.
-Low: Lower bound of the 95\% confidence interval.
-Up: Upper bound of the 95\% confidence interval.
-Pval: Estimated p-value.
 }
 \description{
 Fits a Cox proportional hazards regression model with continuous expression data using the counting process formulation of Andersen and Gill.
@@ -33,7 +39,7 @@ expr <- assay(ICB_Liu);
 clin <- colData(ICB_Liu) \%>\% as.data.frame();
 survCont(status = clin$event_occurred_os,
          time = clin$survival_time_os,
-         time.censor = 36 , 
-         var = as.numeric(expr["CXCL9" , ] )
+         time.censor = 36, 
+         var = as.numeric(expr["CXCL9", ])
          )
 }

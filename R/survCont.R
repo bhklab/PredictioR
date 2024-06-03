@@ -8,12 +8,12 @@
 #' @param var A vector of continuous expression data. 
 #'
 #' @return A subset of results using an object of class 'coxph' representing the fit. 
-#' HR: Estimate of treatment effect i.e., log hazard ratio.
-#' SE: Standard error of treatment estimate.
-#' N: Number of samples.
-#' Low: Lower bound of the 95% confidence interval.
-#' Up: Upper bound of the 95% confidence interval.
-#' Pval: Estimated p-value.
+#' @param HR Estimate of treatment effect i.e., log hazard ratio.
+#' @param SE Standard error of treatment estimate.
+#' @param N Number of samples.
+#' @param Low Lower bound of the 95% confidence interval.
+#' @param Up Upper bound of the 95% confidence interval.
+#' @param Pval Estimated p-value.
 #' @export 
 #' 
 #' @examples
@@ -22,8 +22,8 @@
 #' clin <- colData(ICB_Liu) %>% as.data.frame();
 #' survCont(status = clin$event_occurred_os,
 #'          time = clin$survival_time_os,
-#'          time.censor = 36 , 
-#'          var = as.numeric(expr["CXCL9" , ] )
+#'          time.censor = 36, 
+#'          var = as.numeric(expr["CXCL9", ])
 #'          )
 survCont <- function( status , time , time.censor , var){
   
