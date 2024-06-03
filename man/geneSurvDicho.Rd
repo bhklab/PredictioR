@@ -54,8 +54,37 @@ geneSurvDicho(
 \item{treatment}{Name of the treatment for the given study.}
 }
 \value{
-pppp
+A subset of results using an object of class 'coxph' representing the fit.
+Outcome: Immunotherapy time-to-event outcomes including overall survival (OS) and progression-free survival (PFS).
+Gene: Name of selected genes.
+Study: Name of study.
+Coef: Estimate of treatment effect i.e., log hazard ratio.
+SE: Standard error of treatment estimate.
+N: Number of samples.
+Pval: Estimated p-value.
+Cancer_type: A character shows the cancer type.
+Treatment: A character shows the treatment type.
 }
 \description{
 Fits a Cox proportional hazards regression model with dichotomous expression data for each gene using the counting process formulation of Andersen and Gill.
+}
+\examples{
+Assess the association between selected genes (i.e., dichotomous variable with median cutoff) and OS in immunotherapy.
+geneSurvDicho(dat.icb = ICB_Liu,
+             time.censor = 36,
+             missing.perc = 0.5,
+             const.int = 0.001,
+             n.cutoff = 15,
+             feature = c('CXCL9', 'CXCL10', 'TIGIT', 
+                         'CD83', 'STAT1', 'CXCL11',
+                         'CXCL13', 'CD8A', 'CTLA4'),
+             study = 'ICB_Liu',
+             surv.outcome = 'OS',
+             n0.cutoff = 5, 
+             n1.cutoff = 5, 
+             method = "median",
+             var.type = FALSE,
+             cancer.type = 'Melanoma',
+             treatment = 'PD-1/PD-L1')
+             
 }
