@@ -1,4 +1,4 @@
-#' Compute Signature Score using Single Sample Gene Set Enrichment Analysis
+#' Compute Signature Score using Single Sample Gene Set Enrichment Analysis (ssGSEA)
 #' @description
 #' Consider the single sample gene set enrichment analysis to compute signature score. 
 #' 
@@ -16,6 +16,16 @@
 #' @export
 #'
 #' @examples
+#' Compute the signature score for M1 Hwang signature using the ssGSEA method. 
+#' geneSigssGSEA(dat.icb = ICB_Liu, 
+#'             sig = M1_Hwang,
+#'             sig.name = 'M1_Hwang',
+#'             missing.perc = 0.5,
+#'             const.int = 0.001,
+#'             n.cutoff = 15,
+#'             sig.perc = 0.8, 
+#'             study = 'ICB_Liu')
+#' 
 geneSigssGSEA <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const.int = 0.001, n.cutoff, sig.perc, study){
   
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "data.frame", "matrix") ){

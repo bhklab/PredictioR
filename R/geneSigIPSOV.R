@@ -16,6 +16,16 @@
 #' @export
 #'
 #' @examples
+#' Compute the signature score for IPSOV Shen signature using the specific method. 
+#' geneSigIPSOV(dat.icb = ICB_Liu, 
+#'              sig = IPSOV_Shen,
+#'              sig.name = 'IPSOV_Shen',
+#'              missing.perc = 0.5,
+#'              const.int = 0.001,
+#'              n.cutoff = 15,
+#'              sig.perc = 0.8, 
+#'              study = 'ICB_Liu')
+#'              
 geneSigIPSOV <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
   
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "data.frame", "matrix") ){

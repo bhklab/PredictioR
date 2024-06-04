@@ -16,6 +16,16 @@
 #' @export
 #'
 #' @examples
+#' Compute the signature score for COX-IS Bonavita signature using the specific method. 
+#' geneSigCOX_IS(dat.icb = ICB_Liu, 
+#'               sig = COX_IS_Bonavita,
+#'               sig.name = 'COX-IS_Bonavita',
+#'               missing.perc = 0.5,
+#'               const.int = 0.001,
+#'               n.cutoff = 15,
+#'               sig.perc = 0.8, 
+#'               study = 'ICB_Liu')
+#'             
 geneSigCOX_IS <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
   
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "data.frame", "matrix") ){

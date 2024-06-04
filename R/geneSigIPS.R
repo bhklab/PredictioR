@@ -16,6 +16,16 @@
 #' @export
 #'
 #' @examples
+#' Compute the signature score for IPS Charoentong signature using the specific method. 
+#' geneSigIPS(dat.icb = ICB_Liu, 
+#'            sig = IPS_Charoentong,
+#'            sig.name = 'IPS_Charoentong',
+#'            missing.perc = 0.5,
+#'            const.int = 0.001,
+#'            n.cutoff = 15,
+#'            sig.perc = 0.8, 
+#'            study = 'ICB_Liu')
+#'              
 geneSigIPS <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
   
   

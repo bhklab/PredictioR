@@ -2,7 +2,7 @@
 % Please edit documentation in R/geneSigssGSEA.R
 \name{geneSigssGSEA}
 \alias{geneSigssGSEA}
-\title{Compute Signature Score using Single Sample Gene Set Enrichment Analysis}
+\title{Compute Signature Score using Single Sample Gene Set Enrichment Analysis (ssGSEA)}
 \usage{
 geneSigssGSEA(
   dat.icb,
@@ -40,4 +40,16 @@ A numeric vector of computed signature score.
 }
 \description{
 Consider the single sample gene set enrichment analysis to compute signature score.
+}
+\examples{
+Compute the signature score for M1 Hwang signature using the ssGSEA method. 
+geneSigssGSEA(dat.icb = ICB_Liu, 
+            sig = M1_Hwang,
+            sig.name = 'M1_Hwang',
+            missing.perc = 0.5,
+            const.int = 0.001,
+            n.cutoff = 15,
+            sig.perc = 0.8, 
+            study = 'ICB_Liu')
+
 }

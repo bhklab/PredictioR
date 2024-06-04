@@ -16,6 +16,16 @@
 #' @export
 #'
 #' @examples
+#' Compute the signature score for PassON Du signature using the specific method. 
+#' geneSigPassON(dat.icb = ICB_Liu, 
+#'               sig = PassON_Du,
+#'               sig.name = 'PassON_Du',
+#'               missing.perc = 0.5,
+#'               const.int = 0.001,
+#'               n.cutoff = 15,
+#'               sig.perc = 0.8, 
+#'               study = 'ICB_Liu')
+#'              
 geneSigPassON <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
   
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "data.frame", "matrix") ){

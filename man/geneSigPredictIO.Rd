@@ -41,3 +41,15 @@ A numeric vector of computed signature score.
 \description{
 Consider the specific method explained at ... to compute PredictIO signature score.
 }
+\examples{
+Compute the signature score for PredictIO Bareche signature using the specific method. 
+geneSigPredictIO(dat.icb = ICB_Liu, 
+                 sig = PredictIO_Bareche,
+                 sig.name = 'PredictIO_Bareche',
+                 missing.perc = 0.5,
+                 const.int = 0.001,
+                 n.cutoff = 15,
+                 sig.perc = 0.8, 
+                 study = 'ICB_Liu')
+             
+}

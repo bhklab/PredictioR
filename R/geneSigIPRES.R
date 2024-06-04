@@ -16,6 +16,16 @@
 #' @export
 #'
 #' @examples
+#' Compute the signature score for IPRES Hugo signature using the specific method. 
+#' geneSigIPRES(dat.icb = ICB_Liu, 
+#'              sig = IPRES_Hugo,
+#'              sig.name = 'IPRES_Hugo',
+#'              missing.perc = 0.5,
+#'              const.int = 0.001,
+#'              n.cutoff = 15,
+#'              sig.perc = 0.8, 
+#'              study = 'ICB_Liu')
+#'             
 geneSigIPRES <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
   
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "data.frame", "matrix") ){

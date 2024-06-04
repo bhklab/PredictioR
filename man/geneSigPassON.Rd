@@ -41,3 +41,15 @@ A numeric vector of computed signature score.
 \description{
 Consider the specific method explained at ... to compute PassON signature score.
 }
+\examples{
+Compute the signature score for PassON Du signature using the specific method. 
+geneSigPassON(dat.icb = ICB_Liu, 
+              sig = PassON_Du,
+              sig.name = 'PassON_Du',
+              missing.perc = 0.5,
+              const.int = 0.001,
+              n.cutoff = 15,
+              sig.perc = 0.8, 
+              study = 'ICB_Liu')
+             
+}

@@ -41,3 +41,15 @@ A numeric vector of computed signature score.
 \description{
 Consider the weighted mean average to compute signature score.
 }
+\examples{
+Compute the signature score for EMT Thompson signature using the weighted mean method. 
+geneSigMean(dat.icb = ICB_Liu, 
+            sig = EMT_Thompson,
+            sig.name = 'EMT_Thompson',
+            missing.perc = 0.5,
+            const.int = 0.001,
+            n.cutoff = 15,
+            sig.perc = 0.8, 
+            study = 'ICB_Liu')
+             
+}

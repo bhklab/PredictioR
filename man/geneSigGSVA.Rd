@@ -2,7 +2,7 @@
 % Please edit documentation in R/geneSigGSVA.R
 \name{geneSigGSVA}
 \alias{geneSigGSVA}
-\title{Compute Signature Score using Gene Set Variation Analysis}
+\title{Compute Signature Score using Gene Set Variation Analysis (GSVA)}
 \usage{
 geneSigGSVA(
   dat.icb,
@@ -40,4 +40,16 @@ A numeric vector of computed signature score.
 }
 \description{
 Consider the gene set variation analysis to compute signature score.
+}
+\examples{
+Compute the signature score for CYT Rooney signature using the GSVA method. 
+geneSigGSVA(dat.icb = ICB_Liu, 
+            sig = CYT_Rooney,
+            sig.name = 'CYT_Rooney',
+            missing.perc = 0.5,
+            const.int = 0.001,
+            n.cutoff = 15,
+            sig.perc = 0.8, 
+            study = 'ICB_Liu')
+
 }
