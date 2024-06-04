@@ -1,11 +1,3 @@
-#################################################################
-#################################################################
-## Get gene association (as continuous) with response (R vs NR)
-#################################################################
-#################################################################
-# n1.cutoff: cutoff for NR (== 1) samples
-# n0.cutoff: cutoff for R (== 0) samples
-
 #' Fit Logistic Regression Model for Genes: Continuous Expression Variable
 #' @description
 #' Fits a logistic regression model with continuous expression data for each gene.

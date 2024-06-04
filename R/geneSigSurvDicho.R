@@ -17,10 +17,40 @@
 #' @param cancer.type Name of the cancer type for the given study.
 #' @param treatment Name of the treatment for the given study. 
 #'
-#' @return 
+#' @return A subset of results using an object of class 'coxph' representing the fit. 
+#' Outcome: Immunotherapy time-to-event outcomes including overall survival (OS) and progression-free survival (PFS).
+#' Gene: Name of selected signature.
+#' Study: Name of study.
+#' Coef: Estimate of treatment effect i.e., log hazard ratio.
+#' SE: Standard error of treatment estimate.
+#' N: Number of samples.
+#' Pval: Estimated p-value.
+#' Cancer_type: A character shows the cancer type.
+#' Treatment: A character shows the treatment type.
+#' 
 #' @export
 #'
 #' @examples
+#' Assess the association of EMT Thompson signature and PFS. 
+#' sig <- geneSigMean(dat.icb = ICB_Liu, 
+#'                    sig = EMT_Thompson,
+#'                    sig.name = 'EMT_Thompson',
+#'                    missing.perc = 0.5,
+#'                    const.int = 0.001,
+#'                    n.cutoff = 15,
+#'                    sig.perc = 0.8, 
+#'                    study = 'ICB_Liu')
+#'             
+#' geneSigSurvCont(dat.icb = ICB_Liu,
+#'                 geneSig = sig,
+#'                 time.censor = 24,
+#'                 n.cutoff = 15,
+#'                 study =  'ICB_Liu',
+#'                 surv.outcome = 'PFS',
+#'                 sig.name = 'EMT_Thompson',
+#'                 cancer.type = 'Melanoma',
+#'                 treatment = 'PD-1/PD-L1')
+#'                 
 geneSigSurvDicho <- function(dat.icb, clin = NULL, geneSig, time.censor, n.cutoff, n0.cutoff, n1.cutoff, study, surv.outcome, sig.name,
                              method = "median", var.type, cancer.type, treatment){
   
