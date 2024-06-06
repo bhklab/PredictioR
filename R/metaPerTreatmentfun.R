@@ -13,10 +13,54 @@
 #' @param treatment.spec By default, it is TRUE. 
 #' @param feature Name of feature.
 #'
-#' @return
+#' @return A list of input data, meta-analysis and summary. 
+#' Treatment_type: A character shows the cancer type.
+#' Gene: Name of selected feature.
+#' Coef: Estimate of treatment effect i.e., log odds ratio or log hazard ratio.
+#' SE: Standard error of treatment estimate.
+#' CI_lower: Lower bound of the 95% confidence interval.
+#' CI_upper: Upper bound of the 95% confidence interval.
+#' Pval: Estimated p-value.
+#' I2: A percentage of total variation across studies that is due to heterogeneity.
+#' Q_Pval: Estimated p-value associated with the Q statistic in meta-analysis.
 #' @export
 #'
 #' @examples
+#' expr <- list('ICB_Liu' = ICB_small_Liu, 'ICB_Padron' = ICB_small_Padron, 'ICB_Hugo' = ICB_small_Hugo, 
+#'              'ICB_Mariathasan' = ICB_small_Mariathasan, 'ICB_Nathanson' = ICB_small_Nathanson, 
+#'              'ICB_Riaz' = ICB_small_Riaz, 'ICB_Miao' = ICB_small_Miao, 'ICB_Van_Allen' = ICB_small_Van_Allen)
+#' 
+#' cancer_type <- c('Melanoma', 'Pancreas', 'Melanoma', 'Bladder', 'Melanoma', 'Melanoma', 'Kidney', 'Melanoma')
+#' treatment_type <- c('PD-1/PD-L1', 'PD-1/PD-L1', 'PD-1/PD-L1', 'PD-1/PD-L1', 'CTLA4', 'IO+combo', 'PD-1/PD-L1', 'CTLA4')
+#' 
+#' assoc.res <- lapply(1:length(expr), function(k){
+#' 
+#' geneLogReg(dat.icb = expr[[k]],
+#'            missing.perc = 0.5,
+#'            const.int = 0.001,
+#'            n.cutoff = 15,
+#'            feature = 'CXCL9',
+#'            study = names(expr)[k], 
+#'            n0.cutoff = 3,
+#'            n1.cutoff = 3,
+#'            cancer.type = cancer_type[k],
+#'            treatment = treatment_type[k])
+#' })
+#' assoc.res <- do.call(rbind, assoc.res)
+#' 
+#' fit <- metaPerTreatmentfun(coef = assoc.res$Coef, 
+#'                            se = assoc.res$SE,
+#'                            study = assoc.res$Study,
+#'                            pval = assoc.res$Pval,
+#'                            n = assoc.res$N,
+#'                            cancer.type = assoc.res$Cancer_type,
+#'                            treatment = assoc.res$Treatment,
+#'                            feature = "CXCL9")
+#'  
+#'  fit$`PD-1/PD-L1`$input_data
+#'  fit$`PD-1/PD-L1`$meta_output
+#'  fit$`PD-1/PD-L1`$meta_summery  
+#'  
 metaPerTreatmentfun <- function(coef, se, study, pval, n, cancer.type, treatment, treatment.spec = TRUE, feature){
   
   data <- data.frame( Gene = feature,
