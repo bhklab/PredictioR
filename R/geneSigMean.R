@@ -17,7 +17,7 @@
 #'
 #' @examples
 #' Compute the signature score for EMT Thompson signature using the weighted mean method. 
-#' geneSigMean(dat.icb = ICB_Liu, 
+#' geneSigMean(dat.icb = ICB_small_Liu, 
 #'             sig = EMT_Thompson,
 #'             sig.name = 'EMT_Thompson',
 #'             missing.perc = 0.5,

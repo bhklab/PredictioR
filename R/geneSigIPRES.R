@@ -17,7 +17,7 @@
 #'
 #' @examples
 #' Compute the signature score for IPRES Hugo signature using the specific method. 
-#' geneSigIPRES(dat.icb = ICB_Liu, 
+#' geneSigIPRES(dat.icb = ICB_small_Liu, 
 #'              sig = IPRES_Hugo,
 #'              sig.name = 'IPRES_Hugo',
 #'              missing.perc = 0.5,

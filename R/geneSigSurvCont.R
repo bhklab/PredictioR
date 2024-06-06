@@ -27,7 +27,7 @@
 #'
 #' @examples
 #' Assess the association of CYT Rooney signature and OS. 
-#' sig <- geneSigGSVA(dat.icb = ICB_Liu, 
+#' sig <- geneSigGSVA(dat.icb = ICB_small_Liu, 
 #'                    sig = CYT_Rooney,
 #'                    sig.name = 'CYT_Rooney',
 #'                    missing.perc = 0.5,
@@ -36,11 +36,11 @@
 #'                    sig.perc = 0.8, 
 #'                    study = 'ICB_Liu')
 #'             
-#' geneSigSurvCont(dat.icb = ICB_Liu,
+#' geneSigSurvCont(dat.icb = ICB_small_Liu,
 #'                 geneSig = sig[1,],
 #'                 time.censor = 36,
 #'                 n.cutoff = 15,
-#'                 study =  'ICB_Liu',
+#'                 study =  'ICB_small_Liu',
 #'                 surv.outcome = 'OS',
 #'                 sig.name = 'CYT_Rooney',
 #'                 cancer.type = 'Melanoma',

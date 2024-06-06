@@ -70,7 +70,7 @@ Fits a Cox proportional hazards regression model with dichotomous expression dat
 }
 \examples{
 Assess the association between selected genes (i.e., dichotomous variable with median cutoff) and OS in immunotherapy.
-geneSurvDicho(dat.icb = ICB_Liu,
+geneSurvDicho(dat.icb = ICB_small_Liu,
              time.censor = 36,
              missing.perc = 0.5,
              const.int = 0.001,

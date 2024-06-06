@@ -17,7 +17,7 @@
 #'
 #' @examples
 #' Compute the signature score for IPSOV Shen signature using the specific method. 
-#' geneSigIPSOV(dat.icb = ICB_Liu, 
+#' geneSigIPSOV(dat.icb = ICB_small_Liu, 
 #'              sig = IPSOV_Shen,
 #'              sig.name = 'IPSOV_Shen',
 #'              missing.perc = 0.5,

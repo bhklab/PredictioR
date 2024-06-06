@@ -32,7 +32,7 @@
 #'
 #' @examples
 #' Assess the association of EMT Thompson signature and PFS. 
-#' sig <- geneSigMean(dat.icb = ICB_Liu, 
+#' sig <- geneSigMean(dat.icb = ICB_small_Liu, 
 #'                    sig = EMT_Thompson,
 #'                    sig.name = 'EMT_Thompson',
 #'                    missing.perc = 0.5,
@@ -41,15 +41,19 @@
 #'                    sig.perc = 0.8, 
 #'                    study = 'ICB_Liu')
 #'             
-#' geneSigSurvCont(dat.icb = ICB_Liu,
-#'                 geneSig = sig,
-#'                 time.censor = 24,
-#'                 n.cutoff = 15,
-#'                 study =  'ICB_Liu',
-#'                 surv.outcome = 'PFS',
-#'                 sig.name = 'EMT_Thompson',
-#'                 cancer.type = 'Melanoma',
-#'                 treatment = 'PD-1/PD-L1')
+#' geneSigSurvDicho(dat.icb = ICB_small_Liu,
+#'                  geneSig = sig,
+#'                  time.censor = 24,
+#'                  n.cutoff = 15,
+#'                  n0.cutoff = 5,
+#'                  n1.cutoff = 5,
+#'                  study =  'ICB_Liu',
+#'                  surv.outcome = 'PFS',
+#'                  sig.name = 'EMT_Thompson',
+#'                  method = 'median',
+#'                  var.type = FALSE,
+#'                  cancer.type = 'Melanoma',
+#'                  treatment = 'PD-1/PD-L1')
 #'                 
 geneSigSurvDicho <- function(dat.icb, clin = NULL, geneSig, time.censor, n.cutoff, n0.cutoff, n1.cutoff, study, surv.outcome, sig.name,
                              method = "median", var.type, cancer.type, treatment){
@@ -85,7 +89,7 @@ geneSigSurvDicho <- function(dat.icb, clin = NULL, geneSig, time.censor, n.cutof
     
     if( length( dat_clin$event_occurred_os[ !is.na( dat_clin$event_occurred_os ) ] ) >= n.cutoff ){
       
-      cox <- survDicho( surv = dat_clin$event_occurred_os ,
+      cox <- survDicho( status = dat_clin$event_occurred_os ,
                         time = dat_clin$survival_time_os ,
                         time.censor = time.censor ,
                         var = geneSig,
@@ -125,7 +129,7 @@ geneSigSurvDicho <- function(dat.icb, clin = NULL, geneSig, time.censor, n.cutof
     
     if( length( dat_clin$event_occurred_pfs[ !is.na( dat_clin$event_occurred_pfs ) ] ) >= n.cutoff ){
       
-      cox <- survDicho( surv = dat_clin$event_occurred_pfs ,
+      cox <- survDicho( status = dat_clin$event_occurred_pfs ,
                         time = dat_clin$survival_time_pfs ,
                         time.censor = time.censor ,
                         var = geneSig,

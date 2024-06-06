@@ -17,7 +17,7 @@
 #'
 #' @examples
 #' Compute the signature score for COX-IS Bonavita signature using the specific method. 
-#' geneSigCOX_IS(dat.icb = ICB_Liu, 
+#' geneSigCOX_IS(dat.icb = ICB_small_Liu, 
 #'               sig = COX_IS_Bonavita,
 #'               sig.name = 'COX-IS_Bonavita',
 #'               missing.perc = 0.5,

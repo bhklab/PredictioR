@@ -43,7 +43,7 @@ Consider the specific method explained at ... to compute IPS signature score.
 }
 \examples{
 Compute the signature score for IPS Charoentong signature using the specific method. 
-geneSigIPS(dat.icb = ICB_Liu, 
+geneSigIPS(dat.icb = ICB_small_Liu, 
            sig = IPS_Charoentong,
            sig.name = 'IPS_Charoentong',
            missing.perc = 0.5,

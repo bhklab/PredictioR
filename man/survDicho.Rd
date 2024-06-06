@@ -46,8 +46,8 @@ Fits a Cox proportional hazards regression model with dichotomous expression dat
 }
 \examples{
 Assess the association between CXCL9 (i.e., dichotomous variable with median cutoff) and OS in immunotherapy.
-expr <- assay(ICB_Liu);
-clin <- colData(ICB_Liu) \%>\% as.data.frame();
+expr <- assay(ICB_small_Liu);
+clin <- colData(ICB_small_Liu) \%>\% as.data.frame();
 survDicho( status = clin$event_occurred_os ,
            time = clin$survival_time_os,
            time.censor= 36,

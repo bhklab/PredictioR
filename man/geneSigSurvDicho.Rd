@@ -67,7 +67,7 @@ Fits a Cox proportional hazards regression model with dichotomous signature data
 }
 \examples{
 Assess the association of EMT Thompson signature and PFS. 
-sig <- geneSigMean(dat.icb = ICB_Liu, 
+sig <- geneSigMean(dat.icb = ICB_small_Liu, 
                    sig = EMT_Thompson,
                    sig.name = 'EMT_Thompson',
                    missing.perc = 0.5,
@@ -76,14 +76,18 @@ sig <- geneSigMean(dat.icb = ICB_Liu,
                    sig.perc = 0.8, 
                    study = 'ICB_Liu')
             
-geneSigSurvCont(dat.icb = ICB_Liu,
-                geneSig = sig,
-                time.censor = 24,
-                n.cutoff = 15,
-                study =  'ICB_Liu',
-                surv.outcome = 'PFS',
-                sig.name = 'EMT_Thompson',
-                cancer.type = 'Melanoma',
-                treatment = 'PD-1/PD-L1')
+geneSigSurvDicho(dat.icb = ICB_small_Liu,
+                 geneSig = sig,
+                 time.censor = 24,
+                 n.cutoff = 15,
+                 n0.cutoff = 5,
+                 n1.cutoff = 5,
+                 study =  'ICB_Liu',
+                 surv.outcome = 'PFS',
+                 sig.name = 'EMT_Thompson',
+                 method = 'median',
+                 var.type = FALSE,
+                 cancer.type = 'Melanoma',
+                 treatment = 'PD-1/PD-L1')
                 
 }

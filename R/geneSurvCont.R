@@ -28,7 +28,7 @@
 #'
 #' @examples
 #' Assess the association between selected genes and OS in immunotherapy.
-#' geneSurvCont(dat.icb = ICB_Liu,
+#' geneSurvCont(dat.icb = ICB_small_Liu,
 #'              time.censor = 36,
 #'              missing.perc = 0.5,
 #'              const.int = 0.001,

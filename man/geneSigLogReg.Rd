@@ -55,7 +55,7 @@ Fits a logistic regression model for continuous signature data.
 }
 \examples{
 Assess the association of M1 Hwang signature and response. 
-sig <- geneSigssGSEA(dat.icb = ICB_Liu, 
+sig <- geneSigssGSEA(dat.icb = ICB_small_Liu, 
                      sig = M1_Hwang,
                      sig.name = 'M1_Hwang',
                      missing.perc = 0.5,
@@ -64,7 +64,7 @@ sig <- geneSigssGSEA(dat.icb = ICB_Liu,
                      sig.perc = 0.8, 
                      study = 'ICB_Liu')
             
-geneSigLogReg(dat.icb = ICB_Liu,
+geneSigLogReg(dat.icb = ICB_small_Liu,
               geneSig = sig,
               n.cutoff = 15,
               study =  'ICB_Liu',

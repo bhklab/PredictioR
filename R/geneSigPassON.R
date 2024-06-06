@@ -17,7 +17,7 @@
 #'
 #' @examples
 #' Compute the signature score for PassON Du signature using the specific method. 
-#' geneSigPassON(dat.icb = ICB_Liu, 
+#' geneSigPassON(dat.icb = ICB_small_Liu, 
 #'               sig = PassON_Du,
 #'               sig.name = 'PassON_Du',
 #'               missing.perc = 0.5,

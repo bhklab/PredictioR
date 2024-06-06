@@ -17,7 +17,7 @@
 #'
 #' @examples
 #' Compute the signature score for PredictIO Bareche signature using the specific method. 
-#' geneSigPredictIO(dat.icb = ICB_Liu, 
+#' geneSigPredictIO(dat.icb = ICB_small_Liu, 
 #'                  sig = PredictIO_Bareche,
 #'                  sig.name = 'PredictIO_Bareche',
 #'                  missing.perc = 0.5,

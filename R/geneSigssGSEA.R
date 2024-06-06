@@ -17,7 +17,7 @@
 #'
 #' @examples
 #' Compute the signature score for M1 Hwang signature using the ssGSEA method. 
-#' geneSigssGSEA(dat.icb = ICB_Liu, 
+#' geneSigssGSEA(dat.icb = ICB_small_Liu, 
 #'             sig = M1_Hwang,
 #'             sig.name = 'M1_Hwang',
 #'             missing.perc = 0.5,
