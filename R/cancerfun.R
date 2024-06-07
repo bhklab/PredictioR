@@ -1,14 +1,10 @@
-##############################################################
-##############################################################
-## create a function to specify cancer specific analyses
-##############################################################
-##############################################################
-
-#' Title
+#' Cancer Specific Analysis
+#' @description
+#' Create a function to specify cancer specific analysis.
+#' 
+#' @param cancer A data frame containing a subset of association results obtained using logistic regression or 'coxph' models.
 #'
-#' @param cancer 
-#'
-#' @return
+#' @return Stratify studies within each cancer type that have at least 3 studies.
 #' @export
 #'
 #' @examples

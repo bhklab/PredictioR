@@ -5,7 +5,7 @@
 #' 
 #' @param x A numeric matrix of expression data.
 #'
-#' @return
+#' @return A scaled matrix. 
 #' @export
 #'
 #' @examples

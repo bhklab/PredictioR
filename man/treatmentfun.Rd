@@ -2,13 +2,16 @@
 % Please edit documentation in R/treatmentfun.R
 \name{treatmentfun}
 \alias{treatmentfun}
-\title{Title}
+\title{Treatment Specific Analysis}
 \usage{
 treatmentfun(treatment)
 }
 \arguments{
-\item{treatment}{}
+\item{cancer}{A data frame containing a subset of association results obtained using logistic regression or 'coxph' models.}
+}
+\value{
+Stratify studies within each treatment type that have at least 3 studies.
 }
 \description{
-Title
+Create a function to specify treatment specific analysis.
 }

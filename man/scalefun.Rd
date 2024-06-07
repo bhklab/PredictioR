@@ -9,6 +9,9 @@ scalefun(x)
 \arguments{
 \item{x}{A numeric matrix of expression data.}
 }
+\value{
+A scaled matrix.
+}
 \description{
 A generic function whose default method centers and scales the rows (or features) of a numeric expression matrix.
 }

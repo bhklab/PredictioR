@@ -2,7 +2,7 @@
 % Please edit documentation in R/IPSfun.R
 \name{IPSfun}
 \alias{IPSfun}
-\title{Title}
+\title{IPS Function}
 \usage{
 IPSfun(expr, sig)
 }
@@ -12,5 +12,5 @@ IPSfun(expr, sig)
 \item{sig}{}
 }
 \description{
-Title
+IPS Function
 }

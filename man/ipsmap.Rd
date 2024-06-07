@@ -2,7 +2,7 @@
 % Please edit documentation in R/ipsmap.R
 \name{ipsmap}
 \alias{ipsmap}
-\title{Title}
+\title{Compute Immunophenoscore}
 \usage{
 ipsmap(x)
 }
@@ -10,5 +10,5 @@ ipsmap(x)
 \item{x}{}
 }
 \description{
-Title
+Compute Immunophenoscore
 }

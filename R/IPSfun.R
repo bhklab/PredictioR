@@ -1,4 +1,4 @@
-#' Title
+#' IPS Function
 #'
 #' @param expr 
 #' @param sig 

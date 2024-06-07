@@ -1,9 +1,4 @@
-#####################################################################
-## Get signature score: IPS
-#####################################################################
-## calculate Immunophenoscore
-
-#' Title
+#' Compute Immunophenoscore
 #'
 #' @param x 
 #'

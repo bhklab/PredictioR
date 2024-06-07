@@ -2,13 +2,16 @@
 % Please edit documentation in R/cancerfun.R
 \name{cancerfun}
 \alias{cancerfun}
-\title{Title}
+\title{Cancer Specific Analysis}
 \usage{
 cancerfun(cancer)
 }
 \arguments{
-\item{cancer}{}
+\item{cancer}{A data frame containing a subset of association results obtained using logistic regression or 'coxph' models.}
+}
+\value{
+Stratify studies within each cancer type that have at least 3 studies.
 }
 \description{
-Title
+Create a function to specify cancer specific analysis.
 }

@@ -1,14 +1,10 @@
-##############################################################
-##############################################################
-## create a function to specify treatment analyses
-##############################################################
-##############################################################
-
-#' Title
+#' Treatment Specific Analysis
+#' @description
+#' Create a function to specify treatment specific analysis.
+#' 
+#' @param cancer A data frame containing a subset of association results obtained using logistic regression or 'coxph' models.
 #'
-#' @param treatment 
-#'
-#' @return
+#' @return Stratify studies within each treatment type that have at least 3 studies.
 #' @export
 #'
 #' @examples
