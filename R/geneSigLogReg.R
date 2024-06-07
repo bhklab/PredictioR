@@ -27,23 +27,23 @@
 #'
 #' @examples
 #' Assess the association of M1 Hwang signature and response. 
-#' sig <- geneSigssGSEA(dat.icb = ICB_small_Liu, 
+#' sig <- geneSigssGSEA(dat.icb = ICB_small_Mariathasan, 
 #'                      sig = M1_Hwang,
 #'                      sig.name = 'M1_Hwang',
 #'                      missing.perc = 0.5,
 #'                      const.int = 0.001,
 #'                      n.cutoff = 15,
 #'                      sig.perc = 0.8, 
-#'                      study = 'ICB_Liu')
+#'                      study = 'ICB_Mariathasan')
 #'             
-#' geneSigLogReg(dat.icb = ICB_small_Liu,
+#' geneSigLogReg(dat.icb = ICB_small_Mariathasan,
 #'               geneSig = sig,
 #'               n.cutoff = 15,
-#'               study =  'ICB_Liu',
+#'               study =  'ICB_Mariathasan',
 #'               sig.name = 'M1_Hwang',
 #'               n0.cutoff = 10,
 #'               n1.cutoff = 10,
-#'               cancer.type = 'Melanoma',
+#'               cancer.type = 'Bladder',
 #'               treatment = 'PD-1/PD-L1')
 #'                 
 geneSigLogReg <- function(dat.icb, clin = NULL, geneSig, n.cutoff, study, sig.name, n0.cutoff, n1.cutoff, cancer.type, treatment){

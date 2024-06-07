@@ -17,14 +17,14 @@
 #'
 #' @examples
 #' Compute the signature score for PredictIO Bareche signature using the specific method. 
-#' geneSigPredictIO(dat.icb = ICB_small_Liu, 
+#' geneSigPredictIO(dat.icb = ICB_small_Mariathasan, 
 #'                  sig = PredictIO_Bareche,
 #'                  sig.name = 'PredictIO_Bareche',
 #'                  missing.perc = 0.5,
 #'                  const.int = 0.001,
 #'                  n.cutoff = 15,
 #'                  sig.perc = 0.8, 
-#'                  study = 'ICB_Liu')
+#'                  study = 'ICB_Mariathasan')
 #'              
 geneSigPredictIO <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
   

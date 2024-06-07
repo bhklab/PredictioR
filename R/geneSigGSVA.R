@@ -17,14 +17,14 @@
 #'
 #' @examples
 #' Compute the signature score for CYT Rooney signature using the GSVA method. 
-#' geneSigGSVA(dat.icb = ICB_small_Liu, 
+#' geneSigGSVA(dat.icb = ICB_small_Mariathasan, 
 #'             sig = CYT_Rooney,
 #'             sig.name = 'CYT_Rooney',
 #'             missing.perc = 0.5,
 #'             const.int = 0.001,
 #'             n.cutoff = 15,
 #'             sig.perc = 0.8, 
-#'             study = 'ICB_Liu')
+#'             study = 'ICB_Mariathasan')
 #' 
 geneSigGSVA <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const.int = 0.001, n.cutoff, sig.perc, study){
   

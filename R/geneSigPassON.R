@@ -17,14 +17,14 @@
 #'
 #' @examples
 #' Compute the signature score for PassON Du signature using the specific method. 
-#' geneSigPassON(dat.icb = ICB_small_Liu, 
+#' geneSigPassON(dat.icb = ICB_small_Mariathasan, 
 #'               sig = PassON_Du,
 #'               sig.name = 'PassON_Du',
 #'               missing.perc = 0.5,
 #'               const.int = 0.001,
 #'               n.cutoff = 15,
 #'               sig.perc = 0.8, 
-#'               study = 'ICB_Liu')
+#'               study = 'ICB_Mariathasan')
 #'              
 geneSigPassON <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
   

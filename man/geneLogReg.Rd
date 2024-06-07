@@ -60,17 +60,17 @@ Fits a logistic regression model with continuous expression data for each gene.
 }
 \examples{
 Assess the association between selected genes and response (R vs NR) in immunotherapy.
-geneLogReg(dat.icb = ICB_Liu,
+geneLogReg(dat.icb = ICB_small_Mariathasan,
            missing.perc = 0.5,
            const.int = 0.001,
            n.cutoff = 15,
            feature = c('CXCL9', 'CXCL10', 'TIGIT', 
                          'CD83', 'STAT1', 'CXCL11',
                          'CXCL13', 'CD8A', 'CTLA4'),
-           study = 'ICB_Liu', 
+           study = 'ICB_Mariathasan', 
            n0.cutoff = 10,
            n1.cutoff = 10,
-           cancer.type = 'Melanoma',
+           cancer.type = 'Bladder',
            treatment = 'PD-1/PD-L1')
 
 }

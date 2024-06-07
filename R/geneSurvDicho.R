@@ -32,7 +32,7 @@
 #'
 #' @examples
 #' Assess the association between selected genes (i.e., dichotomous variable with median cutoff) and OS in immunotherapy.
-#' geneSurvDicho(dat.icb = ICB_small_Liu,
+#' geneSurvDicho(dat.icb = ICB_small_Mariathasan,
 #'              time.censor = 36,
 #'              missing.perc = 0.5,
 #'              const.int = 0.001,
@@ -40,13 +40,13 @@
 #'              feature = c('CXCL9', 'CXCL10', 'TIGIT', 
 #'                          'CD83', 'STAT1', 'CXCL11',
 #'                          'CXCL13', 'CD8A', 'CTLA4'),
-#'              study = 'ICB_Liu',
+#'              study = 'ICB_Mariathasan',
 #'              surv.outcome = 'OS',
 #'              n0.cutoff = 5, 
 #'              n1.cutoff = 5, 
 #'              method = "median",
 #'              var.type = FALSE,
-#'              cancer.type = 'Melanoma',
+#'              cancer.type = 'Bladder',
 #'              treatment = 'PD-1/PD-L1')
 #'              
 geneSurvDicho <- function(dat.icb, clin = NULL, time.censor, missing.perc, const.int=0.001, n.cutoff, feature,

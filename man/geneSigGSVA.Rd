@@ -43,13 +43,13 @@ Consider the gene set variation analysis to compute signature score.
 }
 \examples{
 Compute the signature score for CYT Rooney signature using the GSVA method. 
-geneSigGSVA(dat.icb = ICB_small_Liu, 
+geneSigGSVA(dat.icb = ICB_small_Mariathasan, 
             sig = CYT_Rooney,
             sig.name = 'CYT_Rooney',
             missing.perc = 0.5,
             const.int = 0.001,
             n.cutoff = 15,
             sig.perc = 0.8, 
-            study = 'ICB_Liu')
+            study = 'ICB_Mariathasan')
 
 }

@@ -51,16 +51,17 @@ treatment_type <- c('PD-1/PD-L1', 'PD-1/PD-L1', 'PD-1/PD-L1', 'PD-1/PD-L1', 'CTL
 
 assoc.res <- lapply(1:length(expr), function(k){
 
-geneLogReg(dat.icb = expr[[k]],
-           missing.perc = 0.5,
-           const.int = 0.001,
-           n.cutoff = 15,
-           feature = 'CXCL9',
-           study = names(expr)[k], 
-           n0.cutoff = 3,
-           n1.cutoff = 3,
-           cancer.type = cancer_type[k],
-           treatment = treatment_type[k])
+ geneSurvCont(dat.icb = expr[[k]],
+ time.censor = 36,
+ missing.perc = 0.5,
+ const.int = 0.001,
+ n.cutoff = 15,
+ feature = 'CXCL9',
+ study = names(expr)[k],
+ surv.outcome = 'OS',
+ cancer.type = cancer_type[k],
+ treatment = treatment_type[k])
+ 
 })
 assoc.res <- do.call(rbind, assoc.res)
 

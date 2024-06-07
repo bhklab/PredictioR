@@ -17,14 +17,14 @@
 #'
 #' @examples
 #' Compute the signature score for IPRES Hugo signature using the specific method. 
-#' geneSigIPRES(dat.icb = ICB_small_Liu, 
+#' geneSigIPRES(dat.icb = ICB_small_Mariathasan, 
 #'              sig = IPRES_Hugo,
 #'              sig.name = 'IPRES_Hugo',
 #'              missing.perc = 0.5,
 #'              const.int = 0.001,
 #'              n.cutoff = 15,
 #'              sig.perc = 0.8, 
-#'              study = 'ICB_Liu')
+#'              study = 'ICB_Mariathasan')
 #'             
 geneSigIPRES <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
   

@@ -17,14 +17,14 @@
 #'
 #' @examples
 #' Compute the signature score for EMT Thompson signature using the weighted mean method. 
-#' geneSigMean(dat.icb = ICB_small_Liu, 
+#' geneSigMean(dat.icb = ICB_small_Mariathasan, 
 #'             sig = EMT_Thompson,
 #'             sig.name = 'EMT_Thompson',
 #'             missing.perc = 0.5,
 #'             const.int = 0.001,
 #'             n.cutoff = 15,
 #'             sig.perc = 0.8, 
-#'             study = 'ICB_Liu')
+#'             study = 'ICB_Mariathasan')
 #'              
 geneSigMean <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
   

@@ -28,7 +28,7 @@
 #'
 #' @examples
 #' Assess the association between selected genes and OS in immunotherapy.
-#' geneSurvCont(dat.icb = ICB_small_Liu,
+#' geneSurvCont(dat.icb = ICB_small_Mariathasan,
 #'              time.censor = 36,
 #'              missing.perc = 0.5,
 #'              const.int = 0.001,
@@ -36,9 +36,9 @@
 #'              feature = c('CXCL9', 'CXCL10', 'TIGIT', 
 #'                          'CD83', 'STAT1', 'CXCL11',
 #'                          'CXCL13', 'CD8A', 'CTLA4'),
-#'              study = 'ICB_Liu',
+#'              study = 'ICB_Mariathasan',
 #'              surv.outcome = 'OS',
-#'              cancer.type = 'Melanoma',
+#'              cancer.type = 'Bladder',
 #'              treatment = 'PD-1/PD-L1')
 #'              
 geneSurvCont <- function(dat.icb, clin = NULL, time.censor, missing.perc, const.int=0.001,

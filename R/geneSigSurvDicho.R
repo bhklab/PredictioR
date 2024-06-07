@@ -31,28 +31,28 @@
 #' @export
 #'
 #' @examples
-#' Assess the association of EMT Thompson signature and PFS. 
-#' sig <- geneSigMean(dat.icb = ICB_small_Liu, 
+#' Assess the association of EMT Thompson signature and OS. 
+#' sig <- geneSigMean(dat.icb = ICB_small_Mariathasan, 
 #'                    sig = EMT_Thompson,
 #'                    sig.name = 'EMT_Thompson',
 #'                    missing.perc = 0.5,
 #'                    const.int = 0.001,
 #'                    n.cutoff = 15,
 #'                    sig.perc = 0.8, 
-#'                    study = 'ICB_Liu')
+#'                    study = 'ICB_Mariathasan')
 #'             
-#' geneSigSurvDicho(dat.icb = ICB_small_Liu,
+#' geneSigSurvDicho(dat.icb = ICB_small_Mariathasan,
 #'                  geneSig = sig,
-#'                  time.censor = 24,
+#'                  time.censor = 36,
 #'                  n.cutoff = 15,
 #'                  n0.cutoff = 5,
 #'                  n1.cutoff = 5,
-#'                  study =  'ICB_Liu',
-#'                  surv.outcome = 'PFS',
+#'                  study =  'ICB_Mariathasan',
+#'                  surv.outcome = 'OS',
 #'                  sig.name = 'EMT_Thompson',
 #'                  method = 'median',
 #'                  var.type = FALSE,
-#'                  cancer.type = 'Melanoma',
+#'                  cancer.type = 'Bladder',
 #'                  treatment = 'PD-1/PD-L1')
 #'                 
 geneSigSurvDicho <- function(dat.icb, clin = NULL, geneSig, time.censor, n.cutoff, n0.cutoff, n1.cutoff, study, surv.outcome, sig.name,

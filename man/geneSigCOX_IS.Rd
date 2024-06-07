@@ -43,13 +43,13 @@ Consider the specific method explained at ... to compute COX_IS signature score.
 }
 \examples{
 Compute the signature score for COX-IS Bonavita signature using the specific method. 
-geneSigCOX_IS(dat.icb = ICB_small_Liu, 
+geneSigCOX_IS(dat.icb = ICB_small_Mariathasan, 
               sig = COX_IS_Bonavita,
               sig.name = 'COX-IS_Bonavita',
               missing.perc = 0.5,
               const.int = 0.001,
               n.cutoff = 15,
               sig.perc = 0.8, 
-              study = 'ICB_Liu')
+              study = 'ICB_Mariathasan')
             
 }
