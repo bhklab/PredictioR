@@ -70,7 +70,6 @@ geneSigssGSEA <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, con
     #print( paste( signature_name , "|" , "ssGSEA" , sep=" " ) )
     
     geneSig <- NULL
-    
     gsvaPar <- ssgseaParam(scalefun( x=data ) , list(sig$gene_name))
     geneSig <- gsva(gsvaPar, verbose=FALSE)
     

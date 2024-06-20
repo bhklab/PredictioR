@@ -80,7 +80,9 @@ geneSigIPSOV <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, cons
     
     if( ifelse( is.null( nrow( scale.data[ rownames(scale.data) %in% sig[[k]] , ]) ) , 1 , nrow( scale.data[ rownames(scale.data) %in% sig[[k]] , ] ) ) / length( sig[[k]] ) >= sig.perc & ncol(scale.data) >= n.cutoff ){
       
-      geneSig[[k]] <- gsva(scale.data , list(sig[[k]]) , method = "ssgsea", verbose=FALSE)
+      gsvaPar <- ssgseaParam(scale.data , list(sig[[k]]))
+      genesig <- gsva(gsvaPar, verbose=FALSE)
+      geneSig[[k]] <- genesig[1, ]
       
     }else{
       

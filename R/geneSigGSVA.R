@@ -72,8 +72,6 @@ geneSigGSVA <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const
     geneSig <- NULL
     gsvaPar <- gsvaParam(scalefun( x=data ) , list(sig$gene_name))
     geneSig <- gsva(gsvaPar, verbose=FALSE)
-    #geneSig <- as.numeric(gsva( scalefun( x=data ) , list(sig$gene_name) , verbose=FALSE ) )
-    #names( geneSig ) <- colnames(data)
     
   }else{
     
