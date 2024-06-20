@@ -13,8 +13,8 @@
 #' @param cancer.type Name of the cancer type for the given study.
 #' @param treatment Name of the treatment for the given study. 
 #'
-#' @return 
-#' @export A subset of results using an object of class 'coxph' representing the fit. 
+#'  
+#' @return A subset of results using an object of class 'coxph' representing the fit. 
 #' Outcome: Immunotherapy time-to-event outcomes including overall survival (OS) and progression-free survival (PFS).
 #' Gene: Name of selected signature.
 #' Study: Name of study.
@@ -24,7 +24,9 @@
 #' Pval: Estimated p-value.
 #' Cancer_type: A character shows the cancer type.
 #' Treatment: A character shows the treatment type.
-#'
+#' 
+#' @export
+#' 
 #' @examples
 #' Assess the association of CYT Rooney signature and OS. 
 #' sig <- geneSigGSVA(dat.icb = ICB_small_Mariathasan, 

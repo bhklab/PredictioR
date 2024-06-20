@@ -38,6 +38,18 @@ geneSigSurvCont(
 
 \item{treatment}{Name of the treatment for the given study.}
 }
+\value{
+A subset of results using an object of class 'coxph' representing the fit.
+Outcome: Immunotherapy time-to-event outcomes including overall survival (OS) and progression-free survival (PFS).
+Gene: Name of selected signature.
+Study: Name of study.
+Coef: Estimate of treatment effect i.e., log hazard ratio.
+SE: Standard error of treatment estimate.
+N: Number of samples.
+Pval: Estimated p-value.
+Cancer_type: A character shows the cancer type.
+Treatment: A character shows the treatment type.
+}
 \description{
 Fits a Cox proportional hazards regression model with continuous signature data using the counting process formulation of Andersen and Gill.
 }
