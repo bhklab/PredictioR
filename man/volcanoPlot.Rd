@@ -13,7 +13,8 @@ volcanoPlot(
   neg.cutoff,
   x.lab,
   padj.label,
-  cutoff
+  cutoff,
+  colors
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ volcanoPlot(
 \item{padj.label}{If the adjusted p-values (FDR) are used to select significantly associated features, then it is TRUE.}
 
 \item{cutoff}{Cut-off for adjusted p-values (FDR) or p-values.}
+
+\item{colors}{A vector of colors to identify positive, negative, and not associated features.}
 }
 \description{
 Creates a volcano plot of log-odds or log-hazard ratios of changes versus the log p-values from association analysis.

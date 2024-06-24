@@ -11,12 +11,13 @@
 #' @param x.lab Label of x-axis.
 #' @param padj.label If the adjusted p-values (FDR) are used to select significantly associated features, then it is TRUE.
 #' @param cutoff Cut-off for adjusted p-values (FDR) or p-values.
+#' @param colors A vector of colors to identify positive, negative, and not associated features.
 #'
 #' @return 
 #' @export
 #'
 #' @examples
-volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab, padj.label, cutoff){
+volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab, padj.label, cutoff, colors){
   
   data <- data.frame(feature = feature,
                      coef = coef,
@@ -29,7 +30,7 @@ volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab
     data$diffexpressed[data$coef > 0 & data$pval < cutoff] <- paste(paste("Pval < ", cutoff, sep=""), "Coef > 0", sep=", ")
     data$diffexpressed[data$coef < 0 & data$pval < cutoff] <- paste(paste("Pval < ", cutoff, sep=""), "Coef < 0", sep=", ")
     
-    mycolors <- c( "#de2d26","#43a2ca", "#cccccc")
+    #mycolors <- c( "#de2d26","#43a2ca", "#cccccc")
     names(mycolors) <- c(paste(paste("Pval < ", cutoff, sep=""), "Coef > 0", sep=", "),
                          paste(paste("Pval < ", cutoff, sep=""), "Coef < 0", sep=", "),
                          "NO")
@@ -51,7 +52,7 @@ volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab
     data$diffexpressed[data$coef > 0 & data$FDR < cutoff] <- paste(paste("FDR < ", cutoff, sep=""), "Coef > 0", sep=", ")
     data$diffexpressed[data$coef < 0 & data$FDR < cutoff] <- paste(paste("FDR < ", cutoff, sep=""), "Coef < 0", sep=", ")
     
-    mycolors <- c("#de2d26","#43a2ca", "#cccccc")
+    #mycolors <- c("#de2d26","#43a2ca", "#cccccc")
     names(mycolors) <- c(paste(paste("FDR < ", cutoff, sep=""), "Coef > 0", sep=", "),
                          paste(paste("FDR < ", cutoff, sep=""), "Coef < 0", sep=", "),
                          "NO")
