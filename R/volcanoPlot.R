@@ -12,12 +12,13 @@
 #' @param padj.label If the adjusted p-values (FDR) are used to select significantly associated features, then it is TRUE.
 #' @param cutoff Cut-off for adjusted p-values (FDR) or p-values.
 #' @param colors A vector of colors to identify positive, negative, and not associated features.
+#' @param coef.cutoff Cut-off for estimated coef i.e., log-odds or log-hazard ratio.
 #'
 #' @return 
 #' @export
 #'
 #' @examples
-volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab, padj.label, cutoff, colors){
+volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab, padj.label, cutoff, colors, coef.cutoff){
   
   data <- data.frame(feature = feature,
                      coef = coef,
@@ -27,18 +28,18 @@ volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab
   if( padj.label == FALSE){
     
     data$diffexpressed <- "NO"
-    data$diffexpressed[data$coef > 0 & data$pval < cutoff] <- paste(paste("Pval < ", cutoff, sep=""), "Coef > 0", sep=", ")
-    data$diffexpressed[data$coef < 0 & data$pval < cutoff] <- paste(paste("Pval < ", cutoff, sep=""), "Coef < 0", sep=", ")
+    data$diffexpressed[data$coef > coef.cutoff & data$pval < cutoff] <- paste(paste("Pval < ", cutoff, sep=""), paste("Coef > ", coef.cutoff, sep=""), sep=", ")
+    data$diffexpressed[data$coef < coef.cutoff & data$pval < cutoff] <- paste(paste("Pval < ", cutoff, sep=""), paste("Coef < ", coef.cutoff, sep=""), sep=", ")
     
     mycolors <- colors
-    names(mycolors) <- c(paste(paste("Pval < ", cutoff, sep=""), "Coef > 0", sep=", "),
-                         paste(paste("Pval < ", cutoff, sep=""), "Coef < 0", sep=", "),
+    names(mycolors) <- c(paste(paste("Pval < ", cutoff, sep=""), paste("Coef > ", coef.cutoff, sep=""), sep=", "),
+                         paste(paste("Pval < ", cutoff, sep=""), paste("Coef < ", coef.cutoff, sep=""), sep=", "),
                          "NO")
     
     data$delabel <- NA
     data <- data[order(data$pval, decreasing = FALSE), ]
-    id_pos <- data[data$coef > 0 , "feature"][1:pos.cutoff]
-    id_neg <- data[data$coef < 0 , "feature"][1:neg.cutoff]
+    id_pos <- data[data$coef > coef.cutoff , "feature"][1:pos.cutoff]
+    id_neg <- data[data$coef < coef.cutoff , "feature"][1:neg.cutoff]
     id <- c(id_pos, id_neg)
     
     for(j in 1:length(id)){
@@ -49,18 +50,18 @@ volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab
   }else{
     
     data$diffexpressed <- "NO"
-    data$diffexpressed[data$coef > 0 & data$FDR < cutoff] <- paste(paste("FDR < ", cutoff, sep=""), "Coef > 0", sep=", ")
-    data$diffexpressed[data$coef < 0 & data$FDR < cutoff] <- paste(paste("FDR < ", cutoff, sep=""), "Coef < 0", sep=", ")
+    data$diffexpressed[data$coef > coef.cutoff & data$FDR < cutoff] <- paste(paste("FDR < ", cutoff, sep=""), paste("Coef > ", coef.cutoff, sep=""), sep=", ")
+    data$diffexpressed[data$coef < coef.cutoff & data$FDR < cutoff] <- paste(paste("FDR < ", cutoff, sep=""), paste("Coef < ", coef.cutoff, sep=""), sep=", ")
     
     mycolors <- colors
-    names(mycolors) <- c(paste(paste("FDR < ", cutoff, sep=""), "Coef > 0", sep=", "),
-                         paste(paste("FDR < ", cutoff, sep=""), "Coef < 0", sep=", "),
+    names(mycolors) <- c(paste(paste("FDR < ", cutoff, sep=""), paste("Coef > ", coef.cutoff, sep=""), sep=", "),
+                         paste(paste("FDR < ", cutoff, sep=""), paste("Coef < ", coef.cutoff, sep=""), sep=", "),
                          "NO")
     
     data$delabel <- NA
     data <- data[order(data$FDR, decreasing = FALSE), ]
-    id_pos <- data[data$coef > 0 , "feature"][1:pos.cutoff]
-    id_neg <- data[data$coef < 0 , "feature"][1:neg.cutoff]
+    id_pos <- data[data$coef > coef.cutoff , "feature"][1:pos.cutoff]
+    id_neg <- data[data$coef < coef.cutoff , "feature"][1:neg.cutoff]
     id <- c(id_pos, id_neg)
     
     for(j in 1:length(id)){
@@ -95,4 +96,5 @@ volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab
                     seed = 2356,
                     fontface= "bold",
                     max.overlaps = 50)
-}
+  
+ }
