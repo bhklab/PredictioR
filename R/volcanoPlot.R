@@ -30,7 +30,7 @@ volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab
     data$diffexpressed[data$coef > 0 & data$pval < cutoff] <- paste(paste("Pval < ", cutoff, sep=""), "Coef > 0", sep=", ")
     data$diffexpressed[data$coef < 0 & data$pval < cutoff] <- paste(paste("Pval < ", cutoff, sep=""), "Coef < 0", sep=", ")
     
-    #mycolors <- c( "#de2d26","#43a2ca", "#cccccc")
+    mycolors <- colors
     names(mycolors) <- c(paste(paste("Pval < ", cutoff, sep=""), "Coef > 0", sep=", "),
                          paste(paste("Pval < ", cutoff, sep=""), "Coef < 0", sep=", "),
                          "NO")
@@ -52,7 +52,7 @@ volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab
     data$diffexpressed[data$coef > 0 & data$FDR < cutoff] <- paste(paste("FDR < ", cutoff, sep=""), "Coef > 0", sep=", ")
     data$diffexpressed[data$coef < 0 & data$FDR < cutoff] <- paste(paste("FDR < ", cutoff, sep=""), "Coef < 0", sep=", ")
     
-    #mycolors <- c("#de2d26","#43a2ca", "#cccccc")
+    mycolors <- colors
     names(mycolors) <- c(paste(paste("FDR < ", cutoff, sep=""), "Coef > 0", sep=", "),
                          paste(paste("FDR < ", cutoff, sep=""), "Coef < 0", sep=", "),
                          "NO")
