@@ -240,7 +240,8 @@ p <- volcanoPlot(feature = cox_os$Gene,
                  pos.cutoff = 2, 
                  x.lab = "logHR estimate",
                  padj.label = TRUE,
-                 cutoff = 0.05)
+                 cutoff = 0.05,
+                 colors = c("#EF8A62","#67A9CF", "#999999"))
      
 p
      
@@ -280,7 +281,8 @@ p <- volcanoPlot(feature = logreg$Gene,
                  pos.cutoff = 9, 
                  x.lab = "logOR estimate",
                  padj.label = FALSE,
-                 cutoff = 0.05)
+                 cutoff = 0.05,
+                 colors = c("#EF8A62","#67A9CF", "#999999"))
      
 p
      
