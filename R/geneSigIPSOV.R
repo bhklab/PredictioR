@@ -3,7 +3,6 @@
 #' Consider the specific method explained at ... to compute IPSOV signature score. 
 #' 
 #' @param dat.icb A MultiAssayExperiment (MAE) object, SummarizedExperiment (SE) object, or a data frame or matrix of gene expression data.
-#' @param clin If dat.icb is a data frame or matrix, then it contains clinical data (as data frame or matrix). By default, it is NULL.
 #' @param sig A data frame of list of genes' symbol named 'gene_name'. 
 #' @param sig.name Name of signature.
 #' @param missing.perc A cutoff to remove genes with zero expression across samples.
@@ -26,7 +25,7 @@
 #'              sig.perc = 0.8, 
 #'              study = 'ICB_Mariathasan')
 #'              
-geneSigIPSOV <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
+geneSigIPSOV <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
   
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "data.frame", "matrix") ){
     stop(message("function requires SummarizedExperiment, MultiAssayExperiment, data.frame, or matrix class of data"))
@@ -36,21 +35,18 @@ geneSigIPSOV <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, cons
     
     dat <- createSE(dat.icb)
     dat_expr <- assay(dat)
-    dat_clin <- colData(dat)
     
   }
   
   if( class(dat.icb) == "SummarizedExperiment"){
     
     dat_expr <- assay(dat.icb)
-    dat_clin <- colData(dat.icb)
     
   }
   
-  if( sum(nrow(clin)) > 0  ){
+  if( class(dat.icb) %in% c("data.frame", "matrix")  ){
     
     dat_expr <- dat.icb
-    dat_clin <- clin
     
   }
   
@@ -62,9 +58,6 @@ geneSigIPSOV <- function(dat.icb, clin = NULL, sig, sig.name, missing.perc, cons
   }
   names(sig) <- names(IPSOV.dat)
   
-  #cancer_type <- names( table( dat_clin$cancer_type )[ table( dat_clin$cancer_type ) >= n.cutoff ] )
-  #message(paste(study))
-  #data <- dat_expr[ , dat_clin$cancer_type %in% cancer_type ]
   data <- dat_expr
   remove <- rem(data, missing.perc, const.int)
   

@@ -6,7 +6,6 @@
 \usage{
 geneSigGSVA(
   dat.icb,
-  clin = NULL,
   sig,
   sig.name,
   missing.perc,
@@ -18,8 +17,6 @@ geneSigGSVA(
 }
 \arguments{
 \item{dat.icb}{A MultiAssayExperiment (MAE) object, SummarizedExperiment (SE) object, or a data frame or matrix of gene expression data.}
-
-\item{clin}{If dat.icb is a data frame or matrix, then it contains clinical data (as data frame or matrix). By default, it is NULL.}
 
 \item{sig}{A data frame of list of genes' symbol named 'gene_name'.}
 
