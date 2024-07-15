@@ -86,6 +86,10 @@ KMPlot <- function( status , time , time.censor , var , title , xlab, ylab,
                    leg.inset = 0,
                    .lwd = 2 ,
                    verbose=FALSE )
+  }else{
+    
+    message("not enough samples and/or genes in a data")
+    
   }
   
 }
