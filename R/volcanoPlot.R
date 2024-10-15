@@ -14,10 +14,8 @@
 #' @param colors A vector of colors to identify positive, negative, and not associated features.
 #' @param coef.cutoff Cut-off for estimated coef i.e., log-odds or log-hazard ratio.
 #'
-#' @return 
 #' @export
 #'
-#' @examples
 volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab, padj.label, cutoff, colors, coef.cutoff){
   
   data <- data.frame(feature = feature,

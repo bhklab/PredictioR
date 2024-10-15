@@ -1,12 +1,9 @@
 #' IPS Function
 #'
-#' @param expr 
-#' @param sig 
-#'
-#' @return
+#' @param expr A numeric matrix of expression data.
+#' @param sig A data frame of list of genes. 
 #' @export
 #'
-#' @examples
 IPSfun <- function( expr, sig ){
   
   expr <- as.data.frame(expr)

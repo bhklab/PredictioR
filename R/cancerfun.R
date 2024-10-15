@@ -7,7 +7,6 @@
 #' @return Stratify studies within each cancer type that have at least 3 studies.
 #' @export
 #'
-#' @examples
 cancerfun <- function( cancer ){
   
   cancer$Coef <- as.numeric( as.character( cancer$Coef ) )

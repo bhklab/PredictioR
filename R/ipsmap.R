@@ -2,10 +2,8 @@
 #'
 #' @param x 
 #'
-#' @return
 #' @export
 #'
-#' @examples
 ipsmap <- function (x) {
   if (x<=0) {
     ips<-0

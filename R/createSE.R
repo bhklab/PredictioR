@@ -9,7 +9,6 @@
 #' @return A SummarizedExperiment object.
 #' @export
 #'
-#' @examples 
 createSE <- function(dat.icb){
   
   ## slot names for expression data

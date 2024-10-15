@@ -8,7 +8,6 @@
 #' @return Processed expression data after removing low-expressed genes.
 #' @export
 #'
-#' @examples
 rem <- function(x, missing.perc, const.int){
   
   x <- as.matrix(x)

@@ -13,7 +13,6 @@
 #' @param label A label for estimates of treatment effect, e.g., log hazard ratio (logHR).
 #' @param feature Name of feature.
 #'
-#' @return
 #' @export
 #'
 #' @examples

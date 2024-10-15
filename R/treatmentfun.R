@@ -7,7 +7,6 @@
 #' @return Stratify studies within each treatment type that have at least 3 studies.
 #' @export
 #'
-#' @examples
 treatmentfun <- function( treatment ){
   
   treatment$Coef <- as.numeric( as.character( treatment$Coef ) )

@@ -8,7 +8,6 @@
 #' @return A scaled matrix. 
 #' @export
 #'
-#' @examples
 scalefun <- function( x ){
   
   rid = rownames(x)
