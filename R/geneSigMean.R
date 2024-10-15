@@ -10,6 +10,7 @@
 #' @param n.cutoff Minimum number of samples included in the association analysis.
 #' @param sig.perc Minimum percentage of genes in a given expression data. 
 #' @param study Name of study. 
+#' @param gene_annot Specify gene annotation including gene symbol (i.e., gene_name), ENTREZ ID (i.e., entrez_id), and ENSEMBL gene ID (i.e., gene_id).
 #'
 #' @return A numeric vector of computed signature score.
 #' @export
@@ -25,7 +26,7 @@
 #'             sig.perc = 0.8, 
 #'             study = 'ICB_Mariathasan')
 #'              
-geneSigMean <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
+geneSigMean <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study, gene_annot = "gene_name"){
   
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "data.frame", "matrix") ){
     stop(message("function requires SummarizedExperiment, MultiAssayExperiment, data.frame, or matrix class of data"))
@@ -57,12 +58,16 @@ geneSigMean <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, 
     data <- data[-remove,]
   }
   
-  if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > sig.perc & ncol(data) >= n.cutoff ){
+  if( gene_annot == "gene_name" ){ genes <- sig$gene_name  }
+  if( gene_annot == "entrez_id" ){ genes <- sig$entrez_id  }
+  if( gene_annot == "gene_id" ){ genes <- sig$gene_id  }
+  
+  if( ifelse( is.null( nrow( data[ rownames(data) %in% genes , ]) ) , 1 , nrow( data[ rownames(data) %in% genes , ] ) ) / length( genes ) > sig.perc & ncol(data) >= n.cutoff ){
     
     #print( paste( signature_name , "|" , "Weighted Mean" , sep=" " ) )
     
-    gene <- intersect( rownames(data) , sig$gene_name)
-    s <- sig[ sig$gene_name %in% gene, ]
+    gene <- intersect( rownames(data) , genes)
+    s <- sig[ genes %in% gene, ]
     
     scaled_dat <- scalefun( x= data[ gene , ] )
     
