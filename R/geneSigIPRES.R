@@ -10,6 +10,7 @@
 #' @param n.cutoff Minimum number of samples included in the association analysis.
 #' @param sig.perc Minimum percentage of genes in a given expression data. 
 #' @param study Name of study. 
+#' @param gene_annot Specify gene annotation including gene symbol (i.e., gene_name), ENTREZ ID (i.e., entrez_id), and ENSEMBL gene ID (i.e., gene_id).
 #'
 #' @return A numeric vector of computed signature score.
 #' @export
@@ -25,7 +26,7 @@
 #'              sig.perc = 0.8, 
 #'              study = 'ICB_Mariathasan')
 #'             
-geneSigIPRES <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
+geneSigIPRES <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study, gene_annot = "gene_name"){
   
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "data.frame", "matrix") ){
     stop(message("function requires SummarizedExperiment, MultiAssayExperiment, data.frame, or matrix class of data"))
@@ -53,8 +54,26 @@ geneSigIPRES <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001,
   IPRES.dat <- sig
   
   sig <- list()
-  for( j in 1:length(IPRES.dat)){
-    sig[[j]] <-  IPRES.dat[[j]]$gene_name
+  
+  if( gene_annot == "gene_name" ){ 
+    
+    for( j in 1:length(IPRES.dat)){
+      sig[[j]] <-  IPRES.dat[[j]]$gene_name
+    }
+  }
+  
+  if( gene_annot == "entrez_id" ){ 
+    
+    for( j in 1:length(IPRES.dat)){
+      sig[[j]] <-  IPRES.dat[[j]]$entrez_id
+    }
+  }
+  
+  if( gene_annot == "gene_id" ){ 
+    
+    for( j in 1:length(IPRES.dat)){
+      sig[[j]] <-  IPRES.dat[[j]]$gene_id
+    }
   }
   names(sig) <- names(IPRES.dat)
 

@@ -53,9 +53,27 @@ geneSigPassON <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001
   PassON.dat <- sig
   
   sig <- list()
-  for( j in 1:length(PassON.dat)){
-    sig[[j]] <-  PassON.dat[[j]]$gene_name
+  if( gene_annot == "gene_name" ){ 
+    
+    for( j in 1:length(PassON.dat)){
+      sig[[j]] <-  PassON.dat[[j]]$gene_name
+    }
   }
+  
+  if( gene_annot == "entrez_id" ){ 
+    
+    for( j in 1:length(PassON.dat)){
+      sig[[j]] <-  PassON.dat[[j]]$entrez_id
+    }
+  }
+  
+  if( gene_annot == "gene_id" ){ 
+    
+    for( j in 1:length(PassON.dat)){
+      sig[[j]] <-  PassON.dat[[j]]$gene_id
+    }
+  }
+
   names(sig) <- names(PassON.dat)
  
   data <- dat_expr
