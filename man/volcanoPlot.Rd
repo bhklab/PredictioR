@@ -15,7 +15,8 @@ volcanoPlot(
   padj.label,
   cutoff,
   colors,
-  coef.cutoff
+  coef.cutoff.up,
+  coef.cutoff.down
 )
 }
 \arguments{
@@ -39,7 +40,9 @@ volcanoPlot(
 
 \item{colors}{A vector of colors to identify positive, negative, and not associated features.}
 
-\item{coef.cutoff}{Cut-off for estimated coef i.e., log-odds or log-hazard ratio.}
+\item{coef.cutoff.up}{Upper cut-off for estimated coef i.e., log-odds or log-hazard ratio.}
+
+\item{coef.cutoff.down}{Lower cut-off for estimated coef i.e., log-odds or log-hazard ratio.}
 }
 \description{
 Creates a volcano plot of log-odds or log-hazard ratios of changes versus the log p-values from association analysis.

@@ -12,11 +12,13 @@
 #' @param padj.label If the adjusted p-values (FDR) are used to select significantly associated features, then it is TRUE.
 #' @param cutoff Cut-off for adjusted p-values (FDR) or p-values.
 #' @param colors A vector of colors to identify positive, negative, and not associated features.
-#' @param coef.cutoff Cut-off for estimated coef i.e., log-odds or log-hazard ratio.
+#' @param coef.cutoff.up Upper cut-off for estimated coef i.e., log-odds or log-hazard ratio.
+#' @param coef.cutoff.down Lower cut-off for estimated coef i.e., log-odds or log-hazard ratio.
 #'
 #' @export
 #'
-volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab, padj.label, cutoff, colors, coef.cutoff){
+volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab, padj.label, cutoff, 
+                        colors, coef.cutoff.up, coef.cutoff.down){
   
   data <- data.frame(feature = feature,
                      coef = coef,
@@ -26,18 +28,18 @@ volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab
   if( padj.label == FALSE){
     
     data$diffexpressed <- "NO"
-    data$diffexpressed[data$coef > coef.cutoff & data$pval < cutoff] <- paste(paste("Pval < ", cutoff, sep=""), paste("Coef > ", coef.cutoff, sep=""), sep=", ")
-    data$diffexpressed[data$coef < coef.cutoff & data$pval < cutoff] <- paste(paste("Pval < ", cutoff, sep=""), paste("Coef < ", coef.cutoff, sep=""), sep=", ")
+    data$diffexpressed[data$coef > coef.cutoff.up & data$pval < cutoff] <- paste(paste("Pval < ", cutoff, sep=""), paste("Coef > ", coef.cutoff.up, sep=""), sep=", ")
+    data$diffexpressed[data$coef < coef.cutoff.down & data$pval < cutoff] <- paste(paste("Pval < ", cutoff, sep=""), paste("Coef < ", coef.cutoff.down, sep=""), sep=", ")
     
     mycolors <- colors
-    names(mycolors) <- c(paste(paste("Pval < ", cutoff, sep=""), paste("Coef > ", coef.cutoff, sep=""), sep=", "),
-                         paste(paste("Pval < ", cutoff, sep=""), paste("Coef < ", coef.cutoff, sep=""), sep=", "),
+    names(mycolors) <- c(paste(paste("Pval < ", cutoff, sep=""), paste("Coef > ", coef.cutoff.up, sep=""), sep=", "),
+                         paste(paste("Pval < ", cutoff, sep=""), paste("Coef < ", coef.cutoff.down, sep=""), sep=", "),
                          "NO")
     
     data$delabel <- NA
     data <- data[order(data$pval, decreasing = FALSE), ]
-    id_pos <- data[data$coef > coef.cutoff , "feature"][1:pos.cutoff]
-    id_neg <- data[data$coef < coef.cutoff , "feature"][1:neg.cutoff]
+    id_pos <- data[data$coef > coef.cutoff.up , "feature"][1:pos.cutoff]
+    id_neg <- data[data$coef < coef.cutoff.down , "feature"][1:neg.cutoff]
     id <- c(id_pos, id_neg)
     
     for(j in 1:length(id)){
@@ -48,18 +50,18 @@ volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab
   }else{
     
     data$diffexpressed <- "NO"
-    data$diffexpressed[data$coef > coef.cutoff & data$FDR < cutoff] <- paste(paste("FDR < ", cutoff, sep=""), paste("Coef > ", coef.cutoff, sep=""), sep=", ")
-    data$diffexpressed[data$coef < coef.cutoff & data$FDR < cutoff] <- paste(paste("FDR < ", cutoff, sep=""), paste("Coef < ", coef.cutoff, sep=""), sep=", ")
+    data$diffexpressed[data$coef > coef.cutoff.up & data$FDR < cutoff] <- paste(paste("FDR < ", cutoff, sep=""), paste("Coef > ", coef.cutoff.up, sep=""), sep=", ")
+    data$diffexpressed[data$coef < coef.cutoff.down & data$FDR < cutoff] <- paste(paste("FDR < ", cutoff, sep=""), paste("Coef < ", coef.cutoff.down, sep=""), sep=", ")
     
     mycolors <- colors
-    names(mycolors) <- c(paste(paste("FDR < ", cutoff, sep=""), paste("Coef > ", coef.cutoff, sep=""), sep=", "),
-                         paste(paste("FDR < ", cutoff, sep=""), paste("Coef < ", coef.cutoff, sep=""), sep=", "),
+    names(mycolors) <- c(paste(paste("FDR < ", cutoff, sep=""), paste("Coef > ", coef.cutoff.up, sep=""), sep=", "),
+                         paste(paste("FDR < ", cutoff, sep=""), paste("Coef < ", coef.cutoff.down, sep=""), sep=", "),
                          "NO")
     
     data$delabel <- NA
     data <- data[order(data$FDR, decreasing = FALSE), ]
-    id_pos <- data[data$coef > coef.cutoff , "feature"][1:pos.cutoff]
-    id_neg <- data[data$coef < coef.cutoff , "feature"][1:neg.cutoff]
+    id_pos <- data[data$coef > coef.cutoff.up , "feature"][1:pos.cutoff]
+    id_neg <- data[data$coef < coef.cutoff.down , "feature"][1:neg.cutoff]
     id <- c(id_pos, id_neg)
     
     for(j in 1:length(id)){
@@ -86,6 +88,10 @@ volcanoPlot <- function(feature, coef, pval, padj, pos.cutoff, neg.cutoff, x.lab
       legend.position="bottom",
       legend.text = element_text(size = 7, face="bold"),
       legend.title = element_blank()) +
+    geom_hline(yintercept=-log10(0.05), linetype="dashed", 
+               color = "grey", size=0.5) +
+    geom_vline(xintercept=c(coef.cutoff.down, coef.cutoff.up), linetype="dashed", 
+               color = "grey", size=0.5) +
     geom_text_repel(aes(label= delabel),
                     size = 2.4,
                     color = "black",

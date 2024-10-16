@@ -98,7 +98,6 @@ The detailed clinical characteristics of the Mariathasan dataset including cance
 
 # summary table of selected clinical variable 
 sub_clin <- clin[, c("age","sex", "response","survival_time_os")]
-
 print(dfSummary(sub_clin, 
                 style = "grid", 
                 plain.ascii = FALSE, 
@@ -239,10 +238,11 @@ p <- volcanoPlot(feature = cox_os$Gene,
                  neg.cutoff = 38, 
                  pos.cutoff = 2, 
                  x.lab = "logHR estimate",
-                 padj.label = TRUE,
+                 padj.label = FALSE,
                  cutoff = 0.05,
                  colors = c("#EF8A62","#67A9CF", "#999999"),
-                 coef.cutoff = 0.1)
+                 coef.cutoff.up = 0,
+                 coef.cutoff.down = 0)
      
 p
      
@@ -284,7 +284,8 @@ p <- volcanoPlot(feature = logreg$Gene,
                  padj.label = FALSE,
                  cutoff = 0.05,
                  colors = c("#EF8A62","#67A9CF", "#999999"),
-                 coef.cutoff = 0.3)
+                 coef.cutoff.up = 0, 
+                 coef.cutoff.down = 0)
      
 p
      
