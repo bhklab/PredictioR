@@ -5,7 +5,7 @@
 \alias{PredictIO_Bareche}
 \title{PredictIO Bareche RNA Signature}
 \format{
-An object of class \code{data.frame} with 100 rows and 5 columns.
+An object of class \code{data.frame} with 100 rows and 6 columns.
 }
 \source{
 \url{https://pubmed.ncbi.nlm.nih.gov/36055464/}

@@ -5,7 +5,7 @@
 \alias{EMT_Thompson}
 \title{EMT Thompson RNA Signature}
 \format{
-An object of class \code{data.frame} with 12 rows and 5 columns.
+An object of class \code{data.frame} with 12 rows and 6 columns.
 }
 \source{
 \url{https://pubmed.ncbi.nlm.nih.gov/31683225/}

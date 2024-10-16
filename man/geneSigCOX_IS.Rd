@@ -12,7 +12,8 @@ geneSigCOX_IS(
   const.int = 0.001,
   n.cutoff,
   sig.perc,
-  study
+  study,
+  gene_annot = "gene_name"
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ geneSigCOX_IS(
 \item{sig.perc}{Minimum percentage of genes in a given expression data.}
 
 \item{study}{Name of study.}
+
+\item{gene_annot}{Specify gene annotation including gene symbol (i.e., gene_name), ENTREZ ID (i.e., entrez_id), and ENSEMBL gene ID (i.e., gene_id).}
 }
 \value{
 A numeric vector of computed signature score.

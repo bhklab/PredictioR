@@ -7,9 +7,9 @@
 IPSfun(expr, sig)
 }
 \arguments{
-\item{expr}{}
+\item{expr}{A numeric matrix of expression data.}
 
-\item{sig}{}
+\item{sig}{A data frame of list of genes.}
 }
 \description{
 IPS Function

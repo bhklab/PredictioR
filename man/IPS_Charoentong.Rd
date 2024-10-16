@@ -5,7 +5,7 @@
 \alias{IPS_Charoentong}
 \title{IPS Charoentong RNA Signature}
 \format{
-An object of class \code{data.frame} with 162 rows and 7 columns.
+An object of class \code{data.frame} with 162 rows and 8 columns.
 }
 \source{
 \url{https://pubmed.ncbi.nlm.nih.gov/28052254/}
