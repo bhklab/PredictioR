@@ -10,7 +10,7 @@
 #' @param n.cutoff Minimum number of samples included in the association analysis.
 #' @param sig.perc Minimum percentage of genes in a given expression data. 
 #' @param study Name of study. 
-#' @param gene_annot Specify gene annotation including gene symbol (i.e., gene_name), ENTREZ ID (i.e., entrez_id), and ENSEMBL gene ID (i.e., gene_id).
+#' @param gene.annot Specify gene annotation including gene symbol (i.e., gene_name), ENTREZ ID (i.e., entrez_id), and ENSEMBL gene ID (i.e., gene_id).
 #'
 #' @return A numeric vector of computed signature score.
 #' @export
@@ -26,7 +26,7 @@
 #'                  sig.perc = 0.8, 
 #'                  study = 'ICB_Mariathasan')
 #'              
-geneSigPredictIO <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study, gene_annot = "gene_name"){
+geneSigPredictIO <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study, gene.annot = "gene_name"){
   
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "data.frame", "matrix") ){
     stop(message("function requires SummarizedExperiment, MultiAssayExperiment, data.frame, or matrix class of data"))
@@ -63,19 +63,19 @@ geneSigPredictIO <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.
     
     #print( paste( signature_name , "|" , "Specific" , sep=" " ) )
     
-    if( gene_annot == "gene_name" ){   
+    if( gene.annot == "gene_name" ){   
       sensitive <- sig[ sig$weight == "sensitive" , ]$gene_name
       resistance <- sig[ sig$weight == "resistance", ]$gene_name
     }
     
     
-    if( gene_annot == "entrez_id" ){   
+    if( gene.annot == "entrez_id" ){   
       sensitive <- sig[ sig$weight == "sensitive" , ]$entrez_id
       resistance <- sig[ sig$weight == "resistance", ]$entrez_id
     }
     
     
-    if( gene_annot == "gene_id" ){   
+    if( gene.annot == "gene_id" ){   
       sensitive <- sig[ sig$weight == "sensitive" , ]$gene_id
       resistance <- sig[ sig$weight == "resistance", ]$gene_id
     }

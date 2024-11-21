@@ -10,7 +10,7 @@
 #' @param n.cutoff Minimum number of samples included in the association analysis.
 #' @param sig.perc Minimum percentage of genes in a given expression data. 
 #' @param study Name of study. 
-#' @param gene_annot Specify gene annotation including gene symbol (i.e., gene_name), ENTREZ ID (i.e., entrez_id), and ENSEMBL gene ID (i.e., gene_id).
+#' @param gene.annot Specify gene annotation including gene symbol (i.e., gene_name), ENTREZ ID (i.e., entrez_id), and ENSEMBL gene ID (i.e., gene_id).
 #'
 #' @return A numeric vector of computed signature score.
 #' @export
@@ -26,7 +26,7 @@
 #'             sig.perc = 0.8, 
 #'             study = 'ICB_Mariathasan')
 #' 
-geneSigssGSEA <- function(dat.icb, sig, sig.name, missing.perc, const.int = 0.001, n.cutoff, sig.perc, study, gene_annot = "gene_name"){
+geneSigssGSEA <- function(dat.icb, sig, sig.name, missing.perc, const.int = 0.001, n.cutoff, sig.perc, study, gene.annot = "gene_name"){
   
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "data.frame", "matrix") ){
     stop(message("function requires SummarizedExperiment, MultiAssayExperiment, data.frame, or matrix class of data"))
@@ -59,9 +59,9 @@ geneSigssGSEA <- function(dat.icb, sig, sig.name, missing.perc, const.int = 0.00
     data <- data[-remove,]
   }
   
-  if( gene_annot == "gene_name" ){ genes <- sig$gene_name  }
-  if( gene_annot == "entrez_id" ){ genes <- sig$entrez_id  }
-  if( gene_annot == "gene_id" ){ genes <- sig$gene_id  }
+  if( gene.annot == "gene_name" ){ genes <- sig$gene_name  }
+  if( gene.annot == "entrez_id" ){ genes <- sig$entrez_id  }
+  if( gene.annot == "gene_id" ){ genes <- sig$gene_id  }
   
   if( ifelse( is.null( nrow( data[ rownames(data) %in% genes , ]) ) , 1 , nrow( data[ rownames(data) %in% genes , ] ) ) / length( genes ) > sig.perc & ncol(data) >= n.cutoff ){
     

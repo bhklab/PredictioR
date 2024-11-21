@@ -13,7 +13,7 @@ geneSigCOX_IS(
   n.cutoff,
   sig.perc,
   study,
-  gene_annot = "gene_name"
+  gene.annot = "gene_name"
 )
 }
 \arguments{
@@ -33,7 +33,7 @@ geneSigCOX_IS(
 
 \item{study}{Name of study.}
 
-\item{gene_annot}{Specify gene annotation including gene symbol (i.e., gene_name), ENTREZ ID (i.e., entrez_id), and ENSEMBL gene ID (i.e., gene_id).}
+\item{gene.annot}{Specify gene annotation including gene symbol (i.e., gene_name), ENTREZ ID (i.e., entrez_id), and ENSEMBL gene ID (i.e., gene_id).}
 }
 \value{
 A numeric vector of computed signature score.

@@ -23,7 +23,7 @@
 #'            n.cutoff = 15,
 #'            study = 'ICB_Mariathasan')
 #'              
-geneSigIPS <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, study){
+geneSigIPS <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, study, gene.annot = "gene_name"){
   
   
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "data.frame", "matrix") ){
@@ -62,7 +62,7 @@ geneSigIPS <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n
     
     #print( paste( signature_name , "|" , "Specific" , sep=" " ) )
     
-    geneSig <- as.numeric( scale( IPSfun( expr = data , sig = sig) ) )
+    geneSig <- as.numeric( scale( IPSfun( expr = data , sig = sig, gene.annot = gene.annot) ) )
     names( geneSig ) <- colnames(data)
     
   }else{

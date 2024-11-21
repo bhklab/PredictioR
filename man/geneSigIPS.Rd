@@ -11,7 +11,8 @@ geneSigIPS(
   missing.perc,
   const.int = 0.001,
   n.cutoff,
-  study
+  study,
+  gene.annot = "gene_name"
 )
 }
 \arguments{

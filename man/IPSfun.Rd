@@ -4,12 +4,14 @@
 \alias{IPSfun}
 \title{IPS Function}
 \usage{
-IPSfun(expr, sig)
+IPSfun(expr, sig, gene.annot)
 }
 \arguments{
 \item{expr}{A numeric matrix of expression data.}
 
 \item{sig}{A data frame of list of genes.}
+
+\item{gene.annot}{Specify gene annotation including gene symbol (i.e., gene_name), ENTREZ ID (i.e., entrez_id), and ENSEMBL gene ID (i.e., gene_id).}
 }
 \description{
 IPS Function
