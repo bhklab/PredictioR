@@ -8,7 +8,6 @@
 #' @param missing.perc A cutoff to remove genes with zero expression across samples.
 #' @param const.int A pseudocount is added to the TPM (Transcripts Per Million) values before performing a log transformation.
 #' @param n.cutoff Minimum number of samples included in the association analysis.
-#' @param sig.perc Minimum percentage of genes in a given expression data. 
 #' @param study Name of study. 
 #'
 #' @return A numeric vector of computed signature score.
@@ -22,10 +21,9 @@
 #'            missing.perc = 0.5,
 #'            const.int = 0.001,
 #'            n.cutoff = 15,
-#'            sig.perc = 0.8, 
 #'            study = 'ICB_Mariathasan')
 #'              
-geneSigIPS <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, sig.perc, study){
+geneSigIPS <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n.cutoff, study){
   
   
   if( !class(dat.icb) %in% c("SummarizedExperiment", "MultiAssayExperiment", "data.frame", "matrix") ){
@@ -60,7 +58,7 @@ geneSigIPS <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.001, n
   
   
   geneSig = NULL
-  if( ifelse( is.null( nrow( data[ rownames(data) %in% sig$gene_name , ]) ) , 1 , nrow( data[ rownames(data) %in% sig$gene_name , ] ) ) / length( sig$gene_name ) > sig.perc & ncol(data) >= n.cutoff ){ 
+  if( ncol(data) & nrow(data) > 10000  ){ 
     
     #print( paste( signature_name , "|" , "Specific" , sep=" " ) )
     

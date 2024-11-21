@@ -11,7 +11,6 @@ geneSigIPS(
   missing.perc,
   const.int = 0.001,
   n.cutoff,
-  sig.perc,
   study
 )
 }
@@ -27,8 +26,6 @@ geneSigIPS(
 \item{const.int}{A pseudocount is added to the TPM (Transcripts Per Million) values before performing a log transformation.}
 
 \item{n.cutoff}{Minimum number of samples included in the association analysis.}
-
-\item{sig.perc}{Minimum percentage of genes in a given expression data.}
 
 \item{study}{Name of study.}
 }
@@ -46,7 +43,6 @@ geneSigIPS(dat.icb = ICB_small_Mariathasan,
            missing.perc = 0.5,
            const.int = 0.001,
            n.cutoff = 15,
-           sig.perc = 0.8, 
            study = 'ICB_Mariathasan')
              
 }
