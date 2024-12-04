@@ -68,8 +68,11 @@ geneSigGSVA <- function(dat.icb, sig, sig.name, missing.perc, const.int = 0.001,
     #print( paste( signature_name , "|" , "GSVA" , sep=" " ) )
     
     geneSig <- NULL
-    gsvaPar <- gsvaParam(scalefun( x=data ) , list(genes))
-    geneSig <- gsva(gsvaPar, verbose=FALSE)
+    genes <- list(genes)
+    names(genes) <- sig.name
+    gsvaPar <- gsvaParam(scalefun(x = data), genes)
+    geneSig <- gsva(gsvaPar, verbose = FALSE)
+    geneSig <- geneSig[1, ]
     
   }else{
     
