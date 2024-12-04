@@ -65,7 +65,7 @@ sig <- geneSigGSVA(dat.icb = ICB_small_Mariathasan,
                    study = 'ICB_Mariathasan')
             
 geneSigSurvCont(dat.icb = ICB_small_Mariathasan,
-                geneSig = sig[1,],
+                geneSig = sig,
                 time.censor = 36,
                 n.cutoff = 15,
                 study =  'ICB_Mariathasan',
