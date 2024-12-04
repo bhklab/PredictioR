@@ -468,7 +468,7 @@ geneSigScore <- geneSigGSVA(dat.icb = ICB_small_Mariathasan,
                             sig.perc = 0.8, 
                             study = 'ICB_Mariathasan')
      
-head(geneSigScore[1,])
+head(geneSigScore)
      
 ```
      
@@ -532,7 +532,7 @@ geneSig_os <- lapply(1:length(expr), function(k){
        if(sum(!is.na(geneSig)) > 0){
          
          res <- geneSigSurvDicho(dat.icb = expr[[k]],
-                                 geneSig = geneSig[1,],
+                                 geneSig = geneSig,
                                  time.censor = 24,
                                  n.cutoff = 15,
                                  study =  names(expr)[k],
