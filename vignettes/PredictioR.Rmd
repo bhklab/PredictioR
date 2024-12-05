@@ -468,7 +468,7 @@ geneSigScore <- geneSigGSVA(dat.icb = ICB_small_Mariathasan,
                             sig.perc = 0.8, 
                             study = 'ICB_Mariathasan')
      
-head(geneSigScore)
+head(geneSigScore[1, ])
      
 ```
      
@@ -527,23 +527,23 @@ geneSig_os <- lapply(1:length(expr), function(k){
                               const.int = 0.001, 
                               n.cutoff = 15,
                               sig.perc = 0.8, 
-                              study = names(expr)[k])
+                              study = names(expr)[k])  
        
        if(sum(!is.na(geneSig)) > 0){
          
-         res <- geneSigSurvDicho(dat.icb = expr[[k]],
-                                 geneSig = geneSig,
+         res <- geneSigSurvDicho(dat.icb = ICB_small_Mariathasan,
+                                 geneSig = geneSig[1, ],
                                  time.censor = 24,
                                  n.cutoff = 15,
-                                 study =  names(expr)[k],
+                                 study =  names(expr)[k],  
                                  surv.outcome = "OS",
                                  n0.cutoff = 5,
                                  n1.cutoff = 5,
                                  sig.name = 'CYT_Rooney',
                                  method = 'median',
                                  var.type = FALSE,
-                                 cancer.type = cancer_type[k],
-                                 treatment = treatment_type[k])
+                                 cancer.type = cancer_type[k], 
+                                 treatment = treatment_type[k]) 
          
        }else{
          

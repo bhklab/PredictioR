@@ -72,7 +72,6 @@ geneSigssGSEA <- function(dat.icb, sig, sig.name, missing.perc, const.int = 0.00
     names(genes) <- sig.name
     gsvaPar <- ssgseaParam(scalefun(x = data), genes)
     geneSig <- gsva(gsvaPar, verbose = FALSE)
-    geneSig <- geneSig[1, ]
     
   }else{
     
