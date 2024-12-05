@@ -531,7 +531,7 @@ geneSig_os <- lapply(1:length(expr), function(k){
        
        if(sum(!is.na(geneSig)) > 0){
          
-         res <- geneSigSurvDicho(dat.icb = ICB_small_Mariathasan,
+         res <- geneSigSurvDicho(dat.icb = expr[[k]],
                                  geneSig = geneSig[1, ],
                                  time.censor = 24,
                                  n.cutoff = 15,
