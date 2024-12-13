@@ -83,13 +83,17 @@ geneSigPredictIO <- function(dat.icb, sig, sig.name, missing.perc, const.int =0.
     
     IO_resistance <- NULL
     if( ifelse( is.null( nrow( data[ rownames(data) %in% resistance , ]) ) , 1 , nrow( data[ rownames(data) %in% resistance , ] ) ) / length( resistance ) > sig.perc ){
-      gsvaPar <- gsvaParam(scalefun( x=data ) , list(resistance))
+      resistance <- list(resistance)
+      names(resistance) <- sig.name
+      gsvaPar <- gsvaParam(scalefun( x=data ) , resistance)
       IO_resistance <- as.numeric(gsva(gsvaPar, verbose=FALSE))
     }
     
     IO_sensitive <- NULL
     if( ifelse( is.null( nrow( data[ rownames(data) %in% sensitive , ]) ) , 1 , nrow( data[ rownames(data) %in% sensitive , ] ) ) / length( sensitive ) > sig.perc ){
-      gsvaPar <- gsvaParam(scalefun( x=data ) , list(sensitive))
+      sensitive <- list(sensitive)
+      names(sensitive) <- sig.name
+      gsvaPar <- gsvaParam(scalefun( x=data ) , sensitive)
       IO_sensitive <- as.numeric(gsva(gsvaPar, verbose=FALSE))
     }
     
