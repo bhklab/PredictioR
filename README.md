@@ -53,6 +53,8 @@ cd PredictioR
 
 ```
 
+More details about function's computations and their applications are included in the package documentation, refer to the [vignettes](https://github.com/bhklab/PredictioR/blob/main/vignettes/PredictioR.Rmd) or accessible via the web application [predictio.ca](https://predictio.ca/). 
+
 ## Citation 
                                                                   
 If the data or computational functions from the PredictioR package are used in your publication, please cite the following paper(s):                                                                  
