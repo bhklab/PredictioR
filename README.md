@@ -55,22 +55,9 @@ cd PredictioR
 
 ## Citation 
                                                                   
-If the data from the SignatureSets package are used in your publication, please cite the following paper(s):                                                                  
+If the data or computational functions from the PredictioR package are used in your publication, please cite the following paper(s):                                                                  
 - [Bareche, Y., Kelly, D., Abbas-Aghababazadeh, F. et al., Annals of Oncology 2022](https://pubmed.ncbi.nlm.nih.gov/36055464/).
                                                                       
 - [Mammoliti, Anthony, et al., Nature communications, 2021](https://pubmed.ncbi.nlm.nih.gov/34608132/)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-The PredictioR package 
