@@ -5,37 +5,35 @@
 
 # PredictioR: An R Package for Biomarker Discovery in Immuno-Oncology Therapy Response
 
-## Introduction
+## 📖 Introduction
     
-The `PredictioR` is an R package to perform comprehensive analyses for biomarker discovery in Immuno-Oncology (IO) response. It supports pan-cancer, cancer-specific, and treatment-specific settings. Additionally, it allows assessment of the importance of key clinical variables such as age and sex. The package includes multiple algorithms for predicting IO response and provides implementations for computing IO signature scores.
+`PredictioR` is an R package designed for comprehensive biomarker discovery in Immuno-Oncology (IO) therapy response. It supports pan-cancer, cancer-specific, and treatment-specific analyses. The package also enables assessment of key clinical variables such as age and sex. Multiple algorithms are included for IO response prediction, along with methods for computing IO signature scores.
 
-The curated IO data and signature resources can be accessed and downloaded from the following locations:
-
-- IO Data: Clinical and molecular profiles are publicly available at [ORCESTRA](https://www.orcestra.ca/clinical_icb).
-
-- IO Signatures: Curated IO signatures can be downloaded from [SignatureSets GitHub repository](https://github.com/bhklab/SignatureSets)."
+**Resources:**
+- 🧬 **IO Data**: Clinical and molecular profiles – available at [ORCESTRA](https://www.orcestra.ca/clinical_icb)  
+- 🧾 **IO Signatures**: Curated IO gene signatures – available from [SignatureSets GitHub repository](https://github.com/bhklab/SignatureSets)
 
 
-## Setup
+## 🔧 Setup
                                                                  
-The latest version of PredictioR repository can be found on the [PredictioR GitHub repository](https://github.com/bhklab/PredictioR). The package is not yet on CRAN or Bioconductor. 
+The latest version of `PredictioR` is available at the [PredictioR GitHub repository](https://github.com/bhklab/PredictioR). The package is not yet on CRAN or Bioconductor.
 
-It is essential that you have R 4.4.1 or above already installed on your computer or server. PredictioR utilizes many other R packages that are currently available from CRAN, Bioconductor and GitHub. Before installing PredictioR, please install all dependencies by executing the following command in R console:
+### ✅ Requirements
+- R version 4.4.1 or higher
 
-The dependencies includes MultiAssayExperiment, survival, survcomp, GSVA, meta, ggplot2 and ggrepel.
+### 📦 Install Dependencies
 
-``` r
+```r
 if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
 
-depens<-c( 'MultiAssayExperiment', 'survival', 'survcomp', 'GSVA', 'meta', 'ggplot2', 'ggrepel')
-for(i in 1:length(depens)){
-  depen<-depens[i]
-  if (!requireNamespace(depen, quietly = TRUE))  BiocManager::install(depen,update = FALSE)
+dependencies <- c('MultiAssayExperiment', 'survival', 'survcomp', 'GSVA', 'meta', 'ggplot2', 'ggrepel')
+for (pkg in dependencies) {
+  if (!requireNamespace(pkg, quietly = TRUE)) BiocManager::install(pkg, update = FALSE)
 }
 
 ```
 
-You can install it from GitHub:
+📥 Install PredictioR from GitHub
 
 ``` bash
 
@@ -44,7 +42,7 @@ library(PredictioR)
 
 ```
 
-To set up the repository, please download this folder locally:
+💻 Clone the Repository (optional)
 
 ``` bash
 
@@ -53,13 +51,29 @@ cd PredictioR
 
 ```
 
-More details about the functions' computations and their applications are included in the package documentation. Refer to the [vignettes](https://github.com/bhklab/PredictioR/blob/main/vignettes/PredictioR.Rmd) or access them via the web application [predictio.ca](https://predictio.ca/). 
+More details about function usage and computational methods are provided in the package documentation and [vignettes](https://github.com/bhklab/PredictioR/blob/main/vignettes/PredictioR.Rmd), or via the web application at [predictio.ca](https://predictio.ca/).
 
-## Citation 
+## 📁 Repository Structure
+
+```plaintext
+
+PredictioR/
+├── 📁 R/            – Core package functions
+├── 📁 data/         – Selected and curated IO signatures and datasets
+├── 📁 man/          – Function documentation (.Rd files)
+├── 📁 vignettes/    – Workflows and usage examples
+├── 📄 DESCRIPTION   – Package metadata
+└── 📄 README.md     – Overview and setup instructions
+
+```
+
+## 📝 Citation
                                                                   
-If the data or computational functions from the PredictioR package are used in your publication, please cite the following paper(s):                                                                  
+If you use PredictioR or its datasets in your work, please cite the following papers:                                                                  
 - [Bareche, Y., Kelly, D., Abbas-Aghababazadeh, F. et al., Annals of Oncology 2022](https://pubmed.ncbi.nlm.nih.gov/36055464/).
                                                                       
 - [Mammoliti, Anthony, et al., Nature communications, 2021](https://pubmed.ncbi.nlm.nih.gov/34608132/)
 
+## Version Information
 
+📌 This is **version: v1.0**, corresponding to the release used in the paper. 
