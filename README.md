@@ -18,10 +18,10 @@
                                                                  
 The latest version of `PredictioR` is available at the [PredictioR GitHub repository](https://github.com/bhklab/PredictioR). The package is not yet on CRAN or Bioconductor.
 
-### ✅ Requirements
+✅ Requirements
 - R version 4.4.1 or higher
 
-### 📦 Install Dependencies
+📦 Install Dependencies
 
 ```r
 if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
