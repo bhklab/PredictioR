@@ -70,7 +70,7 @@ PredictioR/
 ## 📝 Citation
                                                                   
 If you use PredictioR or its datasets in your work, please cite the following papers:                                                                  
-- [Bareche, Y., Kelly, D., Abbas-Aghababazadeh, F. et al., Annals of Oncology 2022](https://pubmed.ncbi.nlm.nih.gov/36055464/).
+- [Bareche, Y., Kelly, D., Abbas-Aghababazadeh, F. et al., Annals of Oncology 2022](https://pubmed.ncbi.nlm.nih.gov/36055464/)
                                                                       
 - [Mammoliti, Anthony, et al., Nature communications, 2021](https://pubmed.ncbi.nlm.nih.gov/34608132/)
 
